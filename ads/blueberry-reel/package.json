@@ -11,6 +11,7 @@
   "license": "ISC",
   "devDependencies": {
     "@fontsource/noto-sans-jp": "^5.2.8",
+    "@fontsource/noto-serif-jp": "^5.2.8",
     "@fontsource/zen-maru-gothic": "^5.2.8",
     "playwright": "^1.56.1"
   }
