@@ -1,0 +1,73 @@
+{
+  "id": "d-bonus",
+  "description": "訴求D：説明会参加特典（10月限定）",
+  "fps": 30,
+  "duration": 15,
+  "brand": "NeweZ ブルーベリー農園",
+  "scenes": [
+    {
+      "type": "hook",
+      "start": 0,
+      "end": 3.0,
+      "kicker": "10月限定",
+      "lines": [
+        "説明会に参加して",
+        "[[特典]]をもらおう"
+      ],
+      "size": "h-l"
+    },
+    {
+      "type": "gift",
+      "start": 3.0,
+      "end": 7.4,
+      "lines": [
+        "お好きな特典を",
+        "[[1つ]]選べます"
+      ],
+      "items": [
+        {
+          "icon": "gift-rice",
+          "label": "お米"
+        },
+        {
+          "icon": "gift-skincare",
+          "label": "BISSスキンケア"
+        }
+      ],
+      "or": "or",
+      "note": "説明会にご参加の方が対象です",
+      "footnote": "※特典内容・数量・期間は予告なく変更となる場合があります。"
+    },
+    {
+      "type": "field",
+      "start": 7.4,
+      "end": 10.8,
+      "beforeTag": "耕作放棄地",
+      "afterTag": "ブルーベリー農園",
+      "lines": [
+        "千葉の[[耕作放棄地]]を",
+        "農園として再生。"
+      ],
+      "caption": "地域の雇用にもつながる取り組み",
+      "photo": "photo-farm-new.jpg"
+    },
+    {
+      "type": "cta",
+      "start": 10.8,
+      "end": 15,
+      "lines": [
+        "まずは[[説明会]]へ"
+      ],
+      "button": "説明会を予約する",
+      "note": "▼ 下のボタンからご予約ください",
+      "disclaimer": "※農園オーナー制度への参加には費用がかかります。\n収益を保証するものではありません。詳細は説明会でご確認ください。",
+      "bonus": {
+        "medal": "10月\n限定",
+        "head": "説明会参加で[特典プレゼント]",
+        "gift": "お米 または BISSスキンケア",
+        "sub": "お好きな特典を一つお選びいただけます。"
+      },
+      "size": "h-l"
+    }
+  ]
+}

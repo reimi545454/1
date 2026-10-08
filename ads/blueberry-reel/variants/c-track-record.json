@@ -1,0 +1,79 @@
+{
+  "id": "c-track-record",
+  "description": "訴求C：実績・信頼（195農園／135社／6期目）",
+  "fps": 30,
+  "duration": 15,
+  "brand": "NeweZ ブルーベリー農園",
+  "scenes": [
+    {
+      "type": "hook",
+      "start": 0,
+      "end": 3.0,
+      "kicker": "ブルーベリー農園オーナー募集",
+      "lines": [
+        "農園オーナーって",
+        "[[実際どうなの？]]"
+      ]
+    },
+    {
+      "type": "stats",
+      "start": 3.0,
+      "end": 7.8,
+      "title": "NeweZの実績",
+      "items": [
+        {
+          "label": "農園数",
+          "value": 195,
+          "unit": "農園"
+        },
+        {
+          "label": "オーナー社数",
+          "value": 135,
+          "unit": "社"
+        },
+        {
+          "label": "事業の歩み",
+          "value": 6,
+          "unit": "期目"
+        }
+      ],
+      "footnote": "※2026年10月時点の自社資料に基づく"
+    },
+    {
+      "type": "points",
+      "start": 7.8,
+      "end": 10.8,
+      "title": "栽培から販路まで一貫",
+      "stagger": 0.5,
+      "items": [
+        {
+          "label": "STEP 1",
+          "icon": "land",
+          "text": "[[農園開設]]\n耕作放棄地を活用"
+        },
+        {
+          "label": "STEP 2",
+          "icon": "sprout",
+          "text": "[[農園管理]]\n運営代行・収穫・出荷"
+        },
+        {
+          "label": "STEP 3",
+          "icon": "truck",
+          "text": "[[販路・商品開発]]\n大手スーパーと取引"
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "start": 10.8,
+      "end": 15,
+      "lines": [
+        "まずは[[説明会]]で",
+        "くわしく聞いてみる"
+      ],
+      "button": "説明会を予約する",
+      "note": "▼ 下のボタンからご予約ください",
+      "disclaimer": "※農園オーナー制度への参加には費用がかかります。\n収益を保証するものではありません。詳細は説明会でご確認ください。"
+    }
+  ]
+}

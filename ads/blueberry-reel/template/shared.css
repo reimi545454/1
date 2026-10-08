@@ -1,0 +1,100 @@
+@import url('../node_modules/@fontsource/zen-maru-gothic/700.css');
+@import url('../node_modules/@fontsource/zen-maru-gothic/900.css');
+@import url('../node_modules/@fontsource/noto-sans-jp/500.css');
+@import url('../node_modules/@fontsource/noto-sans-jp/700.css');
+@import url('../node_modules/@fontsource/noto-sans-jp/900.css');
+
+/* 現行の静止画クリエイティブ（深緑・赤・オレンジCTA）に合わせた配色 */
+:root {
+  --cream: #f8f4ea;
+  --ink: #1d2a24;
+  --green-deep: #1c3d2e;
+  --green: #3f7d31;
+  --leaf: #4c8a3a;
+  --berry: #3b4a9c;
+  --berry-deep: #262d6b;
+  --red: #e2312b;
+  --orange: #ea6a10;
+  --orange-deep: #b34a05;
+  --marker: #ffd75e;
+  --gold: #f2b84b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { overflow: hidden; background: var(--cream); }
+body {
+  font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "palt" 1;
+}
+.sans { font-family: 'Noto Sans JP', sans-serif; }
+.layer { position: absolute; inset: 0; }
+.bg-cream {
+  background:
+    radial-gradient(1100px 900px at 50% 28%, #fffdf7 0%, rgba(255,253,247,0) 70%),
+    linear-gradient(180deg, #f9f5ec 0%, #f1e9d8 100%);
+}
+
+/* 蛍光マーカー強調：[[ ]] で囲んだ語 */
+.hl {
+  color: var(--berry);
+  background-image: linear-gradient(transparent 62%, var(--marker) 62%, var(--marker) 92%, transparent 92%);
+  background-repeat: no-repeat; background-size: 100% 100%;
+  padding: 0 4px;
+}
+.on-dark .hl { color: var(--marker); background-image: none; }
+
+.pill {
+  display: inline-block; white-space: nowrap;
+  font-family: 'Noto Sans JP', sans-serif; font-weight: 700;
+  color: #fff; background: var(--green); padding: 14px 36px; border-radius: 999px; letter-spacing: 0.06em;
+}
+.band {
+  background: var(--green-deep); color: #fff; text-align: center;
+  font-weight: 900; letter-spacing: 0.02em;
+}
+.cta-btn {
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f5832c 0%, var(--orange) 55%, #d65a06 100%);
+  box-shadow: 0 14px 0 var(--orange-deep), 0 28px 44px rgba(120,50,0,0.30);
+  color: #fff; display: flex; align-items: center; justify-content: center; gap: 24px;
+  font-weight: 900; letter-spacing: 0.02em; white-space: nowrap;
+}
+.cta-btn .arrow {
+  border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;
+}
+.card {
+  background: #fff; border-radius: 36px;
+  box-shadow: 0 18px 40px rgba(28,61,46,0.12), 0 2px 0 rgba(28,61,46,0.05);
+}
+.photo {
+  background-size: cover; background-position: center; border-radius: 28px;
+  box-shadow: 0 14px 30px rgba(28,61,46,0.18);
+}
+.disclaimer {
+  font-family: 'Noto Sans JP', sans-serif; font-weight: 500; line-height: 1.5; color: #55605a; text-align: center;
+}
+
+/* 特典リボン（10月限定など） */
+.bonus {
+  position: relative; display: flex; align-items: stretch; background: #fff; border-radius: 22px; overflow: hidden;
+  box-shadow: 0 12px 30px rgba(120,20,10,0.16);
+}
+.bonus .medal {
+  flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 40% 35%, #ffe7a3, var(--gold) 70%, #d19a2c);
+  color: #8a1f12; font-family: 'Noto Sans JP', sans-serif; font-weight: 900; line-height: 1.05;
+}
+.bonus .body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.bonus .head {
+  background: var(--red); color: #fff; font-family: 'Noto Sans JP', sans-serif; font-weight: 900; white-space: nowrap;
+}
+.bonus .head em { font-style: normal; color: var(--marker); }
+.bonus .gift { font-family: 'Noto Sans JP', sans-serif; font-weight: 900; color: #3a2a1c; white-space: nowrap; }
+.bonus .sub { font-family: 'Noto Sans JP', sans-serif; font-weight: 500; color: #5b4a3a; white-space: nowrap; }
+
+/* セーフゾーン確認用ガイド（--guides 指定時のみ） */
+#guides { display: none; pointer-events: none; z-index: 99; }
+#guides.on { display: block; }
+#guides .g { position: absolute; left: 0; right: 0; background: rgba(255,0,80,0.18); border: 2px dashed rgba(255,0,80,0.7); }
+#guides .gs { position: absolute; top: 0; bottom: 0; background: rgba(255,0,80,0.10); }
