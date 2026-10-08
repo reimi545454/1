@@ -1,0 +1,10 @@
+{
+  "id": "f-gift", "template": "adreel", "fps": 30, "duration": 15,
+  "description": "10月限定の説明会特典 → 何かしたい → まずはお問い合わせ",
+  "scenes": [
+    {"start": 0, "end": 3.2, "parts": {"band": "10月限定", "big": ["説明会に参加して", "[[特典]]をもらおう"], "bigSize": "s"}},
+    {"start": 3.2, "end": 7.4, "parts": {"band": "お好きな特典を選べます", "gifts": true, "sub": "お米 または BISSスキンケア"}},
+    {"start": 7.4, "end": 10.6, "parts": {"band": "地方のために、環境のために。", "big": ["何かしたい。", "[[でも、何から？]]"], "bigSize": "m"}},
+    {"start": 10.6, "end": 15, "parts": {"big": ["ならまずは、", "[[お問い合わせ]]ください。"], "bigSize": "m", "bonus": true, "cta": "まずはお問い合わせ"}}
+  ]
+}

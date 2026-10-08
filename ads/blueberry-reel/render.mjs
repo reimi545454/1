@@ -62,7 +62,7 @@ async function openPage(cfg, guides) {
   const pageErrors = [];
   page.on('pageerror', (e) => pageErrors.push(e.message));
   page.on('requestfailed', (r) => pageErrors.push(`読み込み失敗: ${r.url()}`));
-  await page.goto(pathToFileURL(join(ROOT, 'template', 'reel.html')).href, { waitUntil: 'load' });
+  await page.goto(pathToFileURL(join(ROOT, 'template', `${cfg.template || 'reel'}.html`)).href, { waitUntil: 'load' });
   await page.evaluate(([c, g]) => window.initReel(c, { guides: g }), [cfg, guides]);
   if (pageErrors.length) throw new Error(`テンプレートでエラー:\n  ${pageErrors.join('\n  ')}`);
   // 日本語フォントが実際に読み込まれたか確認（フォールバック描画の事故防止）
@@ -90,7 +90,7 @@ async function main() {
     if (args.stills) {
       for (const [i, s] of cfg.scenes.entries()) {
         await page.evaluate((tt) => window.renderAt(tt), s.end - 0.35);
-        const p = `${base}_scene${i + 1}-${s.type}.png`;
+        const p = `${base}_scene${i + 1}.png`;
         await page.screenshot({ path: p, type: 'png' });
         console.log(`✔ ${p}`);
       }

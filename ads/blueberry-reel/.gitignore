@@ -3,3 +3,5 @@ out/*.log
 out/*.done
 out/*_guides*
 out/*_scene*.png
+out/*.wav
+out/e-chihou-kankyo.mp4
