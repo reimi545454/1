@@ -2,7 +2,7 @@
   :root { --dg: #15392b; --navy: #1b2a52; }
   #stage { position: absolute; left: 0; top: 0; overflow: hidden; background: #6fb4ea; }
   #sky { position: absolute; left: 0; top: 0; width: 1080px; background: url(../assets/bg-sky.jpg) center top / cover; }
-  #forest { position: absolute; left: 0; bottom: 0; width: 1080px; background: url(../assets/bg-forest.jpg) center bottom / cover; -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 45%); mask-image: linear-gradient(to bottom, transparent 0%, #000 45%); }
+  #forest { position: absolute; left: 0; bottom: 0; width: 1080px; background: url(../assets/bg-village.jpg) center bottom / cover; -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 38%); mask-image: linear-gradient(to bottom, transparent 0%, #000 38%); }
   #fade { position: absolute; left: 0; width: 1080px; background: linear-gradient(180deg, rgba(196,224,246,0), rgba(120,170,110,0.55)); }
   #content, .acontent { position: absolute; left: 0; display: flex; flex-direction: column; align-items: center; gap: 22px; }
   .band { width: 100%; background: var(--dg); color: #fff; text-align: center; font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 74px; line-height: 1.3; padding: 18px 0 22px; white-space: nowrap; }

@@ -18,7 +18,7 @@
     if (hit.length) throw new Error(`使用禁止語を含んでいます: ${hit.join('、')}`);
     L.injectDefs();
     document.getElementById('sky').style.height = '1720px';
-    document.getElementById('forest').style.height = '420px';
+    document.getElementById('forest').style.height = '860px';
     if (opts.guides) document.getElementById('guides').classList.add('on');
     const root = document.getElementById('scenes');
     const scenes = cfg.scenes.map((s, i) => {

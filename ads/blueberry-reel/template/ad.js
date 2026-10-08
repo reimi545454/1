@@ -133,7 +133,7 @@
     const stage = document.getElementById('stage');
     stage.style.width = `${F.W}px`; stage.style.height = `${F.H}px`;
     document.getElementById('sky').style.height = `${F.H - 200}px`;
-    document.getElementById('forest').style.height = `${format === 'story' ? 420 : 300}px`;
+    document.getElementById('forest').style.height = `${format === 'story' ? 860 : format === 'feed' ? 520 : 400}px`;
     L.injectDefs();
     const content = document.getElementById('content');
     build(content, cfg, format);
