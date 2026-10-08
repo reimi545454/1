@@ -91,7 +91,16 @@
         b.querySelectorAll('.head, .gift, .sub').forEach((n) => { n.style.fontSize = `${parseFloat(getComputedStyle(n).fontSize) - 1}px`; });
       }
     });
-    const fit = () => { fitBonus(); content.querySelectorAll('.band, .big .ln, .chips').forEach((n) => {
+    // ボタンは「文字＋矢印」が枠に余白付きで収まるまで文字を縮める
+    const fitCta = () => content.querySelectorAll('.cta-btn').forEach((b) => {
+      const label = b.firstElementChild;
+      for (let k = 0; k < 40; k++) {
+        const used = [...b.children].reduce((a, c) => a + c.getBoundingClientRect().width, 0) + 24 * (b.children.length - 1);
+        if (used <= b.getBoundingClientRect().width - 90) break;
+        label.style.fontSize = `${parseFloat(getComputedStyle(label).fontSize) - 1}px`;
+      }
+    });
+    const fit = () => { fitBonus(); fitCta(); content.querySelectorAll('.band, .big .ln, .chips').forEach((n) => {
       if (n.classList.contains('chips')) {
         // チップ行は中身の幅（余白を除く）で判定し、収まらなければ行ごと縮める
         const inner = [...n.children].reduce((a, c) => a + c.getBoundingClientRect().width, 0) + (n.children.length - 1) * 22 * (n.getBoundingClientRect().width / n.offsetWidth || 1);
