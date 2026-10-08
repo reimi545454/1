@@ -13,7 +13,7 @@
     square: { W: 1080, H: 1080, top: 50,  bottom: 1080 - 120, side: 60, minScale: 0.7, maxUp: 1.0 },
   };
   const BANNED = ['農園', '農業', 'ブルーベリー'];
-  const BONUS = { medal: '10月\n限定', head: '説明会参加で[特典プレゼント]', gift: 'お米 または BISSスキンケア', sub: 'お好きな特典を一つお選びいただけます。' };
+  const BONUS = { medal: '10月\n限定', head: 'Zoom個別説明で[特典プレゼント]', gift: 'お米 または BISSスキンケア', sub: 'お好きな特典を一つお選びいただけます。' };
 
   const ICONS = {
     home: '<path d="M8 21 L24 8 L40 21 V38 H29 V27 H19 V38 H8z" fill="#fff"/>',
@@ -46,8 +46,9 @@
     }
     if (c.gifts) {
       const row = el('div', 'gifts', p);
-      const mk = (id, label) => { const g = el('div', 'gcard', row); g.innerHTML = `<svg width="170" height="187" viewBox="0 0 200 220"><use href="#${id}"/></svg>`; T('div', '', g, label); };
-      mk('gift-rice', 'お米'); T('div', 'gor', row, 'or'); mk('gift-skincare', 'BISSスキンケア');
+      const mk = (id, label) => { const g = el('div', 'gcard', row); g.innerHTML = `<svg width="170" height="187" viewBox="0 0 200 220"><use href="#${id}"/></svg>`; T('div', 'glabel', g, label); };
+      const gl = Array.isArray(c.gifts) ? c.gifts : ['お米', 'BISSスキンケア'];
+      mk('gift-rice', gl[0]); T('div', 'gor', row, 'or'); mk('gift-skincare', gl[1]);
     }
     if (c.sub) T('div', `sub ${c.subDark ? 'dark' : ''}`, p, markup(c.sub));
     if (c.bonus) {
@@ -57,7 +58,7 @@
     if (c.noCta) return;
     const btn = el('div', 'cta-btn', p);
     btn.dataset.text = 'box';
-    btn.innerHTML = `<span>${escapeHtml(c.cta || '説明会を予約する')}</span><span class="arrow"><svg width="26" height="26" viewBox="0 0 10 10"><path d="M3 1 L7 5 L3 9" stroke="#b34a05" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+    btn.innerHTML = `<span>${escapeHtml(c.cta || 'Zoom個別説明を予約する')}</span><span class="arrow"><svg width="26" height="26" viewBox="0 0 10 10"><path d="M3 1 L7 5 L3 9" stroke="#b34a05" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
     if (c.foot) T('div', 'foot', p, markup(c.foot));
   }
 
@@ -84,7 +85,13 @@
   function layout(content, F, anchor) {
     // 1行固定の見出しは、文字幅が収まるまでフォントを縮める（セーフゾーン内に収めるため）
     const maxW = 1080 - 2 * (F.side + 14);
-    const fit = () => content.querySelectorAll('.band, .big .ln, .chips').forEach((n) => {
+    // 特典帯は中身が帯の幅に収まるまで文字を縮める
+    const fitBonus = () => content.querySelectorAll('.bonus').forEach((b) => {
+      for (let k = 0; k < 30 && b.scrollWidth > b.clientWidth + 1; k++) {
+        b.querySelectorAll('.head, .gift, .sub').forEach((n) => { n.style.fontSize = `${parseFloat(getComputedStyle(n).fontSize) - 1}px`; });
+      }
+    });
+    const fit = () => { fitBonus(); content.querySelectorAll('.band, .big .ln, .chips').forEach((n) => {
       if (n.classList.contains('chips')) {
         // チップ行は中身の幅（余白を除く）で判定し、収まらなければ行ごと縮める
         const inner = [...n.children].reduce((a, c) => a + c.getBoundingClientRect().width, 0) + (n.children.length - 1) * 22 * (n.getBoundingClientRect().width / n.offsetWidth || 1);
@@ -94,7 +101,7 @@
       let fs = parseFloat(getComputedStyle(n).fontSize);
       const w = () => { const r = document.createRange(); r.selectNodeContents(n); return r.getBoundingClientRect().width; };
       while (w() > maxW && fs > 30) { fs -= 2; n.style.fontSize = `${fs}px`; }
-    });
+    }); };
     const avail = F.bottom - F.top - 8;
     const { scale, h } = fitContent(content, F, avail, fit);
     // 全幅の帯の文字がセーフゾーン上端より上に出ないよう、文字の外接矩形で位置を補正（zoom下の top は拡縮されるため scale で割る）

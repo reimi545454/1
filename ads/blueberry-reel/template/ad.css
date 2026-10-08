@@ -30,3 +30,5 @@
   .cta-btn { width: min(800px, calc(100% - 130px)); height: 128px; font-size: 56px; }
   .cta-btn .arrow { width: 52px; height: 52px; }
   .foot { font-family: 'Noto Sans JP', sans-serif; font-weight: 500; font-size: 24px; color: #fff; text-shadow: 0 1px 4px rgba(0,30,40,.8); text-align: center; }
+
+  .gcard .glabel { font-size: 34px; line-height: 1.25; white-space: nowrap; }
