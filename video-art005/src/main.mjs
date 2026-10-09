@@ -62,6 +62,14 @@ function buildImageScene(s, src) {
   return { root, r };
 }
 
+// 文言を差し替える帯（シーン2・7）：帯は出したまま、中の文字だけ切り替える
+function addSwapBand(root, groups) {
+  const b = el('div', 'band swap', groups.map((g) => `<div class="main">${mainHtml(g)}</div>`).join(''));
+  b.dataset.safe = '1';
+  root.appendChild(b);
+  return { band: b, texts: [...b.querySelectorAll('.main')] };
+}
+
 function addBand(root, r, s, cls, mainLines, sub) {
   const b = el('div', 'band ' + (cls || ''), `<div class="main">${mainHtml(mainLines)}</div>` + (sub ? `<div class="sub">${esc(sub)}</div>` : ''));
   b.dataset.safe = '1';
@@ -78,7 +86,8 @@ function addBand(root, r, s, cls, mainLines, sub) {
 {
   const s = SCENES[1];
   const { root, r } = buildImageScene(s, ASSETS.testing);
-  s.questions.forEach((q) => r.bands.push({ el: addBand(root, r, s, 'q', [q.text]), from: q.from - s.start, to: q.to - s.start, q: true }));
+  const sw = addSwapBand(root, s.questions.map((q) => [q.text]));
+  r.swap = { ...sw, wins: s.questions.map((q) => ({ from: q.from - s.start, to: q.to - s.start })) };
 }
 {
   const s = SCENES[2];
@@ -115,7 +124,8 @@ function addBand(root, r, s, cls, mainLines, sub) {
   box.dataset.safe = '1';
   root.appendChild(box);
   const r = { box, bands: [] };
-  s.texts.forEach((t) => r.bands.push({ el: addBand(root, r, s, '', t.lines), from: t.from - s.start, to: t.to - s.start, swap: true }));
+  const sw = addSwapBand(root, s.texts.map((t) => t.lines));
+  r.swap = { ...sw, wins: s.texts.map((t) => ({ from: t.from - s.start, to: t.to - s.start })) };
   refs[s.id] = r;
 }
 
@@ -125,6 +135,18 @@ function sceneOpacity(i, frame) {
   if (frame < s.start) return 0;
   if (frame > s.end) return next && frame < next.start + RAMP ? 1 : 0; // 次シーンの立ち上がり中だけ下に残す
   return i === 0 ? 1 : clamp((frame - s.start) / RAMP, 0, 1);
+}
+
+// 帯は最初の文言と同時にフェードイン。文言は「直前の文言が4フレームで消える → 次が5フレームで現れる」で切り替える。
+function swapText(sw, f, dur, op) {
+  sw.band.style.opacity = op(fadeIn(f, sw.wins[0].from));
+  sw.texts.forEach((t, i) => {
+    const w = sw.wins[i];
+    const last = i === sw.wins.length - 1;
+    let o = fadeIn(f, w.from, last || i === 0 ? FADE : 5);
+    if (!last) o *= 1 - clamp((f - (w.to - 3)) / 4, 0, 1);
+    t.style.opacity = String(o);
+  });
 }
 
 function renderFrame(frame) {
@@ -152,25 +174,15 @@ function renderFrame(frame) {
     if (s.id === 7) {
       // 最初の3秒だけ緩やかに寄り、最後の3秒は静止
       r.box.style.transform = `scale(${(1 + 0.01 * ease(f / 90)).toFixed(5)})`;
-      r.bands.forEach((b) => {
-        const lf = f - b.from;
-        const len = b.to - b.from + 1;
-        let o2 = fadeIn(f, b.from);
-        if (b.to < dur - 1) o2 *= 1 - clamp((lf - (len - 6)) / 6, 0, 1); // 最後の文言は残す
-        b.el.style.opacity = op(o2);
-      });
+      swapText(r.swap, f, dur, op);
       return;
     }
 
     // 画像シーン：緩やかなズーム 1.00 → 1.025
     r.layer.style.transform = `scale(${(1 + 0.025 * ease(t)).toFixed(5)})`;
+    if (r.swap) swapText(r.swap, f, dur, op);
     r.bands.forEach((b) => {
-      let o2 = fadeIn(f, b.from);
-      if (b.q) {
-        const len = b.to - b.from + 1;
-        if (b.to < s.end) o2 *= 1 - clamp((f - b.from - (len - 6)) / 6, 0, 1);
-      }
-      b.el.style.opacity = op(o2);
+      b.el.style.opacity = op(fadeIn(f, b.from));
     });
     r.notes.forEach((n) => (n.el.style.opacity = op(fadeIn(frame, n.at))));
     r.nums.forEach((n) => {

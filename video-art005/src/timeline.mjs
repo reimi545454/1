@@ -2,7 +2,7 @@
 // 字幕を直すときは、このファイルの文字列だけを編集する。
 export const FPS = 30;
 export const TOTAL_FRAMES = 1200; // 40秒
-export const RAMP = 8; // シーン切り替えのクロスフェード（フレーム）
+export const RAMP = 5; // シーン切り替えのクロスフェード（フレーム）
 export const FADE = 9; // 字幕・注釈のフェードイン（0.3秒）
 
 export const ASSETS = {
@@ -48,9 +48,9 @@ export const SCENES = [
     main: ['うまくいくケースだけでなく、', '情報不足や例外も試す。'],
     sub: '不明なことは、確認待ちへ',
     notes: [
-      { at: 655, text: '情報不足', x: 244, y: 190 },
-      { at: 690, text: '複数の依頼', x: 470, y: 190 },
-      { at: 725, text: '判断できない', x: 760, y: 190 },
+      { at: 655, text: '情報不足', x: 244, y: 178 },
+      { at: 690, text: '複数の依頼', x: 490, y: 178 },
+      { at: 725, text: '判断できない', x: 782, y: 178 },
       { at: 760, text: '確認待ち', x: 1670, y: 150, strong: true },
     ],
     narration: '情報不足や例外も試して、分からないことは確認待ちにします。',

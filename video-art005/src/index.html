@@ -33,17 +33,19 @@
   .band {
     position: absolute; left: 50%; bottom: 150px; transform: translateX(-50%);
     background: var(--ivory-band); color: var(--charcoal);
-    border-radius: 28px; padding: 24px 56px; text-align: center;
+    border-radius: 28px; padding: 20px 56px; text-align: center;
     box-shadow: 0 10px 36px rgba(160, 80, 20, .16);
     white-space: nowrap; opacity: 0;
   }
-  .band .main { font-weight: 700; font-size: 56px; line-height: 1.32; letter-spacing: .02em; }
+  .band .main { font-weight: 700; font-size: 56px; line-height: 1.26; letter-spacing: .02em; }
   .band .main .line { display: block; }
   .band .main .arrow { color: var(--orange-deep); }
-  .band .sub { font-weight: 500; font-size: 38px; line-height: 1.4; color: var(--charcoal-soft); margin-top: 8px; }
-  .band.q { padding: 22px 64px; }
+  .band .sub { font-weight: 500; font-size: 38px; line-height: 1.4; color: #3f322f; margin-top: 4px; }
+  .band.q { padding: 20px 64px; }
   .band.q .main { font-size: 58px; }
 
+  .band.swap { display: grid; }
+  .band.swap .main { grid-area: 1 / 1; align-self: center; opacity: 0; }
   .pill {
     position: absolute; transform: translate(-50%, -50%);
     height: 68px; padding: 0 20px; display: flex; align-items: center; justify-content: center;
@@ -69,7 +71,7 @@
   .s3-img img { width: 100%; height: 100%; display: block; object-fit: cover; }
 
   /* シーン7：バナー全体表示（1200x683 → 1000x569） */
-  .s7-banner { position: absolute; left: 460px; top: 100px; width: 1000px; height: 569px; border-radius: 28px; overflow: hidden; box-shadow: 0 28px 60px rgba(200, 80, 20, .28); transform-origin: 50% 50%; }
+  .s7-banner { position: absolute; left: 460px; top: 100px; width: 1000px; height: 569px; overflow: hidden; box-shadow: 0 28px 60px rgba(200, 80, 20, .28); transform-origin: 50% 50%; }
   .s7-banner img { width: 100%; height: 100%; display: block; object-fit: contain; }
 </style>
 </head>

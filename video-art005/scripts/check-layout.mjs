@@ -23,11 +23,11 @@ try {
         .map((e) => {
           const r = e.getBoundingClientRect();
           const lh = parseFloat(getComputedStyle(e.querySelector('.main') || e).lineHeight);
-          const main = e.querySelector('.main');
+          const mains = [...e.querySelectorAll('.main')];
           return {
             cls: e.className, text: e.textContent.slice(0, 24),
             l: r.left, r: r.right, t: r.top, b: r.bottom,
-            mainLines: main ? Math.round(main.getBoundingClientRect().height / lh) : null,
+            mainLines: mains.length ? Math.max(...mains.map((m) => Math.round(m.getBoundingClientRect().height / lh))) : null,
             overflow: e.scrollWidth > e.clientWidth + 1,
           };
         });
