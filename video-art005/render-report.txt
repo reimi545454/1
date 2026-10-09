@@ -1,0 +1,26 @@
+ART-005 render-report
+output/ART-005_Claude_Frontier_Academy_X_1920x1080_40s.mp4
+thumbnail: output/ART-005_Claude_Frontier_Academy_X_thumbnail.png
+previews: output/preview_01.png, output/preview_04.png, output/preview_07.png
+
+幅x高さ: 1920x1080
+尺: 40.000 秒
+fps: 30/1
+フレーム数: 1200
+コーデック: h264 (High) / yuv420p
+色空間: bt709 / tv
+平均ビットレート: 6.41 Mbps
+容量: 30.55 MB
+
+自動検査:
+  [OK] コンテナ MP4
+  [OK] コーデック H.264
+  [OK] ピクセル形式 yuv420p
+  [OK] 解像度 1920x1080
+  [OK] fps 30
+  [OK] フレーム数 1200
+  [OK] 尺 40.0秒（±0.05）
+  [OK] 平均ビットレート 6〜8Mbps
+  [OK] 容量 50MB以下
+  [OK] faststart（moovが先頭側）
+  [OK] 音声トラックなし（標準版）
