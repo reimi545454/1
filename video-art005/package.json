@@ -1,0 +1,22 @@
+{
+  "name": "art-005-claude-frontier-academy-x-video",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ART-005 X用40秒解説動画（Chromiumでフレーム描画 → FFmpegでMP4化）",
+  "type": "module",
+  "scripts": {
+    "check": "node scripts/check-layout.mjs",
+    "preview": "node scripts/render.mjs --preview",
+    "render": "node scripts/render.mjs",
+    "verify": "node scripts/verify.mjs",
+    "script": "node scripts/gen-script.mjs",
+    "all": "npm run check && npm run preview && npm run render && npm run verify && npm run script"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@fontsource/noto-sans-jp": "5.2.5",
+    "playwright-core": "1.56.1"
+  }
+}
