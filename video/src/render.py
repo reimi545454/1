@@ -21,7 +21,7 @@ FONT_PATHS = [  # 日本語フォント(先頭から探索)
     "/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf",
     "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf",
 ]
-SUB_PX = 60                              # 字幕サイズ(52〜64px)
+SUB_PX = 64                              # 字幕サイズ(52〜64px)
 LINE_H = 84
 SUB_TOP = H - MY - LINE_H * 2            # 字幕ゾーン上端 = 812
 IMG_BOX = (MX, MY, W - MX, SUB_TOP - 24) # 画像表示領域 (120,100)-(1800,788)
@@ -37,6 +37,10 @@ SCENES = [
     (23, 29, ["body1", "body2", "body3"], ["Claude・ChatGPTで作る人へ", "確認したい7項目を記事に。"]),
     (29, 35, ["banner"], ["実務への導入で迷っている方は", "COACH AIへご相談ください"]),
 ]
+HIGHLIGHT = [  # シーン別の強調語(字幕に含まれる部分文字列)
+    ["仕事で使って大丈夫"], ["社内データ"], ["誰が見られる", "どこまで操作"], ["止め方"], ["7項目"], ["COACH AI"],
+]
+ACCENT = (214, 88, 8)  # アイボリー上で読めるオレンジ
 FILES = {"cover": "cover.png", "body1": "body1.png", "body2": "body2.png",
          "body3": "body3.png", "banner": "coach_ai_banner.png"}
 PH_SIZE = {"cover": (2000, 800), "body1": (1600, 900), "body2": (1600, 900),
@@ -107,7 +111,7 @@ def alert_bg():
     return _ALERT[0]
 
 
-def draw_subtitle(canvas, lines, alpha, f, color=INK):
+def draw_subtitle(canvas, lines, alpha, f, color=INK, hl=(), accent=ACCENT):
     if alpha <= 0:
         return
     layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
@@ -118,8 +122,13 @@ def draw_subtitle(canvas, lines, alpha, f, color=INK):
         tw = d.textlength(ln, font=f)
         assert tw <= W - 2 * MX - 24, f"字幕が長すぎます: {ln} ({tw}px)"
         cy = y0 + i * LINE_H + LINE_H // 2
-        d.text((W // 2, cy), ln, font=f, fill=color + (a,), anchor="mm", stroke_width=1, stroke_fill=color + (a,))
-    # オレンジのアクセントライン(字幕ゾーン上)
+        left = W / 2 - tw / 2
+        d.text((left, cy), ln, font=f, fill=color + (a,), anchor="lm", stroke_width=1, stroke_fill=color + (a,))
+        for h in hl:  # 強調語を上書き
+            k = ln.find(h)
+            if k >= 0:
+                x = left + d.textlength(ln[:k], font=f)
+                d.text((x, cy), h, font=f, fill=accent + (a,), anchor="lm", stroke_width=1, stroke_fill=accent + (a,))
     d.rounded_rectangle([W // 2 - 60, SUB_TOP - 12, W // 2 + 60, SUB_TOP - 6], 3, fill=ORANGE + (a,))
     canvas.alpha_composite(layer)
 
@@ -139,9 +148,9 @@ def frame(n, imgs, f):
         bgl = alert_bg().copy()
         bgl.putalpha(int(255 * fo))
         canvas.alpha_composite(bgl)
-    else:
-        ImageDraw.Draw(canvas).rectangle([0, 0, W, 14], fill=ORANGE)
-    zoom = 1.0 + 0.04 * (local / dur)  # 軽いズーム 100%→104%
+
+    zoom = 1.0 + 0.06 * (local / dur)  # 軽いズーム 100%→106%
+    drift = round((local / dur - 0.5) * 28 * (1 if si % 2 == 0 else -1))  # わずかな横移動(px)
 
     if len(keys) == 1:
         weights = [(keys[0], 1.0)]
@@ -162,7 +171,12 @@ def frame(n, imgs, f):
     for k, a in weights:
         if a <= 0:
             continue
-        im = fit(imgs[k], zoom * (0.62 if opening else 1.0)).convert("RGBA")
+        src = imgs[k]
+        if opening and k == "cover":  # 余白の多い表紙を、5:2のまま中央の鍵アイコン周辺に寄せる
+            cw = 880
+            cx0, cy0 = src.width // 2 - cw // 2, 380 - int(cw * 0.4) // 2
+            src = src.crop((cx0, cy0, cx0 + cw, cy0 + int(cw * 0.4)))
+        im = fit(src, zoom * (0.74 if opening else 1.0)).convert("RGBA")
         if opening:  # 小さめのカード+背後の赤橙の光で、暗い背景に浮かせる
             gl = Image.new("RGBA", (W, H), (0, 0, 0, 0))
             cx, cy = (bx0 + bx1) // 2, (by0 + by1) // 2 + 40
@@ -170,9 +184,21 @@ def frame(n, imgs, f):
                                                   cx + im.width // 2 + 30, cy + im.height // 2 + 30], 30,
                                                  fill=RED_GLOW + (int(150 * a * alpha),))
             canvas.alpha_composite(gl.filter(ImageFilter.GaussianBlur(40)))
-        im.putalpha(int(255 * a * alpha))
-        # 影は付けず、中央配置
-        canvas.alpha_composite(im, ((bx0 + bx1 - im.width) // 2, (by0 + by1 - im.height) // 2 + (40 if opening else 0)))
+        rm = Image.new("L", im.size, 0)
+        ImageDraw.Draw(rm).rounded_rectangle([0, 0, im.width - 1, im.height - 1], 28, fill=int(255 * a * alpha))
+        im.putalpha(rm)
+        px = (bx0 + bx1 - im.width) // 2 + drift
+        py = (by0 + by1 - im.height) // 2 + (40 if opening else 0)
+        sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        ImageDraw.Draw(sh).rounded_rectangle([px, py + 14, px + im.width, py + im.height + 14], 28,
+                                             fill=(60, 40, 20, int((120 if not opening else 0) * a * alpha)))
+        canvas.alpha_composite(sh.filter(ImageFilter.GaussianBlur(22)))
+        canvas.alpha_composite(im, (px, py))
+    # 進行バー(冒頭を除く)
+    if not opening:
+        pd = ImageDraw.Draw(canvas)
+        pd.rectangle([0, 0, W, 14], fill=(240, 228, 208))
+        pd.rectangle([0, 0, int(W * t / SEC), 14], fill=ORANGE)
     if opening:
         kl = Image.new("RGBA", (W, H), (0, 0, 0, 0))
         kd = ImageDraw.Draw(kl)
@@ -184,7 +210,7 @@ def frame(n, imgs, f):
                 fill=ORANGE + (ka,), anchor="lm")
         canvas.alpha_composite(kl)
     col = tuple(round(INK[i] + (IVORY[i] - INK[i]) * fo) for i in range(3)) if opening else INK
-    draw_subtitle(canvas, lines, alpha, f, col)
+    draw_subtitle(canvas, lines, alpha, f, col, HIGHLIGHT[si], ORANGE if opening else ACCENT)
     return canvas.convert("RGB")
 
 
