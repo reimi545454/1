@@ -8,7 +8,7 @@
 """
 import argparse, json, subprocess, sys
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS, OUT = ROOT / "assets", ROOT / "output"
@@ -25,6 +25,7 @@ SUB_PX = 60                              # 字幕サイズ(52〜64px)
 LINE_H = 84
 SUB_TOP = H - MY - LINE_H * 2            # 字幕ゾーン上端 = 812
 IMG_BOX = (MX, MY, W - MX, SUB_TOP - 24) # 画像表示領域 (120,100)-(1800,788)
+RED_GLOW = (214, 56, 38)
 FADE = 0.5                               # 秒
 
 # (開始秒, 終了秒, 画像キー, 字幕行)
@@ -86,7 +87,27 @@ def ease(t):
     return t * t * (3 - 2 * t)
 
 
-def draw_subtitle(canvas, lines, alpha, f):
+_ALERT = []
+
+
+def alert_bg():
+    """冒頭用: 暗い背景+右下の赤橙の光+上下の警告ストライプ(静止。点滅なし)"""
+    if _ALERT:
+        return _ALERT[0]
+    bg = Image.new("RGB", (W, H), (26, 22, 21))
+    g = Image.new("RGB", (W, H), (0, 0, 0))
+    ImageDraw.Draw(g).ellipse([900, 300, 2300, 1500], fill=(150, 48, 22))
+    bg = ImageChops.add(bg, g.filter(ImageFilter.GaussianBlur(220)))
+    d = ImageDraw.Draw(bg)
+    for y0 in (0, H - 36):
+        d.rectangle([0, y0, W, y0 + 36], fill=(30, 26, 25))
+        for x in range(-60, W + 60, 72):
+            d.polygon([(x, y0 + 36), (x + 36, y0), (x + 72, y0), (x + 36, y0 + 36)], fill=ORANGE)
+    _ALERT.append(bg.convert("RGBA"))
+    return _ALERT[0]
+
+
+def draw_subtitle(canvas, lines, alpha, f, color=INK):
     if alpha <= 0:
         return
     layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
@@ -97,7 +118,7 @@ def draw_subtitle(canvas, lines, alpha, f):
         tw = d.textlength(ln, font=f)
         assert tw <= W - 2 * MX - 24, f"字幕が長すぎます: {ln} ({tw}px)"
         cy = y0 + i * LINE_H + LINE_H // 2
-        d.text((W // 2, cy), ln, font=f, fill=INK + (a,), anchor="mm", stroke_width=1, stroke_fill=INK + (a,))
+        d.text((W // 2, cy), ln, font=f, fill=color + (a,), anchor="mm", stroke_width=1, stroke_fill=color + (a,))
     # オレンジのアクセントライン(字幕ゾーン上)
     d.rounded_rectangle([W // 2 - 60, SUB_TOP - 12, W // 2 + 60, SUB_TOP - 6], 3, fill=ORANGE + (a,))
     canvas.alpha_composite(layer)
@@ -113,8 +134,13 @@ def frame(n, imgs, f):
     fo = ease((dur - local) / FADE) if si < len(SCENES) - 1 else 1.0
     alpha = min(fa, fo)
     canvas = Image.new("RGBA", (W, H), IVORY + (255,))
-    d = ImageDraw.Draw(canvas)
-    d.rectangle([0, 0, W, 14], fill=ORANGE)
+    opening = si == 0
+    if opening:  # 冒頭: 危機感のある暗い警告トーン。終端のフェードでアイボリーへ移る
+        bgl = alert_bg().copy()
+        bgl.putalpha(int(255 * fo))
+        canvas.alpha_composite(bgl)
+    else:
+        ImageDraw.Draw(canvas).rectangle([0, 0, W, 14], fill=ORANGE)
     zoom = 1.0 + 0.04 * (local / dur)  # 軽いズーム 100%→104%
 
     if len(keys) == 1:
@@ -136,11 +162,29 @@ def frame(n, imgs, f):
     for k, a in weights:
         if a <= 0:
             continue
-        im = fit(imgs[k], zoom).convert("RGBA")
+        im = fit(imgs[k], zoom * (0.62 if opening else 1.0)).convert("RGBA")
+        if opening:  # 小さめのカード+背後の赤橙の光で、暗い背景に浮かせる
+            gl = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            cx, cy = (bx0 + bx1) // 2, (by0 + by1) // 2 + 40
+            ImageDraw.Draw(gl).rounded_rectangle([cx - im.width // 2 - 30, cy - im.height // 2 - 30,
+                                                  cx + im.width // 2 + 30, cy + im.height // 2 + 30], 30,
+                                                 fill=RED_GLOW + (int(150 * a * alpha),))
+            canvas.alpha_composite(gl.filter(ImageFilter.GaussianBlur(40)))
         im.putalpha(int(255 * a * alpha))
         # 影は付けず、中央配置
-        canvas.alpha_composite(im, ((bx0 + bx1 - im.width) // 2, (by0 + by1 - im.height) // 2))
-    draw_subtitle(canvas, lines, alpha, f)
+        canvas.alpha_composite(im, ((bx0 + bx1 - im.width) // 2, (by0 + by1 - im.height) // 2 + (40 if opening else 0)))
+    if opening:
+        kl = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        kd = ImageDraw.Draw(kl)
+        ka = int(255 * alpha)
+        kx, ky = W // 2 - 300, 118
+        kd.polygon([(kx + 22, ky), (kx + 44, ky + 40), (kx, ky + 40)], fill=ORANGE + (ka,))
+        kd.text((kx + 22, ky + 26), "!", font=ImageFont.truetype(font()[1], 26), fill=(26, 22, 21, ka), anchor="mm")
+        kd.text((kx + 62, ky + 20), "仕事で使う前に、確認を", font=ImageFont.truetype(font()[1], 40),
+                fill=ORANGE + (ka,), anchor="lm")
+        canvas.alpha_composite(kl)
+    col = tuple(round(INK[i] + (IVORY[i] - INK[i]) * fo) for i in range(3)) if opening else INK
+    draw_subtitle(canvas, lines, alpha, f, col)
     return canvas.convert("RGB")
 
 
