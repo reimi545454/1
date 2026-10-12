@@ -86,7 +86,7 @@ panel.innerHTML=`<div id="detail"><span class="no">C</span><h2>C社</h2><div cla
 $("stage").insertBefore(panel,$("cap"));
 const det=panel.querySelector("#detail"),lis=[...det.querySelectorAll("li")],chips=[...det.querySelectorAll(".chip")],arrs=[...det.querySelectorAll(".arrow s")];
 const PANEL={x:300,y:190,w:1320,h:650};
-const CAPS=[[0.3,3.0,"長いMarkdownは、<em>読むだけで大変</em>。"],[3.4,8.8,"HTMLなら、<em>5社を並べて比べられる</em>。"],[9.6,14.1,"開けば詳細。<em>判断して、Claudeへ戻す</em>。"]];
+const CAPS=[[0.3,3.0,"長い文章は、<em>読むだけで大変</em>。"],[3.4,8.8,"HTMLなら、<em>5社を並べて比べられる</em>。"],[9.6,14.1,"開けば詳細。<em>判断して、Claudeへ戻す</em>。"]];
 // カーソル経路
 const c=i=>({x:cardPos(i).x+260,y:cardPos(i).y+150});
 const WP=[[6.2,{x:1700,y:960}],[7.0,c(0)],[7.7,c(1)],[8.4,c(2)],[9.0,c(2)]];
