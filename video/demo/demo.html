@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><title>report-to-cards demo</title>
+<style>
+:root{--ivory:#FCF7EC;--orange:#F07C1C;--deep:#D65808;--ink:#332921;--mute:#8a7d70;--line:#eadfce;--card:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--ivory);font-family:"Liberation Sans","DejaVu Sans","Noto Sans CJK JP","IPAGothic","IPAPGothic",sans-serif;color:var(--ink)}
+#stage{position:absolute;inset:0;overflow:hidden}
+.abs{position:absolute;left:0;top:0;transform-origin:0 0}
+/* レポート */
+#report{left:460px;top:100px;width:1000px;height:740px;background:#fff;border-radius:24px;box-shadow:0 30px 80px rgba(80,50,20,.18);overflow:hidden;transform-origin:50% 50%}
+#reportInner{position:absolute;left:0;top:0;width:100%;padding:56px 72px}
+#reportInner h1{font-size:46px;line-height:1.3;border-left:10px solid var(--orange);padding-left:20px;margin-bottom:12px}
+#reportInner .meta{font-size:24px;color:var(--mute);margin-bottom:40px}
+.sec{margin-bottom:44px}
+.sec h2{font-size:34px;margin-bottom:16px;color:var(--ink)}
+.file{display:inline-block;background:#f4ece0;border-radius:10px;padding:6px 16px;font-size:24px;color:var(--mute);margin-bottom:22px;font-family:monospace}
+.sec h2 i{font-style:normal;background:var(--orange);color:#fff;border-radius:50%;width:48px;height:48px;display:inline-flex;align-items:center;justify-content:center;font-size:28px}
+.ln{height:16px;border-radius:8px;background:#ece3d6;margin:14px 0}
+#fadeTop,#fadeBot{position:absolute;left:0;width:100%;height:90px;pointer-events:none}
+#fadeTop{top:0;background:linear-gradient(#fff,rgba(255,255,255,0))}
+#fadeBot{bottom:0;background:linear-gradient(rgba(255,255,255,0),#fff)}
+/* カード */
+.card{width:520px;height:300px;background:var(--card);border-radius:24px;padding:28px 32px;box-shadow:0 14px 40px rgba(80,50,20,.14);border:2px solid transparent}
+.card .hd{display:flex;align-items:center;gap:18px;margin-bottom:14px}.card .no{width:64px;height:64px;border-radius:50%;background:var(--orange);color:#fff;font-size:34px;display:flex;align-items:center;justify-content:center}
+.card h3{font-size:44px;line-height:1.2}
+.card hr{border:0;border-top:2px solid var(--line);margin:8px 0 12px}
+.card .row{display:flex;gap:16px;font-size:30px;line-height:1.5}.card .row b{color:var(--mute);font-weight:400;flex:0 0 96px}
+/* 詳細 */
+#detail{position:absolute;left:0;top:0;opacity:0;padding:56px 72px}
+#detail .no{display:inline-flex;width:76px;height:76px;border-radius:50%;background:var(--orange);color:#fff;font-size:44px;align-items:center;justify-content:center;vertical-align:middle;margin-right:22px}
+#detail h2{font-size:58px;display:inline;vertical-align:middle}
+#detail .sub{font-size:30px;color:var(--mute);margin:14px 0 26px}
+#detail li{list-style:none;font-size:36px;line-height:1.5;padding-left:44px;position:relative;margin-bottom:10px}
+#detail li:before{content:"";position:absolute;left:0;top:19px;width:20px;height:20px;border-radius:50%;background:var(--orange)}
+#flow{position:absolute;left:72px;right:72px;bottom:56px;display:flex;align-items:center;gap:0}
+.chip{flex:0 0 250px;height:96px;border-radius:20px;background:#f4ece0;font-size:34px;display:flex;align-items:center;justify-content:center;border:2px solid var(--line)}
+.chip.hot{background:var(--orange);color:#fff;border-color:var(--orange)}
+.arrow{flex:1;height:6px;background:var(--line);border-radius:3px;position:relative;margin:0 10px;min-width:40px}
+.arrow s{position:absolute;left:0;top:0;height:6px;background:var(--orange);border-radius:3px;width:0}
+/* 文字/UI */
+#title{left:120px;top:100px;font-size:56px;font-weight:700;opacity:0}
+#cap{left:0;top:880px;width:1920px;text-align:center;font-size:56px;font-weight:700;line-height:1.35}
+#cap em{font-style:normal;color:var(--deep)}
+#note{position:absolute;right:120px;top:108px;font-size:24px;color:var(--mute)}
+#bar{position:absolute;left:0;top:0;height:12px;background:var(--orange)}
+#cursor{position:absolute;left:0;top:0;width:44px;height:44px;opacity:0;z-index:50;filter:drop-shadow(0 4px 6px rgba(0,0,0,.3))}
+#ripple{position:absolute;width:20px;height:20px;border-radius:50%;border:5px solid var(--orange);opacity:0;z-index:40}
+</style></head><body>
+<div id="stage">
+  <div id="bar"></div>
+  <div id="title" class="abs">競合5社を、同じ画面で比べる</div>
+  <div id="note">概念デモ（架空の画面）</div>
+  <div id="report" class="abs"><div id="reportInner"></div><div id="fadeTop"></div><div id="fadeBot"></div></div>
+  <div id="cap" class="abs"></div>
+  <div id="ripple"></div>
+  <svg id="cursor" viewBox="0 0 24 24"><path d="M3 2l7.5 19 2.6-7.9L21 10.5z" fill="#332921" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+</div>
+<script>
+const ITEMS=[
+ ["A社","低め","導入が早い","機能が少ない"],
+ ["B社","中程度","分析機能が豊富","設定が複雑"],
+ ["C社","高め","手厚いサポート","費用が大きい"],
+ ["D社","低め","画面が分かりやすい","連携が少ない"],
+ ["E社","中程度","連携が多い","画面が重い"]];
+const SECS=["要約","A社の動向","B社の動向","C社の動向","D社の動向","E社の動向","今週の行動"];
+const OPEN=2;
+const T=14, $=id=>document.getElementById(id);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), P=(t,a,b)=>clamp((t-a)/(b-a));
+const eio=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2, eo=p=>1-Math.pow(1-p,3);
+const eb=p=>{const c1=1.4,c3=c1+1;return 1+c3*Math.pow(p-1,3)+c1*Math.pow(p-1,2)};
+const lerp=(a,b,p)=>a+(b-a)*p;
+const ri=$("reportInner");
+let h='<div class="file">competitor-report.md</div><h1># 週次 競合調査レポート</h1><div class="meta">調査対象：競合5社（社名は架空）／約120行</div>';
+SECS.forEach((it,i)=>{h+=`<div class="sec"><h2>## ${it}</h2>`+[100,92,97,60].map(w=>`<div class="ln" style="width:${w}%"></div>`).join("")+`<div class="ln" style="width:88%"></div><div class="ln" style="width:74%"></div></div>`});
+ri.innerHTML=h;
+const MAXS=ri.scrollHeight-740+40;
+// カード
+const cardPos=i=>i<3?{x:140+i*560,y:200}:{x:140+280+(i-3)*560,y:536};
+const cards=ITEMS.map((it,i)=>{const d=document.createElement("div");d.className="card abs";
+ d.innerHTML=`<div class="hd"><div class="no">${"ABCDE"[i]}</div><h3>${it[0]}</h3></div><hr><div class="row"><b>価格</b>${it[1]}</div><div class="row"><b>強み</b>${it[2]}</div><div class="row"><b>弱み</b>${it[3]}</div>`;
+ $("stage").insertBefore(d,$("cap"));return d});
+// 詳細パネル
+const panel=document.createElement("div");panel.className="card abs";panel.style.cssText="padding:0;height:650px;z-index:20;overflow:hidden";
+panel.innerHTML=`<div id="detail"><span class="no">C</span><h2>C社</h2><div class="sub">価格・強み・弱みを、並べて確認する</div><ul><li>価格：高め</li><li>強み：手厚いサポート</li><li>弱み：費用が大きい　→　自社への影響を確認</li></ul>
+<div id="flow"><div class="chip">選ぶ</div><div class="arrow"><s></s></div><div class="chip">理由を添える</div><div class="arrow"><s></s></div><div class="chip">結果をコピー</div><div class="arrow"><s></s></div><div class="chip hot">Claudeへ戻す</div></div></div>`;
+$("stage").insertBefore(panel,$("cap"));
+const det=panel.querySelector("#detail"),lis=[...det.querySelectorAll("li")],chips=[...det.querySelectorAll(".chip")],arrs=[...det.querySelectorAll(".arrow s")];
+const PANEL={x:300,y:190,w:1320,h:650};
+const CAPS=[[0.3,3.0,"長いMarkdownは、<em>読むだけで大変</em>。"],[3.4,8.8,"HTMLなら、<em>5社を並べて比べられる</em>。"],[9.6,14.1,"開けば詳細。<em>判断して、Claudeへ戻す</em>。"]];
+// カーソル経路
+const c=i=>({x:cardPos(i).x+260,y:cardPos(i).y+150});
+const WP=[[6.2,{x:1700,y:960}],[7.0,c(0)],[7.7,c(1)],[8.4,c(2)],[9.0,c(2)]];
+function cursorAt(t){if(t<=WP[0][0])return WP[0][1];for(let k=1;k<WP.length;k++){if(t<=WP[k][0]){const p=eio(P(t,WP[k-1][0],WP[k][0]));const a=WP[k-1][1],b=WP[k][1];return{x:lerp(a.x,b.x,p),y:lerp(a.y,b.y,p)}}}return WP.at(-1)[1]}
+function render(t){
+ $("bar").style.width=(1920*t/T)+"px";
+ // レポート
+ const rin=eo(P(t,0,.5)),rout=eio(P(t,3.0,3.9));
+ const rep=$("report");rep.style.opacity=rin*(1-rout);
+ rep.style.transform=`scale(${lerp(.96,1,rin)*(1-.18*rout)})`;
+ rep.style.display=rout>=1?"none":"block";
+ const sc=eio(P(t,.5,3.0))*MAXS;ri.style.transform=`translateY(${-sc}px)`;
+ // 見出し
+ $("title").style.opacity=eo(P(t,4.2,4.9))*(1-P(t,9.2,9.8));$("title").style.transform=`translateY(${(1-eo(P(t,4.2,4.9)))*16}px)`;
+ // キャプション
+ let cap="",ca=0;for(const [a,b,tx] of CAPS){if(t>=a&&t<=b){cap=tx;ca=Math.min(P(t,a,a+.4),1-P(t,b-.4,b))}}
+ if($("cap").dataset.t!==cap){$("cap").innerHTML=cap;$("cap").dataset.t=cap}
+ $("cap").style.opacity=ca;$("cap").style.transform=`translateY(${(1-ca)*14}px)`;
+ // カーソル/操作
+ const cur=cursorAt(t),curOn=eo(P(t,6.0,6.5))*(1-P(t,10.3,10.8));
+ $("cursor").style.opacity=curOn;$("cursor").style.transform=`translate(${cur.x}px,${cur.y}px)`;
+ const rp=P(t,9.0,9.6);$("ripple").style.opacity=rp>0&&rp<1?(1-rp)*.9:0;
+ $("ripple").style.transform=`translate(${c(OPEN).x-10-rp*50}px,${c(OPEN).y-10-rp*50}px) scale(${1+rp*5})`;
+ // カード
+ const ex=eio(P(t,9.2,10.2)),dim=ex;
+ cards.forEach((d,i)=>{
+  const t0=3.2+i*.12,q=P(t,t0,t0+.9),pos=cardPos(i);
+  const fx=lerp(960-260,pos.x,eb(q)),fy=lerp(540-150,pos.y,eb(q)),fs=lerp(.3,1,eb(q));
+  // ホバー持ち上げ
+  const dx=cur.x-(pos.x+260),dy=cur.y-(pos.y+150);
+  const near=(t>6.4&&t<9.4)?1-clamp(Math.hypot(dx,dy)/300):0,lift=eio(near);
+  const press=(i===OPEN&&t>9.0&&t<9.2)?.97:1;
+  d.style.opacity=(q>0?Math.min(1,q*2.5):0)*(i===OPEN&&ex>=1?0:1)*(i===OPEN?1:1-.82*dim);
+  d.style.transform=`translate(${fx}px,${fy-lift*12}px) scale(${fs*press*(i===OPEN?1:lerp(1,.96,dim))})`;
+  d.style.boxShadow=`0 ${14+lift*18}px ${40+lift*20}px rgba(80,50,20,${.14+lift*.08})`;
+  d.style.borderColor=i===OPEN?`rgba(240,124,28,${lift})`:"transparent";
+  d.style.filter=i===OPEN?"none":`blur(${dim*5}px)`;d.style.display=(t<t0)?"none":"block";
+ });
+ // パネル(カード4から展開)
+ const p4=cardPos(OPEN);
+ panel.style.display=ex>0?"block":"none";
+ panel.style.opacity=ex>0?1:0;
+ panel.style.width=lerp(520,PANEL.w,ex)+"px";panel.style.height=lerp(300,PANEL.h,ex)+"px";
+ panel.style.transform=`translate(${lerp(p4.x,PANEL.x,ex)}px,${lerp(p4.y,PANEL.y,ex)}px)`;
+ det.style.opacity=eo(P(t,9.9,10.5));det.style.width=PANEL.w+"px";det.style.height=PANEL.h+"px";
+ lis.forEach((li,i)=>{const p=eo(P(t,10.2+i*.3,10.8+i*.3));li.style.opacity=p;li.style.transform=`translateX(${(1-p)*30}px)`});
+ chips.forEach((ch,i)=>{const p=eo(P(t,11.2+i*.35,11.7+i*.35));ch.style.opacity=p;ch.style.transform=`translateY(${(1-p)*20}px)`});
+ arrs.forEach((a,i)=>{a.style.width=(eio(P(t,11.5+i*.35,12.0+i*.35))*100)+"%"});
+ const pulse=t>12.6?1+.03*Math.sin((t-12.6)*Math.PI*1.2)*P(t,12.6,13):1;chips[2].style.transform=`scale(${pulse})`;
+ // パネル内:元カード内容が潰れないよう、展開途中は詳細のみ表示
+ // 全体フェード(最後)
+ $("stage").style.opacity=1-P(t,13.7,14);
+}
+window.render=render;render(0);
+</script></body></html>

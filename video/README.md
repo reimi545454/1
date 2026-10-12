@@ -28,3 +28,8 @@
 ## 効果音付き版
 `python3 src/sound.py` で `output/ART-015_security_X_1920x1080_35s_SE.mp4` を生成(標準版MP4が先に必要)。
 効果音はnumpyで合成(外部音源なし/権利問題なし): 冒頭の低音、切替のスウッシュ、字幕のティック、終盤のチャイム。無音の標準版も引き続き提供。
+
+## デモ動画: 長いレポート → 比較カード → 詳細(記事「ClaudeCodeはMarkdownよりHTML」向け)
+`demo/demo.html`(時間tで描画する決定論的アニメーション) + `demo/render_demo.js`(Playwrightで30fpsキャプチャ→FFmpeg)。
+`node demo/render_demo.js $(npm root -g)/playwright` で無音版、`python3 demo/sound_demo.py` で効果音版。
+14秒: 0-3秒 長いMarkdown(competitor-report.md)をスクロール → 3-4秒 カードに分解 → 4-9秒 競合5社(架空)を比較、カーソルでホバー → 9-14秒 C社を開き詳細と「選ぶ→理由→コピー→Claudeへ戻す」。
