@@ -48,6 +48,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:var(--ivory);fon
 </style></head><body>
 <div id="stage">
   <div id="bar"></div>
+  <img id="intro" src="../assets/article_visual.png" style="position:absolute;left:178px;top:100px;width:1564px;height:880px;border-radius:28px;box-shadow:0 30px 80px rgba(80,50,20,.2);opacity:0;transform-origin:50% 50%">
   <div id="title" class="abs">競合5社を、同じ画面で比べる</div>
   <div id="note">概念デモ（架空の画面）</div>
   <div id="report" class="abs"><div id="reportInner"></div><div id="fadeTop"></div><div id="fadeBot"></div></div>
@@ -140,5 +141,18 @@ function render(t){
  // 全体フェード(最後)
  $("stage").style.opacity=1-P(t,13.7,14);
 }
-window.render=render;render(0);
+const renderDemo=render, INTRO=3.0;
+function renderAll(t){
+  const im=$("intro");
+  if(t<INTRO){
+    const a=Math.min(P(t,0,.5),1-P(t,INTRO-.4,INTRO));
+    im.style.opacity=a;im.style.transform=`scale(${1+.04*P(t,0,INTRO)})`;
+    document.querySelectorAll("#stage > :not(#intro)").forEach(e=>e.style.visibility="hidden");
+  }else{
+    im.style.opacity=0;
+    document.querySelectorAll("#stage > :not(#intro)").forEach(e=>e.style.visibility="");
+    renderDemo(t-INTRO);
+  }
+}
+window.render=renderAll;renderAll(0);
 </script></body></html>
