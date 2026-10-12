@@ -10,14 +10,11 @@ np, put, tick, whoosh, bell, N, SR, DUR, OUT = (g[k] for k in ["np", "put", "tic
 mix = np.zeros(N)
 putd = lambda m, x, t0, gain=1.0: put(m, x, t0 + 3.0, gain)  # 冒頭3秒の概念画像ぶん後ろへずらす
 putd(mix, tick(1180, 0.12), 0.5, 0.2)
-put(mix, whoosh(0.6), 2.55, 0.22)
-putd(mix, whoosh(0.8), 2.5, 0.30)                      # レポートが縮んでカードに変わる
 for i in range(5):
     putd(mix, tick(1000 + 90 * i, 0.14), 3.2 + i * 0.12 + 0.55, 0.22)   # カードが着地
 for t0, f in ((7.2, 900), (7.9, 980), (8.6, 1060)):
     putd(mix, tick(f, 0.08), t0, 0.12)                 # ホバー
 putd(mix, tick(700, 0.1), 9.0, 0.30)                   # クリック
-putd(mix, whoosh(0.6), 9.0, 0.22)                      # カードが開く
 for i in range(4):
     putd(mix, tick(880 + 110 * i, 0.1), 11.2 + i * 0.35 + 0.3, 0.14)   # 操作チップ
 putd(mix, bell(783.99, 1.4), 12.75, 0.18)

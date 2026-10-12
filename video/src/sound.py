@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """効果音をコードで合成(外部音源なし)し、無音版MP4に合成して SE版を出力する。
 使い方: python3 src/sound.py   -> output/ART-015_security_X_1920x1080_35s_SE.mp4
-控えめな設計: 緊張感のある低音(冒頭)、シーン切替のスウッシュ、字幕のやわらかいティック、終盤のチャイム。
+控えめな設計: 緊張感のある低音(冒頭)、シーン字幕のやわらかいティック、終盤のチャイム。
 """
 import subprocess, wave
 from pathlib import Path
@@ -76,8 +76,6 @@ def bell(f, d=1.6):  # チャイム
 
 mix = np.zeros(N)
 put(mix, drone(5.0), 0.0, 0.34)
-for t0 in (5, 11, 17, 23, 29):
-    put(mix, whoosh(), t0 - 0.35, 0.30)      # 切替の直前から
 for t0 in (0.8, 5.6, 11.6, 17.6, 23.6, 29.6):
     put(mix, tick(), t0, 0.22)               # 字幕の出現
 for t0 in (25.0, 27.0):
