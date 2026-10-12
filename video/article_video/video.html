@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><title>article quote video</title>
+<style>
+:root{--ivory:#FCF7EC;--orange:#F07C1C;--deep:#D65808;--ink:#332921;--mute:#8a7d70;--line:#eadfce}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--ivory);font-family:"Liberation Sans","DejaVu Sans","IPAGothic","IPAPGothic",sans-serif;color:var(--ink)}
+#stage{position:absolute;inset:0;overflow:hidden}
+.abs{position:absolute;left:0;top:0;transform-origin:50% 50%}
+.chip{height:72px;background:#fff;border-radius:18px;box-shadow:0 8px 24px rgba(80,50,20,.14);font-size:32px;display:flex;align-items:center;justify-content:center;border:2px solid var(--line)}
+.card{background:#fff;border-radius:28px;box-shadow:0 20px 60px rgba(80,50,20,.14);border:2px solid transparent;padding:32px 36px}
+.h{font-size:46px;font-weight:700}
+.sub{font-size:30px;color:var(--mute);margin-top:8px;line-height:1.35}
+#cap{left:0;top:884px;width:1920px;text-align:center;font-size:56px;font-weight:700;line-height:1.35;transform-origin:50% 50%}
+#cap em{font-style:normal;color:var(--deep)}
+#note{position:absolute;right:120px;top:108px;font-size:22px;color:var(--mute)}
+#bar{position:absolute;left:0;top:0;height:12px;background:var(--orange)}
+.row{display:flex;align-items:center;gap:20px;height:104px}
+.row .no{flex:0 0 64px;height:64px;border-radius:50%;background:var(--orange);color:#fff;font-size:34px;display:flex;align-items:center;justify-content:center}
+.row b{font-size:34px;flex:0 0 270px}
+.row .val{flex:1;height:60px;border-radius:14px;background:#f4ece0;font-size:30px;display:flex;align-items:center;padding:0 20px;color:var(--ink)}
+.bar{height:16px;border-radius:8px;background:#ece3d6}
+.node{height:104px;border-radius:22px;background:#f4ece0;border:2px solid var(--line);font-size:34px;display:flex;align-items:center;justify-content:center}
+.big{font-size:84px;font-weight:700;line-height:1.3;text-align:center;width:1920px}
+</style></head><body>
+<div id="stage">
+ <div id="bar"></div><div id="note">記事の要点イメージ（非公式）</div>
+ <div id="cap" class="abs"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id),stage=$("stage");
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)),P=(t,a,b)=>clamp((t-a)/(b-a));
+const eio=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2,eo=p=>1-Math.pow(1-p,3),eb=p=>{const c=1.5;return 1+(c+1)*Math.pow(p-1,3)+c*Math.pow(p-1,2)};
+const lerp=(a,b,p)=>a+(b-a)*p;
+function mk(cls,html,w,h){const d=document.createElement("div");d.className="abs "+cls;d.innerHTML=html;if(w)d.style.width=w+"px";if(h)d.style.height=h+"px";stage.insertBefore(d,$("cap"));return d}
+function put(d,x,y,s=1,o=1){d.style.transform=`translate(${x}px,${y}px) scale(${s})`;d.style.opacity=o;d.style.display=o<=.002?"none":""}
+// シーン可視度(前後0.4秒フェード)
+function sa(t,a,b,fin=true,fout=true){if(t<a||t>b)return 0;let v=1;if(fin)v=Math.min(v,eo(P(t,a,a+.4)));if(fout)v=Math.min(v,1-eo(P(t,b-.4,b)));return v}
+
+/* ---------- S1: なんでも最上位モデルへ (0-4.5) ---------- */
+const T1=["要約","JSON整形","分類","長いデバッグ","画面QA","大規模リファクタ"];
+const s1chips=T1.map(x=>mk("chip",x,300,76));
+const s1box=mk("card",`<div class="h" style="text-align:center;margin-top:70px">最上位モデル</div><div class="sub" style="text-align:center;font-size:34px;color:var(--deep)">GPT-6 Astra</div><div class="sub" style="text-align:center;margin-top:28px">ぜんぶ、ここへ？</div>`,500,380);
+s1box.style.borderColor="var(--orange)";
+function S1(t){const A=sa(t,0,4.5,false,true);
+ s1chips.forEach((c,i)=>{const ap=eo(P(t,.2+i*.12,.6+i*.12)),f=eio(P(t,1.5+i*.4,2.2+i*.4));
+  const x=lerp(220,1130,f),y=lerp(180+i*100,400,f),s=lerp(1,.35,f);
+  put(c,x,y,s,A*ap*(1-clamp((f-.7)/.3)))});
+ const n=s1chips.filter((_,i)=>t>2.05+i*.4).length;
+ put(s1box,1010,250,1+.018*n,A*eo(P(t,.1,.6)));
+ s1box.style.boxShadow=`0 20px 60px rgba(240,124,28,${.12+.06*n})`;}
+
+/* ---------- S2: 振り分け (4.5-12) ---------- */
+const LX=[170,710,1250];
+const LANES=[["Luna","単純・大量"],["Terra / Sol","通常の専門業務"],["Astra","長い・難しい・GUI・失敗コスト大"]];
+const lanes=LANES.map((l,i)=>mk("card",`<div class="h">${l[0]}</div><div class="sub">${l[1]}</div>`,500,640));
+const badge=mk("chip","本丸の仕事",200,52);badge.style.cssText+=";background:#F07C1C;color:#fff;border:0;font-size:28px;height:52px";
+const T2=[["要約",0],["JSON整形",0],["分類",0],["通常のコーディング",1],["データ整理",1],["長いデバッグ",2],["画面QA",2],["大規模リファクタ",2]];
+const s2chips=T2.map(([x])=>mk("chip",x,440,72));
+const laneIdx=[0,0,0,0,0,0,0,0];let cnt=[0,0,0];T2.forEach(([,l],i)=>{laneIdx[i]=cnt[l]++});
+function S2(t){const A=sa(t,4.5,12,true,true),hi=eo(P(t,9.3,9.9));
+ lanes.forEach((l,i)=>{put(l,LX[i],150,1,A*eo(P(t,4.6+i*.12,5.2+i*.12))*(i<2?1-.25*hi:1));
+  l.style.borderColor=i===2?`rgba(240,124,28,${hi})`:"transparent";l.style.background=i===2?`rgb(${lerp(255,255,hi)},${lerp(255,244,hi)},${lerp(255,232,hi)})`:"#fff";});
+ put(badge,LX[2]+280,166,1,A*hi);
+ T2.forEach(([,l],i)=>{const ap=eo(P(t,4.9+i*.07,5.4+i*.07)),f=eio(P(t,5.9+i*.4,6.6+i*.4));
+  const sx=700+(i%4)*14,sy=330+(i%3)*14,ex=LX[l]+30,ey=150+200+laneIdx[i]*88;
+  put(s2chips[i],lerp(sx,ex,f),lerp(sy,ey,f),1,A*ap)});}
+
+/* ---------- S3: 完了条件を先に渡す (12-19) ---------- */
+const brief=mk("card",`<div class="h" style="margin-bottom:6px">依頼メモ</div><div class="sub" style="margin:0 0 6px">先に、ここまで渡す</div>
+<div class="row"><div class="no">1</div><b>誰に？</b><div class="val">3社向けの提案</div></div>
+<div class="row"><div class="no">2</div><b>参考資料は？</b><div class="val">既存の社内資料</div></div>
+<div class="row"><div class="no">3</div><b>完成の条件は？</b><div class="val">提案案＋比較表</div></div>`,900,480);
+const brow=[...brief.querySelectorAll(".row")];
+const ex=mk("card",`<div style="font-size:34px;line-height:1.5">「既存資料から3社向けの提案案を作り、違いが分かる比較表も用意して」</div>`,900,160);
+ex.style.background="#FFF4E8";ex.style.padding="24px 36px";
+const arrow3=mk("","",90,10);arrow3.style.cssText+=";background:#F07C1C;border-radius:5px";
+const res=["A社向けの提案案","B社向けの提案案","C社向けの提案案"].map(x=>mk("chip",x,640,84));
+const tbl=mk("card",`<div style="font-size:30px;font-weight:700;margin-bottom:14px">違いが分かる比較表</div>${[0,1,2,3].map(r=>`<div style="display:flex;gap:16px;margin:12px 0">${[0,1,2,3].map(c=>`<div class="bar" style="flex:${c?1:1.2};${r===0?'background:#F5C79B':''}"></div>`).join("")}</div>`).join("")}`,640,250);
+tbl.style.padding="26px 34px";
+function S3(t){const A=sa(t,12,19,true,true);
+ put(brief,140,150,1,A*eo(P(t,12.1,12.6)));
+ brow.forEach((r,i)=>{const p=eo(P(t,12.7+i*1,13.2+i*1));r.style.opacity=p;r.style.transform=`translateX(${(1-p)*40}px)`});
+ put(ex,140,150+480+20,1,A*eo(P(t,15,15.6)));
+ put(arrow3,1050,420,1,A*eo(P(t,16.2,16.6)));
+ res.forEach((c,i)=>{const p=eb(P(t,16.5+i*.35,17+i*.35));put(c,1140,150+i*100,.9+.1*p,A*clamp(p*2))});
+ put(tbl,1140,470,1,A*eo(P(t,17.8,18.4)))}
+
+/* ---------- S4: 最後だけ人が確認 (19-25) ---------- */
+const NODES=[["調査",210],["実装",210],["テスト",210],["差分作成",210],["人が確認",230],["送信・公開・削除",300]];
+const NX=[];let cx=120;NODES.forEach(([,w],i)=>{NX.push(cx);cx+=w+(i<NODES.length-1?62:0)});
+const nodes=NODES.map(([x,w],i)=>mk("node",x,w,104));
+nodes[4].style.fontWeight="700";
+const links=NODES.slice(0,-1).map((_,i)=>{const d=mk("",`<s style="display:block;height:6px;background:#F07C1C;border-radius:3px;width:0"></s>`,50,6);d.style.background="#eadfce";d.style.borderRadius="3px";return d});
+const br1=mk("",`<div style="font-size:34px;font-weight:700;color:#D65808;text-align:center;margin-bottom:10px">AIが自律的に進める（可逆な作業）</div><div style="height:8px;background:#F07C1C;border-radius:4px"></div>`,NX[3]+210-NX[0],70);
+const br2=mk("",`<div style="font-size:34px;font-weight:700;color:#8a7d70;text-align:center;margin-bottom:10px">不可逆</div><div style="height:8px;background:#cfc4b6;border-radius:4px"></div>`,300,70);
+const hint=mk("",`<div style="font-size:38px;color:#8a7d70;text-align:center;width:1680px">レビューできる状態まで作ってから、最後だけ承認する</div>`,1680,50);
+const dot=mk("",``,36,36);dot.style.cssText+=";border-radius:50%;background:#F07C1C;box-shadow:0 0 0 10px rgba(240,124,28,.2)";
+const LIT=[19.9,20.5,21.1,21.7,22.7,23.6];
+function S4(t){const A=sa(t,19,25,true,true),Y=430;
+ br1.style.display=br2.style.display="block";
+ put(br1,NX[0],Y-110,1,A*eo(P(t,19.2,19.7)));put(br2,NX[5],Y-110,1,A*eo(P(t,19.4,19.9)));
+ nodes.forEach((n,i)=>{const lit=eo(P(t,LIT[i],LIT[i]+.3));put(n,NX[i],Y,1,A*eo(P(t,19.1+i*.08,19.6+i*.08)));
+  n.style.background=i===4?`rgb(${lerp(244,240,lit)},${lerp(236,124,lit)},${lerp(224,28,lit)})`:i===5?`rgb(${lerp(244,207,lit)},${lerp(236,196,lit)},${lerp(224,182,lit)})`:`rgb(${lerp(244,255,lit)},${lerp(236,226,lit)},${lerp(224,196,lit)})`;
+  n.style.color=i===4&&lit>.5?"#fff":"#332921";n.style.borderColor=lit>.5?"#F07C1C":"#eadfce"});
+ links.forEach((l,i)=>{put(l,NX[i]+NODES[i][1]+6,Y+49,1,A);const f=P(t,LIT[i]+.2,LIT[i+1]-.05);l.firstChild.style.width=(f*100)+"%"});
+ // 進行ドット
+ const pos=i=>NX[i]+NODES[i][1]/2-18;let dx=pos(0);
+ for(let i=0;i<5;i++){if(t>LIT[i]+.3)dx=lerp(pos(i),pos(i+1),eio(P(t,LIT[i]+.3,LIT[i+1]-.05)))}
+ put(dot,dx,Y+104+40,1,A*eo(P(t,19.6,19.9))*(1-P(t,24.4,24.8)));
+ put(hint,120,Y+240,1,A*eo(P(t,22.3,22.9)))}
+
+/* ---------- S5: 完了1件あたり (25-28) ---------- */
+const c1=mk("card",`<div class="h" style="color:#8a7d70">トークン単価</div><div class="sub">1Mトークンあたりの価格だけ見る</div>`,700,300);
+const c2=mk("card",`<div class="h" style="color:#D65808">完了1件あたり</div><div class="sub" style="margin-bottom:20px">仕事を終えるまでの総量で見る</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">${["完了率","人の介入回数","完了時間","完了コスト"].map(x=>`<div class="chip" style="height:84px;font-size:32px;box-shadow:none;background:#FFF4E8;border-color:#F5C79B">${x}</div>`).join("")}</div>`,700,430);
+c2.style.borderColor="#F07C1C";
+const mchips=[...c2.querySelectorAll(".chip")];
+function S5(t){const A=sa(t,24.6,28.2,true,true);
+ put(c1,190,230,1,A*.7*eo(P(t,24.8,25.3)));put(c2,1030,200,1,A*eo(P(t,25,25.5)));
+ mchips.forEach((m,i)=>{const p=eo(P(t,25.7+i*.25,26.1+i*.25));m.style.opacity=p;m.style.transform=`scale(${.9+.1*p})`})}
+
+/* ---------- S6: まとめ (28-30) ---------- */
+const fin=mk("big",`選ぶ力より、<br><span style="color:#D65808">振り分ける力。</span>`,1920,260);
+const fin2=mk("",`<div style="font-size:36px;color:#8a7d70;text-align:center;width:1920px">GPT-6 Astraを使い倒す7つのLectureは記事で</div>`,1920,50);
+function S6(t){const A=sa(t,27.9,30,true,false);put(fin,0,330,1,A);put(fin2,0,760,1,A*eo(P(t,28.6,29.1)))}
+
+const CAPS=[[.5,4.4,"なんでも、最上位モデルに<em>任せていませんか</em>？"],[4.9,8.3,"仕事ごとに、<em>モデルを振り分ける</em>。"],[8.4,11.9,"差が出る仕事だけ、<em>Astra</em>へ。"],
+[12.4,15.6,"<em>完了条件</em>を、最初に渡す。"],[15.7,18.9,"誰に・どの資料で・何をもって完成か。"],[19.4,24.7,"可逆な作業は任せ、<em>不可逆な操作だけ</em>人が確認。"],[25.2,27.9,"単価ではなく、<em>完了1件あたり</em>で。"]];
+function renderVideo(t){
+ $("bar").style.width=(1920*t/30)+"px";
+ S1(t);S2(t);S3(t);S4(t);S5(t);S6(t);
+ let cap="",ca=0;for(const [a,b,tx] of CAPS)if(t>=a&&t<=b){cap=tx;ca=Math.min(P(t,a,a+.35),1-P(t,b-.35,b))}
+ if($("cap").dataset.t!==cap){$("cap").innerHTML=cap;$("cap").dataset.t=cap}
+ $("cap").style.opacity=ca;$("cap").style.transform=`translateY(${(1-ca)*12}px)`;
+ stage.style.opacity=1-P(t,29.7,30)}
+window.renderVideo=renderVideo;renderVideo(0);
+</script></body></html>

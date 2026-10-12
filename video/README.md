@@ -33,3 +33,8 @@
 `demo/demo.html`(時間tで描画する決定論的アニメーション) + `demo/render_demo.js`(Playwrightで30fpsキャプチャ→FFmpeg)。
 `node demo/render_demo.js $(npm root -g)/playwright` で無音版、`python3 demo/sound_demo.py` で効果音版。
 17秒(冒頭3秒に記事の概念画像): 0-3秒 長いMarkdown(competitor-report.md)をスクロール → 3-4秒 カードに分解 → 4-9秒 競合5社(架空)を比較、カーソルでホバー → 9-14秒 C社を開き詳細と「選ぶ→理由→コピー→Claudeへ戻す」。
+
+## 記事引用ポスト用: GPT-6 Astra 記事の動画(30秒)
+`article_video/video.html`(render(t)方式) + `render_video.js` + `sound_video.py`。
+`node article_video/render_video.js $(npm root -g)/playwright` → 無音版、`python3 article_video/sound_video.py` → 効果音版。
+構成: 0-4.5 なんでも最上位モデルへ → 4.5-12 Luna/Terra・Sol/Astraへ振り分け → 12-19 完了条件(誰に/資料/完成)を先に渡す(ポスト本文の例) → 19-25 可逆は任せ不可逆だけ人が確認 → 25-28 完了1件あたりで評価 → 28-30 まとめ。
