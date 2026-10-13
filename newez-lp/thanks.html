@@ -11,11 +11,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
 
 <!--
-  【計測タグ（要確認）】
-  ブルーベリーLPの thanks.html には GTM / GA4（generate_lead イベント）/ Meta Pixel（Lead）が入っています。
-  このLPで同じ計測IDを使ってよいか未確認のため、ここには入れていません。
-  使う場合は、ブルーベリーLPの thanks.html の該当ブロックをこの位置に移してください
-  （コンバージョン＝この「送信完了ページの表示」で計測）。
+  計測タグ（Meta Pixel / GA4 / GTM）は assets/js/tracking.js で管理します。
+  この完了ページの表示を Lead（GA4は generate_lead）として計測します。
 -->
 
 <style>
@@ -36,7 +33,7 @@
   @media (min-width: 768px) { .thanks { padding: 64px 48px; } h1 { font-size: 36px; } p { font-size: 18px; } }
 </style>
 </head>
-<body>
+<body data-page="thanks">
   <main class="thanks">
     <div class="thanks__mark" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
@@ -47,5 +44,6 @@
     <p class="thanks__note">確認メールが届かない場合は、迷惑メールフォルダをご確認ください。</p>
     <a class="btn" href="index.html">トップへ戻る</a>
   </main>
+  <script src="assets/js/tracking.js" defer></script>
 </body>
 </html>

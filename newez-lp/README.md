@@ -9,6 +9,7 @@ Figma（PC 1440px / SP 390px）をもとにした静的LP。HTML + CSS + 最小�
 | `index.html` | ページ本体（文言・画像枠・差し替えコメント） |
 | `assets/css/style.css` | スタイル。冒頭の「デザイントークン」で色・フォント・余白・文字サイズを一括管理 |
 | `assets/js/form.js` | フォームのブラウザ側入力検証 |
+| `assets/js/tracking.js` | 計測タグ（Meta Pixel / GA4 / GTM）。IDを入れると有効化 |
 | `submit.php` | フォーム送信処理（メール送信 → `thanks.html` へ遷移）。ブルーベリーLPの方式を踏襲 |
 | `thanks.html` | 送信完了ページ |
 | `assets/img/` | 画像置き場（現在はfaviconのみ） |
@@ -44,7 +45,7 @@ php -S 127.0.0.1:8000        # フォーム送信（submit.php）まで確認で
 ### 公開前に必ず確認（未確認・未設定）
 1. **`submit.php` の宛先**: 問い合わせは `info-ricefield@newez-farming.jp` に届く設定（自動返信の返信先も同じ）。送信元（From）の `noreply@newez-farming.jp` と件名はブルーベリーLPから引き継いだ値なので、サーバーで送信できるアドレスか確認（冒頭の「設定」で変更）。
 2. **本番サーバーでのメール到達確認**（`mb_send_mail` / sendmail 設定、迷惑メール判定）。ローカルでは未確認。
-3. **計測タグ**: ブルーベリーLPの `thanks.html` にある GTM / GA4 / Meta Pixel は、同じIDを使ってよいか未確認のため入れていません（`thanks.html` 内のコメント参照）。
+3. **計測タグ（このLP専用のIDを設定）**: ブルーベリーLPとは別に新規作成したMeta Pixel（必要ならGA4・GTMも）のIDを `assets/js/tracking.js` の `TRACKING` に貼る。未設定（空）の間は何も読み込まず、計測されません。LPは PageView、`thanks.html` は PageView + Lead（GA4は generate_lead）を送信。ブルーベリーLPのIDは区別のため入れないこと。
 4. スパム対策はハニーポットのみ。必要に応じて reCAPTCHA / Turnstile 等を追加。
 5. プライバシーポリシー本文・URL、自動返信メールの文面。
 
