@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>送信完了｜法人向け 田んぼオーナー制度｜NeweZ株式会社</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#315e43">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
+
+<!--
+  【計測タグ（要確認）】
+  ブルーベリーLPの thanks.html には GTM / GA4（generate_lead イベント）/ Meta Pixel（Lead）が入っています。
+  このLPで同じ計測IDを使ってよいか未確認のため、ここには入れていません。
+  使う場合は、ブルーベリーLPの thanks.html の該当ブロックをこの位置に移してください
+  （コンバージョン＝この「送信完了ページの表示」で計測）。
+-->
+
+<style>
+  :root { --white:#fff; --cream:#f7f5ed; --green:#315e43; --green-dark:#264b36; --ink:#243d2e; --muted:#657467; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 48px 24px; background: var(--cream); color: var(--ink);
+         font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; line-height: 1.8; overflow-wrap: anywhere; }
+  .thanks { width: 100%; max-width: 640px; padding: 48px 24px; background: var(--white); text-align: center; }
+  .thanks__mark { width: 72px; height: 72px; margin: 0 auto 24px; border-radius: 50%; background: var(--green); display: grid; place-items: center; }
+  .thanks__mark svg { width: 36px; height: 36px; }
+  h1 { margin: 0 0 24px; font-family: "Noto Serif JP", "Hiragino Mincho ProN", serif; font-size: 28px; line-height: 1.55; color: var(--ink); }
+  p { margin: 0 0 16px; font-size: 16px; }
+  .thanks__note { font-size: 14px; color: var(--muted); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 56px; margin-top: 16px; padding: 16px 32px; border-radius: 6px;
+         background: var(--green); color: var(--white); font-weight: 700; text-decoration: none; transition: background-color .2s ease; }
+  .btn:hover { background: var(--green-dark); }
+  .btn:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
+  @media (min-width: 768px) { .thanks { padding: 64px 48px; } h1 { font-size: 36px; } p { font-size: 18px; } }
+</style>
+</head>
+<body>
+  <main class="thanks">
+    <div class="thanks__mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+    </div>
+    <h1>送信が完了しました</h1>
+    <p>お問い合わせありがとうございます。</p>
+    <p>ご入力いただいた内容を確認のうえ、<br>担当者より最短1営業日以内にご連絡いたします。</p>
+    <p class="thanks__note">確認メールが届かない場合は、迷惑メールフォルダをご確認ください。</p>
+    <a class="btn" href="index.html">トップへ戻る</a>
+  </main>
+</body>
+</html>

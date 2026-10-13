@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>法人向け 田んぼオーナー制度｜NeweZ株式会社</title>
+<meta name="description" content="収穫したお米を社員へ配布する福利厚生として、法人向け田んぼオーナー制度をご提案します。社員とその家族の食卓を支え、米農家の営農支援にもつながります。">
+<!-- TODO(公開前): 公開時にこの noindex を削除する（制作中の検索エンジン登録を防ぐため） -->
+<meta name="robots" content="noindex, nofollow">
+<!-- TODO(公開前): 公開URLが決まったら canonical / OGP（og:image は 1200×630px）を設定する -->
+<meta name="theme-color" content="#315e43">
+
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+<a class="skip-link" href="#main">本文へスキップ</a>
+
+<!-- ============================================================
+  1. ヘッダー（Figma: ヘッダー）
+  SPではCTAなし（Figmaでも非表示）。ロゴ・ラベルのみ。
+============================================================ -->
+<header class="site-header">
+  <div class="site-header__inner">
+    <p class="site-header__logo">NeweZ</p>
+    <p class="site-header__label">法人向け 田んぼオーナー制度</p>
+    <a class="btn site-header__cta" href="#contact">導入を相談する</a>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============================================================
+  2. ファーストビュー（Figma: 01｜ファーストビュー）
+  h1 はページ内でここだけ。
+============================================================ -->
+<section class="section section--cream hero" aria-labelledby="hero-title">
+  <div class="container">
+
+    <div class="hero__news">
+      <p class="hero__kicker">社員への還元が、日本の米づくりの力になる。</p>
+      <!-- 新聞記事タイトルの引用。サービス説明文とは区別（blockquote + 媒体名・掲載日） -->
+      <blockquote class="hero__quote">
+        <p class="hero__quote-title">「第3の賃上げ」<br class="br-sp">広がる</p>
+        <p class="hero__quote-sub">社食・弁当補助・コメ支給で実質賃金アップ</p>
+      </blockquote>
+      <p class="hero__cite">日本経済新聞 <time datetime="2025-10-09">2025年10月9日</time> 掲載記事タイトルより</p>
+    </div>
+
+    <div class="hero__body">
+      <div class="hero__message">
+        <h1 class="hero__title" id="hero-title">お米を社員に届ける<br>福利厚生。</h1>
+        <div class="hero__text">
+          <p class="hero__text-lead">社員と、その家族の食卓を支える。</p>
+          <p>田んぼオーナー制度で収穫したお米を、社員への配布に活用できます。企業の取り組みが、暮らしに届く福利厚生です。</p>
+        </div>
+        <a class="btn" href="#contact">福利厚生としての導入を相談する</a>
+      </div>
+
+      <!--
+        【画像差し替え】のどかな田んぼの実写写真
+        推奨: 1280×680px（2倍密度） / 縦横比 PC 32:17・SP 9:5 / JPG・WebP
+        .placeholder の div を丸ごと次の img に置き換えてください（枠サイズは .media が維持します）。
+        <img src="assets/img/hero.jpg" alt="（写真の説明）" width="1280" height="680" fetchpriority="high">
+      -->
+      <div class="media media--hero">
+        <div class="placeholder" role="img" aria-label="画像仮枠：のどかな田んぼの実写写真を配置予定">
+          <p class="placeholder__main">（ここに画像が入ります）</p>
+          <p class="placeholder__sub">のどかな田んぼの実写写真を配置予定</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+  3. 米農家の課題・最新統計・制度による支援（Figma: 02｜米農家の課題）
+============================================================ -->
+<section class="section section--white" id="support" aria-labelledby="support-title">
+  <div class="container container--stack">
+
+    <p class="eyebrow">02 / 日本の米づくりを支える</p>
+    <h2 class="section-title" id="support-title">これからも、お米を作り続けられるように。</h2>
+
+    <div class="problem">
+      <!--
+        【画像差し替え】田んぼ・米づくりの風景
+        推奨: 1040×620px / 縦横比 PC 52:31・SP 9:5 / JPG・WebP
+        <img src="assets/img/problem.jpg" alt="（写真の説明）" width="1040" height="620" loading="lazy">
+      -->
+      <div class="media media--problem">
+        <div class="placeholder" role="img" aria-label="画像仮枠：田んぼ・米づくりの風景">
+          <p class="placeholder__main">（ここに画像が入ります）</p>
+          <p class="placeholder__sub">田んぼ・米づくりの風景</p>
+        </div>
+      </div>
+      <div class="problem__text">
+        <h3 class="problem__title">お米の値段だけでは見えない、<br>米づくりを続ける難しさ。</h3>
+        <p class="lead">米づくりには、田植えや収穫だけでなく、水の管理や草刈りなど継続的な作業が必要です。<br>担い手の減少・高齢化に加え、肥料や農薬、人件費などの負担も、営農を続けるうえでの課題です。<sup class="ref"><a href="#source-1" aria-label="出典1">[1]</a><a href="#source-3" aria-label="出典3">[3]</a></sup></p>
+      </div>
+    </div>
+
+    <!-- 最新統計。[1]は農業全体（個人経営体）の統計、[2]は米の生産費。出典・対象年は下の注記と各カードに記載 -->
+    <div class="stats">
+      <h3 class="visually-hidden">最新統計</h3>
+      <div class="stats__list">
+        <article class="stat">
+          <h4 class="stat__title">農業の担い手が減少</h4>
+          <p class="stat__value">103.6万人</p>
+          <p class="stat__desc">基幹的農業従事者数（2025年）。<br>2000年の240万人から半数未満に。<sup class="ref"><a href="#source-1" aria-label="出典1">[1]</a></sup></p>
+        </article>
+        <article class="stat">
+          <h4 class="stat__title">次世代への継承が課題</h4>
+          <p class="stat__value">69.6%</p>
+          <p class="stat__desc">基幹的農業従事者のうち65歳以上が占める割合（2025年）。平均年齢は67.7歳。<sup class="ref"><a href="#source-1" aria-label="出典1">[1]</a></sup></p>
+        </article>
+        <article class="stat">
+          <h4 class="stat__title">栽培にかかる費用</h4>
+          <p class="stat__value">132,112円</p>
+          <p class="stat__desc">米の10a当たり全算入生産費（2024年産・個別経営体）。肥料・農薬や労働などの費用が必要です。<sup class="ref"><a href="#source-2" aria-label="出典2">[2]</a></sup></p>
+        </article>
+      </div>
+    </div>
+
+    <!-- 統計の対象・出典（実際の参照先へリンク） -->
+    <div class="sources">
+      <p>※[1]は米農家だけでなく、個人経営体の農業全体を対象とした統計です。[2]の全算入生産費は、家族労働の評価額や資本利子・地代を含み、現金支出額とは異なります。</p>
+      <ul class="sources__list">
+        <li id="source-1"><a href="https://www.maff.go.jp/j/wpaper/w_maff/r7/r7_h/trend/part1/chap3/c3_2_00.html" target="_blank" rel="noopener noreferrer">[1] 農林水産省「令和7年度 食料・農業・農村白書」第2章 第2節（2025年農林業センサス）<span class="visually-hidden">（新しいタブで開きます）</span></a></li>
+        <li id="source-2"><a href="https://www.maff.go.jp/j/tokei/sihyo/data/12-2.html" target="_blank" rel="noopener noreferrer">[2] 農林水産省「農業経営に関する統計（2）」米の全算入生産費・個別経営体（2024年産）<span class="visually-hidden">（新しいタブで開きます）</span></a></li>
+        <li id="source-3"><a href="https://www.maff.go.jp/j/wpaper/w_maff/r7/r7_h/trend/part1/chap0/c0_1_00.html" target="_blank" rel="noopener noreferrer">[3] 農林水産省「令和7年度 食料・農業・農村白書」特集 米の安定供給に向けた対応<span class="visually-hidden">（新しいタブで開きます）</span></a></li>
+      </ul>
+      <p>資料確認日：<time datetime="2026-10-08">2026年10月8日</time>／統計の対象年は各項目に記載</p>
+    </div>
+
+    <div class="mechanism">
+      <h3 class="mechanism__title">企業の継続的な参加が、米づくりを支える。</h3>
+      <p class="lead">田んぼオーナー制度は、収穫前から契約が決まることで、農家が売上の見通しを立てやすくする仕組みです。<br>企業には収穫したお米が届き、社員への福利厚生として活用できます。社員への還元と、農家の営農支援をつなぎます。</p>
+    </div>
+
+    <ol class="flow" aria-label="制度の流れ">
+      <li class="flow__item">企業がオーナーに</li>
+      <li class="flow__item">農家が栽培・管理</li>
+      <li class="flow__item">収穫したお米をお届け</li>
+    </ol>
+
+  </div>
+</section>
+
+<!-- ============================================================
+  4. 通常納品・小分け・オリジナル包装（Figma: 03｜小分け・オリジナル包装）
+  ※通常納品は30kg袋。2kg・3kg・5kg／3合（450g）／オリジナル包装はオプション。
+============================================================ -->
+<section class="section section--cream" id="packaging" aria-labelledby="packaging-title">
+  <div class="container container--stack">
+
+    <p class="eyebrow">03 / 福利厚生にも、贈答にも</p>
+    <h2 class="section-title" id="packaging-title">御社らしいお米で、感謝の気持ちを。</h2>
+    <p class="lead">収穫したお米は通常30kg袋で納品します。<br>社員への配布や取引先への贈り物に合わせて、小分け・オリジナル包装のオプションをご用意しています。</p>
+
+    <!--
+      【画像差し替え】カード3枚共通
+      推奨: 700×440px / 縦横比 346:220（約 11:7） / JPG・WebP
+      各 .placeholder を <img src="assets/img/xxx.jpg" alt="..." width="700" height="445" loading="lazy"> に置換
+    -->
+    <div class="cards cards--3">
+      <article class="card">
+        <div class="media media--card">
+          <div class="placeholder" role="img" aria-label="画像仮枠：30kg袋の写真">
+            <p class="placeholder__main">（ここに画像が入ります）</p>
+            <p class="placeholder__sub">30kg袋の写真</p>
+          </div>
+        </div>
+        <h3 class="card__title">通常納品</h3>
+        <p class="card__text">30kg袋で納品<br>小分けを利用しない場合</p>
+      </article>
+      <article class="card">
+        <div class="media media--card">
+          <div class="placeholder" role="img" aria-label="画像仮枠：ロゴ入り米袋・秋葉米の実例">
+            <p class="placeholder__main">（ここに画像が入ります）</p>
+            <p class="placeholder__sub">ロゴ入り米袋・秋葉米の実例</p>
+          </div>
+        </div>
+        <h3 class="card__title">社員への配布</h3>
+        <p class="card__text">2kg・3kg・5kg<br>クラフト米袋／企業ロゴ入り</p>
+      </article>
+      <article class="card">
+        <div class="media media--card">
+          <div class="placeholder" role="img" aria-label="画像仮枠：450gの米袋・紙袋入りセット">
+            <p class="placeholder__main">（ここに画像が入ります）</p>
+            <p class="placeholder__sub">450gの米袋・紙袋入りセット</p>
+          </div>
+        </div>
+        <h3 class="card__title">取引先への贈り物</h3>
+        <p class="card__text">3合（450g）<br>紙袋に1袋・2袋・3袋入り</p>
+      </article>
+    </div>
+
+    <p class="note">※小分け・オリジナル包装はオプションです。仕様・費用はご相談ください。</p>
+
+  </div>
+</section>
+
+<!-- ============================================================
+  5. メディア掲載（Figma: 04｜メディア掲載）
+  記事見出しは「紹介文」と区別し、媒体名・掲載日を明記。
+============================================================ -->
+<section class="section section--white" id="media" aria-labelledby="media-title">
+  <div class="container container--stack">
+
+    <p class="eyebrow">04 / メディア掲載</p>
+    <h2 class="section-title" id="media-title">新聞・雑誌で紹介されました</h2>
+    <p class="lead">社員の暮らしを支え、日本の農業を未来につなぐ取り組みとして紹介されています。</p>
+
+    <div class="media-list">
+
+      <article class="media-card">
+        <h3 class="media-card__name">日本経済新聞</h3>
+        <p class="media-card__date"><time datetime="2025-10-09">2025年10月9日</time> 掲載</p>
+        <!--
+          【画像差し替え】新聞掲載イメージ
+          推奨: 1090×380px / 縦横比 PC 544:190・SP 302:190 / JPG・WebP
+        -->
+        <div class="media media--article">
+          <div class="placeholder" role="img" aria-label="画像仮枠：新聞掲載イメージ">
+            <p class="placeholder__main">（ここに画像が入ります）</p>
+            <p class="placeholder__sub">新聞掲載イメージ</p>
+          </div>
+        </div>
+        <!-- 記事見出し（引用）とサービス紹介文を区別 -->
+        <h4 class="media-card__headline"><span class="visually-hidden">記事見出し：</span>「第3の賃上げ」広がる</h4>
+        <p class="media-card__text">福利厚生を通じて社員の家計を支える取り組みの一つとして、田んぼオーナー制度が紹介されました。</p>
+        <!-- TODO(URL): 日本経済新聞の掲載記事URLが確認できたら href を追加（未確認のため仮置き。URL捏造禁止） -->
+        <a class="media-card__link" data-todo="nikkei-article-url">掲載記事を読む →</a>
+      </article>
+
+      <article class="media-card">
+        <h3 class="media-card__name">月刊「石垣」</h3>
+        <p class="media-card__date">2026年7月号 掲載</p>
+        <!--
+          【画像差し替え】雑誌表紙・掲載イメージ（PCは2枠、SPは1枠目のみ表示＝Figma準拠）
+          1枠目: 推奨 710×480px / 縦横比 353:237（PC）・302:190（SP）
+          2枠目: 推奨 400×532px / 縦横比 200:266（縦長・PCのみ）
+        -->
+        <div class="media-pair">
+          <div class="media media--magazine-a">
+            <div class="placeholder" role="img" aria-label="画像仮枠：雑誌表紙・掲載イメージ">
+              <p class="placeholder__main">（ここに画像が入ります）</p>
+              <p class="placeholder__sub">雑誌表紙・掲載イメージ</p>
+            </div>
+          </div>
+          <div class="media media--magazine-b">
+            <div class="placeholder" role="img" aria-label="画像仮枠：掲載ページのイメージ">
+              <p class="placeholder__main">（ここに画像が入ります）</p>
+              <p class="placeholder__sub">掲載ページのイメージ</p>
+            </div>
+          </div>
+        </div>
+        <h4 class="media-card__headline"><span class="visually-hidden">記事見出し：</span>農業分野に商機あり</h4>
+        <p class="media-card__text">お米を福利厚生や贈答に活用する仕組みや、企業ロゴ入りのオリジナル米袋が紹介されました。</p>
+        <!-- TODO(URL): 月刊「石垣」の掲載記事URLが確認できたら href を追加（未確認のため仮置き） -->
+        <a class="media-card__link" data-todo="ishigaki-article-url">掲載記事を読む →</a>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+  6. お客様の声（Figma: 05｜お客様の声）
+  ※仮掲載。実際の感想は創作しない。確定したら該当カードの文言を差し替える。
+============================================================ -->
+<section class="section section--cream" id="voice" aria-labelledby="voice-title">
+  <div class="container container--stack">
+
+    <p class="eyebrow">05 / 導入企業の声</p>
+    <h2 class="section-title" id="voice-title">お米を届ける、その先のよろこび。</h2>
+    <p class="lead">田んぼオーナー制度をご利用いただいている企業様のご紹介</p>
+
+    <!--
+      【画像差し替え】お米・オリジナル米袋など
+      推奨: 700×425px / 縦横比 PC 346:210・SP 302:190 / JPG・WebP
+    -->
+    <div class="cards cards--3">
+      <!-- 差し替え箇所: 企業名 / ○口申込（従業員数○人） / コメント見出し / コメント本文 -->
+      <article class="card">
+        <div class="media media--voice">
+          <div class="placeholder" role="img" aria-label="画像仮枠：お米・オリジナル米袋など">
+            <p class="placeholder__main">（ここに画像が入ります）</p>
+            <p class="placeholder__sub">お米・オリジナル米袋など</p>
+          </div>
+        </div>
+        <h3 class="card__company">菊川工業株式会社 様</h3>
+        <p class="card__scale">○口申込（従業員数○人）</p>
+        <p class="card__comment-title">コメント掲載予定</p>
+        <p class="card__comment">導入のきっかけや、お米を配布した際の社員の反応などを掲載する欄です。</p>
+      </article>
+      <article class="card">
+        <div class="media media--voice">
+          <div class="placeholder" role="img" aria-label="画像仮枠：お米・オリジナル米袋など">
+            <p class="placeholder__main">（ここに画像が入ります）</p>
+            <p class="placeholder__sub">お米・オリジナル米袋など</p>
+          </div>
+        </div>
+        <h3 class="card__company">企業名掲載予定</h3>
+        <p class="card__scale">○口申込（従業員数○人）</p>
+        <p class="card__comment-title">コメント掲載予定</p>
+        <p class="card__comment">導入のきっかけや、お米を配布した際の社員の反応などを掲載する欄です。</p>
+      </article>
+      <article class="card">
+        <div class="media media--voice">
+          <div class="placeholder" role="img" aria-label="画像仮枠：お米・オリジナル米袋など">
+            <p class="placeholder__main">（ここに画像が入ります）</p>
+            <p class="placeholder__sub">お米・オリジナル米袋など</p>
+          </div>
+        </div>
+        <h3 class="card__company">企業名掲載予定</h3>
+        <p class="card__scale">○口申込（従業員数○人）</p>
+        <p class="card__comment-title">コメント掲載予定</p>
+        <p class="card__comment">導入のきっかけや、お米を配布した際の社員の反応などを掲載する欄です。</p>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+  7. 参加のご案内（Figma: 06｜参加のご案内）
+  ※参加費・数量・募集条件は未確定。下の「参加条件」の値は確認用の仮表示（○）のまま。
+  ※Figma PC版では「25万円（税別）／1口」「240kg／1口」、SP版では「○」表記で食い違いあり。
+    確定したら下の .terms__value を書き換える（README「要確認」参照）。
+============================================================ -->
+<section class="section section--green" id="join" aria-labelledby="join-title">
+  <div class="container container--stack">
+
+    <h2 class="join__title" id="join-title">御社も、田んぼオーナー制度に<br>参加しませんか？</h2>
+    <p class="join__lead">社員への配布人数や、ご希望の包装に合わせて導入をご相談いただけます。</p>
+
+    <dl class="terms">
+      <div class="terms__item">
+        <dt class="terms__label">参加費</dt>
+        <dd class="terms__value">○万円／1口</dd>
+      </div>
+      <div class="terms__item">
+        <dt class="terms__label">お米の予定数量</dt>
+        <dd class="terms__value">○kg／1口</dd>
+      </div>
+      <div class="terms__item">
+        <dt class="terms__label">通常の納品形態</dt>
+        <dd class="terms__value">30kg袋</dd>
+      </div>
+    </dl>
+    <p class="join__note">※参加費・数量・募集条件は、最新のご案内に合わせて確定します。</p>
+
+    <div class="consult">
+      <p class="consult__text">人数・用途・お届け方法など、お気軽にご相談ください。</p>
+      <a class="btn" href="#contact">田んぼオーナー制度について相談する</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+  8. お問い合わせフォーム（Figma: 07｜お問い合わせフォーム）
+  送信方式: ブルーベリーLPと同じ「PHP（submit.php）→ メール送信 → thanks.html へリダイレクト」。
+  - 入力検証は assets/js/form.js（ブラウザ側）と submit.php（サーバー側）の二重。
+  - 送信先メールアドレス等は submit.php 冒頭の「設定」で変更。
+  - フォーム項目を増減したら form.js の FIELDS と submit.php の取得部分も合わせて修正。
+============================================================ -->
+<section class="section section--white" id="contact" aria-labelledby="contact-title">
+  <div class="container container--stack">
+
+    <p class="eyebrow">07 / お問い合わせ</p>
+    <h2 class="section-title section-title--sans" id="contact-title">田んぼオーナー制度の<br>導入をご相談ください。</h2>
+    <p class="lead">配布人数や包装のご希望に合わせてご案内します。<br>内容が決まっていない段階でも、お気軽にご相談ください。</p>
+
+    <form class="form" id="contact-form" action="submit.php" method="POST" novalidate>
+
+      <!-- bot対策（honeypot）。人間には見えない欄。入力があったら submit.php が破棄する -->
+      <div class="honeypot" aria-hidden="true">
+        <label>このフィールドに入力しないでください
+          <input type="text" name="website" tabindex="-1" autocomplete="off">
+        </label>
+      </div>
+
+      <!-- 送信元ページ（form.js が現在のURLを入れる） -->
+      <input type="hidden" name="form_url" id="form-url" value="">
+
+      <div class="field">
+        <label class="field__label" for="company">会社名<span class="tag tag--required">必須</span></label>
+        <input class="field__control" type="text" id="company" name="company" autocomplete="organization" maxlength="100" required placeholder="例：株式会社○○" aria-describedby="company-error">
+        <p class="field__error" id="company-error" aria-live="polite" hidden></p>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="name">ご担当者名<span class="tag tag--required">必須</span></label>
+        <input class="field__control" type="text" id="name" name="name" autocomplete="name" maxlength="100" required placeholder="例：山田 太郎" aria-describedby="name-error">
+        <p class="field__error" id="name-error" aria-live="polite" hidden></p>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="email">メールアドレス<span class="tag tag--required">必須</span></label>
+        <input class="field__control" type="email" id="email" name="email" autocomplete="email" inputmode="email" maxlength="254" required placeholder="例：name@example.com" aria-describedby="email-error">
+        <p class="field__error" id="email-error" aria-live="polite" hidden></p>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="tel">電話番号<span class="tag">任意</span></label>
+        <input class="field__control" type="tel" id="tel" name="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="例：03-1234-5678">
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="people">配布予定人数<span class="tag">任意</span></label>
+        <input class="field__control" type="text" id="people" name="people" maxlength="50" placeholder="例：50人／未定">
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="purpose">ご希望の用途<span class="tag">任意</span></label>
+        <select class="field__control field__control--select" id="purpose" name="purpose">
+          <option value="">選択してください（未定でも可）</option>
+          <option>社員への福利厚生</option>
+          <option>取引先への贈答</option>
+          <option>両方</option>
+          <option>その他</option>
+          <option>未定</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="packaging">小分け・包装のご希望<span class="tag">任意</span></label>
+        <select class="field__control field__control--select" id="packaging" name="packaging">
+          <option value="">選択してください（未定でも可）</option>
+          <option>通常30kg袋</option>
+          <option>2kg・3kg・5kg</option>
+          <option>450g贈答用</option>
+          <option>オリジナル包装</option>
+          <option>相談して決めたい</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="message">お問い合わせ内容<span class="tag">任意</span></label>
+        <textarea class="field__control field__control--textarea" id="message" name="message" rows="5" maxlength="2000" placeholder="導入時期・申込口数・ご質問などをご記入ください。"></textarea>
+      </div>
+
+      <div class="field field--agree">
+        <label class="agree">
+          <input type="checkbox" id="agree" name="agree" value="1" required aria-describedby="agree-error">
+          <span>個人情報の取扱いに同意する（必須）</span>
+        </label>
+        <!-- TODO(URL): プライバシーポリシーのURLが確定したら href を追加（未確定のため仮置き。URL捏造禁止）。ブルーベリーLPのように同ページ内に本文を載せる場合は #policy 等のアンカーでも可 -->
+        <a class="policy-link" data-todo="privacy-policy-url">プライバシーポリシー</a>
+        <p class="field__error" id="agree-error" aria-live="polite" hidden></p>
+      </div>
+
+      <p class="form__status" id="form-status" role="alert" hidden></p>
+
+      <button class="btn btn--block" type="submit" id="form-submit">お問い合わせを送信する</button>
+    </form>
+
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================
+  9. フッター（Figma: フッター）
+============================================================ -->
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p class="site-footer__name">NeweZ株式会社</p>
+    <ul class="site-footer__links">
+      <!-- TODO(URL): 会社情報ページのURL確定後に href を追加 -->
+      <li><a data-todo="company-url">会社情報</a></li>
+      <li><a href="#contact">お問い合わせ</a></li>
+      <!-- TODO(URL): プライバシーポリシーのURL確定後に href を追加 -->
+      <li><a data-todo="privacy-policy-url">プライバシーポリシー</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script src="assets/js/form.js" defer></script>
+</body>
+</html>
