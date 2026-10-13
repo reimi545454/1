@@ -42,7 +42,7 @@ php -S 127.0.0.1:8000        # フォーム送信（submit.php）まで確認で
 - 項目を増減する場合は `index.html` / `form.js` / `submit.php` の3か所を揃える。
 
 ### 公開前に必ず確認（未確認・未設定）
-1. **`submit.php` の宛先・送信元・件名**: ブルーベリーLPの設定（info@newez-farming.jp ほか）をそのまま引き継いでいます。この制度の問い合わせ先として正しいか確認し、必要なら冒頭の「設定」を変更。
+1. **`submit.php` の宛先**: 問い合わせは `info-ricefield@newez-farming.jp` に届く設定（自動返信の返信先も同じ）。送信元（From）の `noreply@newez-farming.jp` と件名はブルーベリーLPから引き継いだ値なので、サーバーで送信できるアドレスか確認（冒頭の「設定」で変更）。
 2. **本番サーバーでのメール到達確認**（`mb_send_mail` / sendmail 設定、迷惑メール判定）。ローカルでは未確認。
 3. **計測タグ**: ブルーベリーLPの `thanks.html` にある GTM / GA4 / Meta Pixel は、同じIDを使ってよいか未確認のため入れていません（`thanks.html` 内のコメント参照）。
 4. スパム対策はハニーポットのみ。必要に応じて reCAPTCHA / Turnstile 等を追加。

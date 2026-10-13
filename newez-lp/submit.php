@@ -5,8 +5,8 @@
  * ブルーベリーLPの submit.php と同じ方式（mb_send_mail → thanks.html へリダイレクト）。
  * 要件: PHP 7.4+ / mbstring / サーバーのメール送信設定（sendmail 等）。
  *
- * 【公開前に必ず確認】下の「設定」の宛先・送信元・件名は、ブルーベリーLPの設定を
- * そのまま引き継いでいます。この田んぼオーナー制度LPの正しい宛先か確認してください。
+ * 問い合わせの宛先は info-ricefield@newez-farming.jp。
+ * 送信元(From)はブルーベリーLPと同じ noreply@newez-farming.jp を引き継いでいます（要確認）。
  */
 
 mb_language('Japanese');
@@ -14,9 +14,9 @@ mb_internal_encoding('UTF-8');
 date_default_timezone_set('Asia/Tokyo');
 
 // === 設定 =====================================================================
-$to      = 'info@newez-farming.jp, misawa@newez.jp, hirayama@newez.jp'; // 管理者宛（カンマ区切り） ※要確認
-$from    = 'noreply@newez-farming.jp';   // 送信元（自ドメイン推奨）           ※要確認
-$reply_to_admin = 'info@newez-farming.jp'; // 自動返信の返信先                  ※要確認
+$to      = 'info-ricefield@newez-farming.jp'; // 管理者宛（複数はカンマ区切り）
+$from    = 'noreply@newez-farming.jp';   // 送信元（自ドメイン推奨） ※要確認
+$reply_to_admin = 'info-ricefield@newez-farming.jp'; // 自動返信の返信先（お客様が返信した場合の宛先）
 $subject = '【NeweZ LP】法人向け田んぼオーナー制度 お問い合わせ';
 $autores_subject = '【自動返信】お問い合わせありがとうございます（NeweZ）';
 $site_url = 'https://newez.jp/';
