@@ -156,7 +156,7 @@
   4. 通常納品・小分け・オリジナル包装（Figma: 03｜小分け・オリジナル包装）
   ※通常納品は30kg袋。2kg・3kg・5kg／3合（450g）／オリジナル包装はオプション。
 ============================================================ -->
-<section class="section section--cream" id="packaging" aria-labelledby="packaging-title">
+<section class="section section--cream" id="packaging-options" aria-labelledby="packaging-title">
   <div class="container container--stack">
 
     <p class="eyebrow">03 / 福利厚生にも、贈答にも</p>
@@ -203,6 +203,19 @@
 
     <p class="note">※小分け・オリジナル包装はオプションです。仕様・費用はご相談ください。</p>
 
+  </div>
+</section>
+
+<!-- ============================================================
+  簡単お見積もりボタン（セクション間のCTA）
+  遷移先 estimate.html（LPと同じ項目の別フォーム。受信メールで「簡単お見積もり経由」と分かる）
+============================================================ -->
+<section class="section section--white estimate-band" aria-label="簡単お見積もり">
+  <div class="container">
+    <div class="estimate-box">
+      <p class="estimate-box__text">配布人数とお米の量を入れるだけで、大体の口数とご予算をメールでお知らせします。</p>
+      <a class="btn" href="estimate.html">簡単お見積もりはこちら</a>
+    </div>
   </div>
 </section>
 
@@ -390,6 +403,8 @@
 
       <!-- 送信元ページ（form.js が現在のURLを入れる） -->
       <input type="hidden" name="form_url" id="form-url" value="">
+      <!-- 流入元（社内でどこから来たか分かるように、受信メールの件名・本文に反映）: lp / estimate -->
+      <input type="hidden" name="source" value="lp">
 
       <div class="field">
         <label class="field__label" for="company">会社名<span class="tag tag--required">必須</span></label>
@@ -414,9 +429,26 @@
         <input class="field__control" type="tel" id="tel" name="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="例：03-1234-5678">
       </div>
 
+      <!-- 配布予定人数・kg数: 人数を入力したら kg数も必須（form.js / submit.php で検証）。
+           両方入力された方には、自動返信メールで口数と概算予算を案内（計算は submit.php 冒頭の設定） -->
       <div class="field">
-        <label class="field__label" for="people">配布予定人数<span class="tag">任意</span></label>
-        <input class="field__control" type="text" id="people" name="people" maxlength="50" placeholder="例：50人／未定">
+        <label class="field__label" for="people">配布予定人数（従業員数）<span class="tag">任意</span></label>
+        <div class="field__unit">
+          <input class="field__control" type="text" id="people" name="people" inputmode="numeric" autocomplete="off" maxlength="7" placeholder="例：50" aria-describedby="people-hint people-error">
+          <span class="field__unit-label">人</span>
+        </div>
+        <p class="field__hint" id="people-hint">人数を入力した場合は、下の「配布予定kg数」も必ずご入力ください。</p>
+        <p class="field__error" id="people-error" aria-live="polite" hidden></p>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="kg">配布予定kg数（白米）<span class="tag" id="kg-tag">任意</span></label>
+        <div class="field__unit">
+          <input class="field__control" type="text" id="kg" name="kg" inputmode="decimal" autocomplete="off" maxlength="9" placeholder="例：300" aria-describedby="kg-hint kg-error">
+          <span class="field__unit-label">kg</span>
+        </div>
+        <p class="field__hint" id="kg-hint">人数とkg数の両方をご入力いただくと、大体の口数とご予算を自動返信メールでお知らせします。</p>
+        <p class="field__error" id="kg-error" aria-live="polite" hidden></p>
       </div>
 
       <div class="field">

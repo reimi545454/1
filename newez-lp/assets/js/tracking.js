@@ -21,6 +21,9 @@
 
   var page = document.body ? document.body.getAttribute('data-page') : '';
   var isThanks = page === 'thanks';
+  // submit.php が簡単お見積もり経由のとき thanks.html?from=estimate を付ける。計測側で区別するために使う
+  var fromEstimate = /[?&]from=estimate(&|$)/.test(window.location.search);
+  var leadParams = { content_name: fromEstimate ? 'estimate' : 'lp_form' };
 
   // 完了ページの二重計測防止（storageが使えない環境ではそのまま計測）
   var fireLead = isThanks;
@@ -39,7 +42,7 @@
     gtm.async = true;
     gtm.src = 'https://www.googletagmanager.com/gtm.js?id=' + encodeURIComponent(TRACKING.gtmId);
     document.head.appendChild(gtm);
-    if (fireLead) window.dataLayer.push({ event: 'generate_lead' });
+    if (fireLead) window.dataLayer.push({ event: 'generate_lead', lead_source: leadParams.content_name });
   }
 
   // ---- GA4 ----
@@ -52,7 +55,7 @@
     document.head.appendChild(ga);
     window.gtag('js', new Date());
     window.gtag('config', TRACKING.ga4Id);
-    if (fireLead) window.gtag('event', 'generate_lead');
+    if (fireLead) window.gtag('event', 'generate_lead', { lead_source: leadParams.content_name });
   }
 
   // ---- Meta Pixel ----
@@ -67,6 +70,6 @@
     })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
     window.fbq('init', TRACKING.metaPixelId);
     window.fbq('track', 'PageView');
-    if (fireLead) window.fbq('track', 'Lead');
+    if (fireLead) window.fbq('track', 'Lead', leadParams);
   }
 })();

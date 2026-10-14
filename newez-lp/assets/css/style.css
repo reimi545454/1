@@ -378,3 +378,21 @@ a[data-todo]:not([href]) { cursor: default; text-decoration: none; }
   html { scroll-behavior: auto; }
   * { transition-duration: .01ms !important; }
 }
+
+/* ---------- フォーム補足（単位付き入力・ヒント） ---------- */
+.field__unit { display: flex; align-items: center; gap: 12px; }
+.field__unit .field__control { flex: 1 1 auto; min-width: 0; }
+.field__unit-label { flex: none; font-weight: 700; font-size: var(--fs-input); }
+.field__hint { font-size: 14px; line-height: 1.7; color: var(--tanbo-muted); }
+
+/* ---------- 簡単お見積もりバンド（セクション間のボタン） ---------- */
+.estimate-band { padding-top: 0; padding-bottom: 0; }
+.estimate-box { display: flex; flex-direction: column; gap: 20px; padding: 24px 20px; margin-top: calc(var(--pad-y) * -.5); position: relative; background: var(--tanbo-cream); border: 2px solid var(--tanbo-green); }
+.estimate-box__text { font-weight: 700; font-size: var(--fs-lead); line-height: 1.7; }
+.estimate-box .btn { width: 100%; }
+@media (min-width: 1024px) {
+  .estimate-box { flex-direction: row; align-items: center; justify-content: space-between; gap: 32px; padding: 32px 40px; }
+  .estimate-box .btn { width: fit-content; flex: none; }
+}
+.estimate-band + .section { padding-top: calc(var(--pad-y) * 1.1); }
+.estimate-box__text, .field__hint { text-wrap: pretty; word-break: auto-phrase; }
