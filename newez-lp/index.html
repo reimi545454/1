@@ -429,15 +429,15 @@
         <input class="field__control" type="tel" id="tel" name="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="例：03-1234-5678">
       </div>
 
-      <!-- 配布予定人数・kg数: 人数を入力したら kg数も必須（form.js / submit.php で検証）。
+      <!-- 配布予定人数・kg数: 片方を入力したらもう片方も必須（form.js / submit.php で検証）。
            両方入力された方には、自動返信メールで口数と概算予算を案内（計算は submit.php 冒頭の設定） -->
       <div class="field">
-        <label class="field__label" for="people">配布予定人数（従業員数）<span class="tag">任意</span></label>
+        <label class="field__label" for="people">配布予定人数（従業員数）<span class="tag" id="people-tag">任意</span></label>
         <div class="field__unit">
           <input class="field__control" type="text" id="people" name="people" inputmode="numeric" autocomplete="off" maxlength="7" placeholder="例：50" aria-describedby="people-hint people-error">
           <span class="field__unit-label">人</span>
         </div>
-        <p class="field__hint" id="people-hint">人数を入力した場合は、下の「配布予定kg数」も必ずご入力ください。</p>
+        <p class="field__hint" id="people-hint">人数とkg数は、どちらか一方を入力した場合、両方の入力が必要です。</p>
         <p class="field__error" id="people-error" aria-live="polite" hidden></p>
       </div>
 
@@ -447,7 +447,7 @@
           <input class="field__control" type="text" id="kg" name="kg" inputmode="decimal" autocomplete="off" maxlength="9" placeholder="例：300" aria-describedby="kg-hint kg-error">
           <span class="field__unit-label">kg</span>
         </div>
-        <p class="field__hint" id="kg-hint">人数とkg数の両方をご入力いただくと、大体の口数とご予算を自動返信メールでお知らせします。</p>
+        <p class="field__hint" id="kg-hint">両方をご入力いただくと、大体の口数とご予算を自動返信メールでお知らせします。</p>
         <p class="field__error" id="kg-error" aria-live="polite" hidden></p>
       </div>
 

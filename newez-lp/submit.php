@@ -126,7 +126,7 @@ if (empty($_POST['agree'])) $errors[] = '個人情報の取扱いへの同意が
 if ($purpose !== '' && !in_array($purpose, $allowed_purpose, true))     $errors[] = 'ご希望の用途の値が不正です。';
 if ($packaging !== '' && !in_array($packaging, $allowed_packaging, true)) $errors[] = '小分け・包装のご希望の値が不正です。';
 
-// 配布予定人数・kg数: 人数を入力したら kg数も必須
+// 配布予定人数・kg数: 片方を入力したらもう片方も必須（estimateは両方必須）
 $people = 0;
 $kg = 0.0;
 $is_estimate = ($source_key === 'estimate');
@@ -147,6 +147,9 @@ if ($people_raw !== '') {
     }
 }
 if ($kg_raw !== '') {
+    if ($people_raw === '' && !$is_estimate) { // estimateは上で既にエラー追加済み
+        $errors[] = '配布予定kg数を入力した場合は、配布予定人数も入力してください。';
+    }
     if (!preg_match('/^\d+(\.\d+)?$/', $kg_raw) || (float)$kg_raw <= 0 || (float)$kg_raw > $MAX_KG) {
         $errors[] = '配布予定kg数は0より大きい半角数字で入力してください。';
     } else {

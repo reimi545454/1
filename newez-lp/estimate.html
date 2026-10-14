@@ -80,7 +80,7 @@
       <!-- 配布予定人数・kg数: 人数を入力したら kg数も必須（form.js / submit.php で検証）。
            両方入力された方には、自動返信メールで口数と概算予算を案内（計算は submit.php 冒頭の設定） -->
       <div class="field">
-        <label class="field__label" for="people">配布予定人数（従業員数）<span class="tag tag--required">必須</span></label>
+        <label class="field__label" for="people">配布予定人数（従業員数）<span class="tag tag--required" id="people-tag">必須</span></label>
         <div class="field__unit">
           <input class="field__control" type="text" id="people" name="people" required inputmode="numeric" autocomplete="off" maxlength="7" placeholder="例：50" aria-describedby="people-hint people-error">
           <span class="field__unit-label">人</span>
