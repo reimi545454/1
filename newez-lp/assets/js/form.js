@@ -6,6 +6,7 @@
    ・サーバー側（submit.php）でも同じ項目を再検証します。ここだけを信用しないこと。
    ・必須項目を変えるときは、下の RULES・HTMLの required・submit.php の3か所を揃える。
    ・ルール: 「配布予定人数」を入力したら「配布予定kg数」も必須。
+     estimate.html（form に data-require-estimate）では人数・kg数ともに必須。
    ========================================================================== */
 (function () {
   'use strict';
@@ -13,7 +14,10 @@
   var form = document.getElementById('contact-form');
   if (!form) return;
 
+  // estimate.html: 人数・kg数を両方必須にする
+  var requireEstimate = form.hasAttribute('data-require-estimate');
   var submitBtn = document.getElementById('form-submit');
+  var submitLabel = submitBtn.textContent;
   var statusBox = document.getElementById('form-status');
   var formUrl = document.getElementById('form-url');
   if (formUrl) formUrl.value = window.location.href.split('#')[0];
@@ -41,7 +45,7 @@
     },
     people: function (el) {
       var v = normalizeNumber(el.value);
-      if (!v) return '';
+      if (!v) return requireEstimate ? '配布予定人数を入力してください。' : '';
       if (!/^\d+$/.test(v)) return '人数は半角数字で入力してください。（例：50）';
       var n = parseInt(v, 10);
       return n >= 1 && n <= MAX_PEOPLE ? '' : '人数は1〜' + MAX_PEOPLE.toLocaleString('ja-JP') + 'の範囲で入力してください。';
@@ -49,7 +53,7 @@
     kg: function (el) {
       var v = normalizeNumber(el.value);
       var people = normalizeNumber(form.elements.people.value);
-      if (!v) return people ? '配布予定人数を入力した場合は、kg数も入力してください。' : '';
+      if (!v) return requireEstimate ? '配布予定kg数を入力してください。' : (people ? '配布予定人数を入力した場合は、kg数も入力してください。' : '');
       if (!/^\d+(\.\d+)?$/.test(v)) return 'kg数は半角数字で入力してください。（例：300）';
       var n = parseFloat(v);
       return n > 0 && n <= MAX_KG ? '' : 'kg数は0より大きい数値で入力してください。';
@@ -81,7 +85,7 @@
   // 人数が入っているときだけ、kg欄のラベルを「必須」にする
   var kgTag = document.getElementById('kg-tag');
   function syncKgRequired() {
-    var need = !!normalizeNumber(form.elements.people.value);
+    var need = requireEstimate || !!normalizeNumber(form.elements.people.value);
     if (kgTag) {
       kgTag.textContent = need ? '必須' : '任意';
       kgTag.classList.toggle('tag--required', need);
@@ -131,6 +135,6 @@
   // 「戻る」で戻った場合（bfcache）にボタンが無効のままになるのを防ぐ
   window.addEventListener('pageshow', function () {
     submitBtn.disabled = false;
-    submitBtn.textContent = 'お問い合わせを送信する';
+    submitBtn.textContent = submitLabel;
   });
 })();

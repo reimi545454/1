@@ -20,17 +20,24 @@ date_default_timezone_set('Asia/Tokyo');
 $to      = 'info-ricefield@newez-farming.jp'; // 管理者宛（複数はカンマ区切り）
 $from    = 'noreply@newez-farming.jp';   // 送信元（自ドメイン推奨） ※要確認
 $reply_to_admin = 'info-ricefield@newez-farming.jp'; // 自動返信の返信先（お客様が返信した場合の宛先）
-$autores_subject = '【自動返信】お問い合わせありがとうございます（NeweZ）';
 $site_url = 'https://newez.jp/';
 $thanks   = 'thanks.html';
 $contact_within = '3営業日以内'; // 「営業担当より◯◯にご連絡します」の期限
 
-// 流入元ごとの社内向けメール件名・表示名（受信したとき、どこから来たか分かるようにする）
+// 流入元ごとの件名・自動返信の書き出し・表示名（社内で、どこから来たか分かるようにする）
 $sources = [
-    'lp'       => ['subject' => '【NeweZ LP】法人向け田んぼオーナー制度 お問い合わせ',
-                   'label'   => 'LPのお問い合わせフォーム'],
-    'estimate' => ['subject' => '【NeweZ LP｜簡単お見積もり】法人向け田んぼオーナー制度 お見積もり依頼',
-                   'label'   => '簡単お見積もり（estimate.html）経由'],
+    'lp'       => ['subject'     => '【NeweZ LP】法人向け田んぼオーナー制度 お問い合わせ',
+                   'autoreply'   => '【自動返信】お問い合わせありがとうございます（NeweZ）',
+                   'thanks_word' => 'お問い合わせありがとうございます。',
+                   'copy_title'  => 'お問い合わせ内容（控え）',
+                   'received'    => 'お問い合わせ',
+                   'label'       => 'LPのお問い合わせフォーム'],
+    'estimate' => ['subject'     => '【NeweZ LP｜簡単お見積もり】法人向け田んぼオーナー制度 お見積もり依頼',
+                   'autoreply'   => '【自動返信】お見積もり依頼ありがとうございます（NeweZ）',
+                   'thanks_word' => 'お見積もり依頼ありがとうございます。',
+                   'copy_title'  => 'お見積もり依頼内容（控え）',
+                   'received'    => 'お見積もり依頼',
+                   'label'       => '簡単お見積もり（estimate.html）経由'],
 ];
 
 // 概算の計算（金額はすべて税別・円）
@@ -122,13 +129,20 @@ if ($packaging !== '' && !in_array($packaging, $allowed_packaging, true)) $error
 // 配布予定人数・kg数: 人数を入力したら kg数も必須
 $people = 0;
 $kg = 0.0;
+$is_estimate = ($source_key === 'estimate');
+if ($is_estimate && $people_raw === '') {
+    $errors[] = '配布予定人数が未入力です。';
+}
+if ($is_estimate && $kg_raw === '') {
+    $errors[] = '配布予定kg数が未入力です。';
+}
 if ($people_raw !== '') {
     if (!preg_match('/^\d+$/', $people_raw) || (int)$people_raw < 1 || (int)$people_raw > $MAX_PEOPLE) {
         $errors[] = '配布予定人数は1〜' . number_format($MAX_PEOPLE) . 'の半角数字で入力してください。';
     } else {
         $people = (int)$people_raw;
     }
-    if ($kg_raw === '') {
+    if ($kg_raw === '' && !$is_estimate) { // estimateは上で既にエラー追加済み
         $errors[] = '配布予定人数を入力した場合は、配布予定kg数も入力してください。';
     }
 }
@@ -173,7 +187,7 @@ $est_admin = $est
     : "■ 自動計算（概算）： なし（人数・kg数の両方が未入力）\n";
 
 $body = <<<EOT
-【NeweZ LP】より以下の内容でお問い合わせを受け付けました。
+【NeweZ LP】より以下の内容で{$source['received']}を受け付けました。
 ■ 流入元： {$source['label']}
 
 ━━━━━━━━━━━━━━━━━━━━━━
@@ -201,13 +215,21 @@ $headers .= "Reply-To: {$clean_email}\r\n";
 $sent_admin = mb_send_mail($to, $source['subject'], $body, $headers);
 
 // 本人宛 自動返信（失敗しても管理者宛が届いていれば完了扱い）
+// 文面は3パターン:
+//   1) 簡単お見積もり経由（人数・kg数は必須なので必ず概算つき）
+//   2) LP経由・人数とkg数が入力されている → 概算つき
+//   3) LP経由・人数とkg数が空 → 概算なし（担当者がご案内）
+$small_lot_note = ($est && $est['bags'] === 0)
+    ? "※小分け（2kg・3kg・5kg／450g）をご希望の場合は、1袋あたり" . yen($FEE_PER_BAG) . "（税別）の小分け手数料がかかります。\n"
+    : '';
 if ($est) {
-    $lead = "ご入力いただいた配布予定人数（{$people}人）・白米{$kg_text}kgから、\n"
+    $lead = "ご入力いただいた配布予定人数（{$people_disp}）・白米{$kg_disp}から、\n"
           . "大体 {$est['kuchi']}口 が必要で、ご予算は " . yen($est['total']) . "（税別）です。\n"
           . "（1口＝{$KG_PER_KUCHI}kg で計算しています）\n\n"
           . "【内訳（税別）】\n{$est_detail}\n\n"
-          . "※自動計算による概算です。小分け・オリジナル包装などのご希望により金額は変わります。\n"
-          . "　正式なお見積もりは、担当者よりご案内いたします。";
+          . "※自動計算による概算です。正式なお見積もりは、担当者よりご案内いたします。\n"
+          . $small_lot_note;
+    $lead = rtrim($lead);
 } else {
     $lead = "ご入力内容を確認のうえ、担当者よりご案内いたします。";
 }
@@ -216,7 +238,7 @@ $autores_body = <<<AUTO
 {$company}
 {$name} 様
 
-お問い合わせありがとうございます。
+{$source['thanks_word']}
 
 {$lead}
 
@@ -224,7 +246,7 @@ $autores_body = <<<AUTO
 今しばらくお待ちください。
 
 ――――――――――――――――――
-■ お問い合わせ内容（控え）
+■ {$source['copy_title']}
 {$body}
 ――――――――――――――――――
 
@@ -233,7 +255,7 @@ URL: {$site_url}
 AUTO;
 $autores_headers  = "From: {$from}\r\n";
 $autores_headers .= "Reply-To: {$reply_to_admin}\r\n";
-mb_send_mail($clean_email, $autores_subject, $autores_body, $autores_headers);
+mb_send_mail($clean_email, $source['autoreply'], $autores_body, $autores_headers);
 
 if ($sent_admin) {
     // 計測で「簡単お見積もり経由」を区別できるよう、完了ページに流入元を渡す
