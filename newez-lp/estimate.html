@@ -48,7 +48,7 @@
 
     <p class="eyebrow">簡単お見積もり</p>
     <h1 class="section-title section-title--sans" id="contact-title">配布人数とお米の量から、<br>大体の口数とご予算をお知らせします。</h1>
-    <p class="lead">配布予定人数（従業員数）と白米のkg数は必須です。<br>お見積もり依頼の自動返信メールで、大体の口数とご予算をお送りします。</p>
+    <p class="lead">配布予定人数（従業員数）と、1人あたりの配布予定kg数（白米）は必須です。<br>お見積もり依頼の自動返信メールで、大体の口数とご予算をお送りします。</p>
 
     <!-- data-require-estimate: この見積もりページでは「配布予定人数」と「配布予定kg数」を両方必須にする（form.js / submit.php が見る） -->
     <form class="form" id="contactForm" action="submit.php" method="POST" novalidate data-require-estimate>
@@ -101,12 +101,12 @@
       </div>
 
       <div class="form__group">
-        <label class="form__label" for="kg">配布予定kg数（白米）<span class="form__required" id="kg-tag">必須</span></label>
+        <label class="form__label" for="kg">1人あたりの配布予定kg数（白米）<span class="form__required" id="kg-tag">必須</span></label>
         <div class="form__unit">
-          <input class="form__input" type="text" id="kg" name="kg" required inputmode="decimal" autocomplete="off" maxlength="9" placeholder="例：300" aria-describedby="kg-hint kg-error">
+          <input class="form__input" type="text" id="kg" name="kg" required inputmode="decimal" autocomplete="off" maxlength="7" placeholder="例：3" aria-describedby="kg-hint kg-error">
           <span class="form__unit-label">kg</span>
         </div>
-        <p class="form__hint" id="kg-hint">お見積もりに必要です。配布したい白米の合計kg数をご入力ください。自動返信メールで、大体の口数とご予算をお知らせします。</p>
+        <p class="form__hint" id="kg-hint">お見積もりに必要です。1人に配る量をご入力ください。（例：1人に3kgずつ配る場合は「3」）人数と合わせて、合計の量から大体の口数とご予算を自動返信メールでお知らせします。</p>
         <p class="form__error" id="kg-error" aria-live="polite" hidden></p>
       </div>
 

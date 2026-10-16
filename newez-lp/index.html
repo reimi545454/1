@@ -439,7 +439,7 @@
         <input class="form__input" type="tel" id="tel" name="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="例：03-1234-5678">
       </div>
 
-      <!-- 配布予定人数・kg数: 片方を入力したらもう片方も必須（form.js / submit.php で検証）。
+      <!-- 配布予定人数・1人あたりkg数: 片方を入力したらもう片方も必須（form.js / submit.php で検証）。
            両方入力された方には、自動返信メールで口数と概算予算を案内（計算は submit.php 冒頭の設定） -->
       <div class="form__group">
         <label class="form__label" for="people">配布予定人数（従業員数）<span class="form__optional" id="people-tag">任意</span></label>
@@ -452,12 +452,12 @@
       </div>
 
       <div class="form__group">
-        <label class="form__label" for="kg">配布予定kg数（白米）<span class="form__optional" id="kg-tag">任意</span></label>
+        <label class="form__label" for="kg">1人あたりの配布予定kg数（白米）<span class="form__optional" id="kg-tag">任意</span></label>
         <div class="form__unit">
-          <input class="form__input" type="text" id="kg" name="kg" inputmode="decimal" autocomplete="off" maxlength="9" placeholder="例：300" aria-describedby="kg-hint kg-error">
+          <input class="form__input" type="text" id="kg" name="kg" inputmode="decimal" autocomplete="off" maxlength="7" placeholder="例：3" aria-describedby="kg-hint kg-error">
           <span class="form__unit-label">kg</span>
         </div>
-        <p class="form__hint" id="kg-hint">両方をご入力いただくと、大体の口数とご予算を自動返信メールでお知らせします。</p>
+        <p class="form__hint" id="kg-hint">1人に配る量をご入力ください。（例：1人に3kgずつ配る場合は「3」）人数と合わせて、合計の量から大体の口数とご予算を自動返信メールでお知らせします。</p>
         <p class="form__error" id="kg-error" aria-live="polite" hidden></p>
       </div>
 
