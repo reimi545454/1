@@ -26,6 +26,7 @@
       K.build(c, { ...s.parts, noCta: !s.parts.cta }, 'story');
       return { s, c, last: i === cfg.scenes.length - 1 };
     });
+    if (cfg.scenes.some((x) => x.parts.gifts)) await L.loadImages(['../assets/gift-rice.jpg', '../assets/gift-biss.jpg']);
     await L.loadFonts(document.body.innerText);
     await Promise.all(['900 60px "Noto Serif JP"', '900 60px "Noto Sans JP"'].map((f) => document.fonts.load(f, document.body.innerText)));
     await document.fonts.ready;

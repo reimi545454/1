@@ -46,7 +46,13 @@
     }
     if (c.gifts) {
       const row = el('div', 'gifts', p);
-      const mk = (id, label) => { const g = el('div', 'gcard', row); g.innerHTML = `<svg width="170" height="187" viewBox="0 0 200 220"><use href="#${id}"/></svg>`; T('div', 'glabel', g, label); };
+      const PHOTO = { 'gift-rice': ['gift-rice.jpg', '52% 50%'], 'gift-skincare': ['gift-biss.jpg', '58% 50%'] };
+      const mk = (id, label) => {
+        const g = el('div', 'gcard', row);
+        const [file, pos] = PHOTO[id];
+        el('div', 'gphoto', g, { backgroundImage: `url(../assets/${file})`, backgroundPosition: pos });
+        T('div', 'glabel', g, label);
+      };
       const gl = Array.isArray(c.gifts) ? c.gifts : ['お米', 'BISSスキンケア'];
       mk('gift-rice', gl[0]); T('div', 'gor', row, 'or'); mk('gift-skincare', gl[1]);
     }
@@ -142,6 +148,7 @@
       g.className = 'layer on';
       g.innerHTML = '<div class="g" style="top:0;height:269px"></div><div class="g" style="bottom:0;height:672px"></div>';
     }
+    if (cfg.gifts) await L.loadImages(['../assets/gift-rice.jpg', '../assets/gift-biss.jpg']);
     await L.loadFonts(document.body.innerText);
     await Promise.all(['900 60px "Noto Serif JP"', '900 60px "Noto Sans JP"'].map((s) => document.fonts.load(s, document.body.innerText)));
     await document.fonts.ready;
