@@ -28,7 +28,7 @@
     });
     const imgs = new Set();
     if (cfg.scenes.some((x) => x.parts.gifts)) ['gift-rice.jpg', 'gift-biss.jpg'].forEach((f) => imgs.add(f));
-    cfg.scenes.forEach((x) => { if (x.parts.bg) imgs.add(x.parts.bg); if (x.parts.deco) imgs.add(x.parts.deco.img); });
+    cfg.scenes.forEach((x) => { if (x.parts.bg) imgs.add(x.parts.bg); if (x.parts.deco) imgs.add(x.parts.deco.img); if (x.parts.img) imgs.add(x.parts.img.src); });
     await L.loadImages([...imgs].map((f) => `../assets/${f}`));
     await L.loadFonts(document.body.innerText);
     await Promise.all(['900 60px "Noto Serif JP"', '900 60px "Noto Sans JP"'].map((f) => document.fonts.load(f, document.body.innerText)));
@@ -48,7 +48,8 @@
     }
     for (const sn of scenes) {
       sn.c.style.opacity = 1; sn.c.style.visibility = 'visible';
-      K.layout(sn.c, F, 'top');
+      K.layout(sn.c, F, sn.s.parts.anchor || 'center');
+      if (sn.s.parts.slam) sn.flash = el('div', 'sflash', root);
       sn.kids = [...sn.c.children];
       const btn = sn.c.querySelector('.cta-btn');
       if (btn) {
@@ -74,6 +75,7 @@
         sn.c.style.opacity = 0;
         if (sn.bg) sn.bg.style.opacity = 0;
         if (sn.deco) sn.deco.style.opacity = 0;
+        if (sn.flash) sn.flash.style.opacity = 0;
         continue;
       }
       const lt = t - start;
@@ -90,8 +92,29 @@
         sn.deco.style.opacity = alpha * clamp(dp * 1.5);
         sn.deco.style.transform = `translateY(${(1 - dp) * 80}px) scale(${sc(lerp(0.6, 1, dp))}) rotate(${(1 - dp) * -8 + Math.sin(lt * 1.8) * 1.2}deg)`;
       }
+      // 「ドーン／バン」演出：特大文字が一気に拡大して着地 → 画面が揺れ、白くフラッシュ
+      const slam = !!sn.s.parts.slam;
+      const IMPACT = 0.16;
+      let shakeX = 0, shakeY = 0;
+      if (slam) {
+        const d = lt - 0.05 - IMPACT;
+        if (d >= 0) { const amp = 20 * Math.exp(-d * 9); shakeX = Math.sin(d * 95) * amp; shakeY = Math.cos(d * 80) * amp; }
+        sn.flash.style.opacity = d >= 0 ? 0.65 * Math.exp(-d * 16) * (1 - pout) : 0;
+      }
+      sn.c.style.transform = `translate(${shakeX.toFixed(2)}px, ${shakeY.toFixed(2)}px)`;
+      if (sn.bg && slam) sn.bg.style.transform = `translate(${shakeX.toFixed(2)}px, ${shakeY.toFixed(2)}px) scale(${1 + 0.07 * clamp(lt / (end - start))})`;
       sn.kids.forEach((k, i) => {
-        const p = ease.outBack(prog(lt, 0.08 + 0.3 * i, 0.5));
+        if (slam && k.classList.contains('big')) {
+          const dt = lt - 0.05;
+          let s = 1;
+          if (dt < IMPACT) s = lerp(3.2, 0.93, Math.pow(clamp(dt / IMPACT), 2));
+          else { const e = dt - IMPACT; s = 1 - 0.07 * Math.exp(-e * 11) * Math.cos(e * 32); }
+          k.style.opacity = clamp(dt / 0.04);
+          k.style.transform = `scale(${sc(s)})`;
+          return;
+        }
+        const delay = slam ? 0.55 + 0.25 * i : 0.08 + 0.3 * i;
+        const p = ease.outBack(prog(lt, delay, 0.5));
         const fp = clamp(p * 1.4);
         const isBtn = k === sn.btn;
         let press = 0;

@@ -23,6 +23,7 @@
   const T = (tag, cls, parent, html) => { const e = el(tag, cls, parent); e.innerHTML = html; e.dataset.text = '1'; return e; };
 
   function build(p, c, f) {
+    if (c.badge) T('div', 'badge', p, escapeHtml(c.badge));
     if (c.band) T('div', 'band', p, escapeHtml(c.band));
     if (c.chips) {
       const row = el('div', 'chips', p);
@@ -43,6 +44,10 @@
     if (c.big) {
       const b = el('div', `big glow ${c.bigSize || ''}`, p);
       c.big.forEach((l) => { const ln = el('span', 'ln', b); ln.innerHTML = markup(l).replace(/class="hl"/g, 'class="red"'); ln.dataset.text = '1'; });
+    }
+    if (c.img) {
+      const im = el('img', 'flowimg', p, { width: `${c.img.width}px` });
+      im.src = `../assets/${c.img.src}`;
     }
     if (c.gifts) {
       const row = el('div', 'gifts', p);
@@ -121,7 +126,7 @@
     const avail = F.bottom - F.top - 8;
     const { scale, h } = fitContent(content, F, avail, fit);
     // 全幅の帯の文字がセーフゾーン上端より上に出ないよう、文字の外接矩形で位置を補正（zoom下の top は拡縮されるため scale で割る）
-    content.style.top = `${(F.top + (anchor === 'top' ? 20 : Math.max(0, (avail - h) / 2))) / scale}px`;
+    content.style.top = `${(F.top + (anchor === 'top' ? 20 : Math.max(0, (avail - h) * 0.62))) / scale}px`;
     const first = content.querySelector('[data-text]');
     const rr = document.createRange(); rr.selectNodeContents(first);
     const over = F.top - rr.getBoundingClientRect().top;
