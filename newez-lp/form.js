@@ -32,7 +32,7 @@
 
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   var MAX_PEOPLE = 100000;
-  var MAX_KG = 1000; // 1人あたりのkg数の上限（誤入力防止。0.45 のような小数も可）
+  var MAX_KG = 1000; // 1人あたり年間kg数の上限（誤入力防止。0.45 のような小数も可）
 
   // 検証ルール（name属性 → 検証関数。エラーメッセージを返す／OKなら空文字）
   var RULES = {
@@ -47,7 +47,7 @@
       var v = normalizeNumber(el.value);
       if (!v) {
         if (requireEstimate) return '配布予定人数を入力してください。';
-        return normalizeNumber(form.elements.kg.value) ? '1人あたりのkg数を入力した場合は、人数も入力してください。' : '';
+        return normalizeNumber(form.elements.kg.value) ? '1人あたりの年間kg数を入力した場合は、人数も入力してください。' : '';
       }
       if (!/^\d+$/.test(v)) return '人数は半角数字で入力してください。（例：50）';
       var n = parseInt(v, 10);
@@ -56,10 +56,10 @@
     kg: function (el) {
       var v = normalizeNumber(el.value);
       var people = normalizeNumber(form.elements.people.value);
-      if (!v) return requireEstimate ? '1人あたりの配布予定kg数を入力してください。' : (people ? '配布予定人数を入力した場合は、1人あたりのkg数も入力してください。' : '');
-      if (!/^\d+(\.\d+)?$/.test(v)) return '1人あたりのkg数は半角数字で入力してください。（例：3）';
+      if (!v) return requireEstimate ? '1人あたりの年間配布予定kg数を入力してください。' : (people ? '配布予定人数を入力した場合は、1人あたりの年間kg数も入力してください。' : '');
+      if (!/^\d+(\.\d+)?$/.test(v)) return '1人あたりの年間kg数は半角数字で入力してください。（例：60）';
       var n = parseFloat(v);
-      return n > 0 && n <= MAX_KG ? '' : '1人あたりのkg数は、0より大きく' + MAX_KG.toLocaleString('ja-JP') + '以下の数値で入力してください。';
+      return n > 0 && n <= MAX_KG ? '' : '1人あたりの年間kg数は、0より大きく' + MAX_KG.toLocaleString('ja-JP') + '以下の数値で入力してください。';
     },
     agree: function (el) { return el.checked ? '' : '個人情報の取扱いへの同意が必要です。'; }
   };

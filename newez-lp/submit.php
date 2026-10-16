@@ -8,8 +8,8 @@
  *
  * ・問い合わせの宛先は info-ricefield@newez-farming.jp。
  * ・送信元(From)はブルーベリーLPと同じ noreply@newez-farming.jp を引き継いでいます（要確認）。
- * ・「配布予定人数」と「1人あたりの配布予定kg数」が両方入力された場合は、
- *   合計kg数（人数×1人あたりkg）から口数と概算予算を計算し、自動返信メール（と社内向けメール）に載せる。
+ * ・「配布予定人数」と「1人あたりの年間配布予定kg数」が両方入力された場合は、
+ *   年間の合計kg数（人数×1人あたりの年間kg）から口数と概算予算を計算し、自動返信メール（と社内向けメール）に載せる。
  *   計算の単価は下の「設定」を変更する。
  * ・社内向けメールには、お客様へ送った自動返信の文面も載せる。
  */
@@ -43,7 +43,7 @@ $sources = [
 ];
 
 // 概算の計算（金額はすべて税別・円）
-// 合計kg ＝ 配布予定人数 × 1人あたりの配布予定kg数 → 口数 ＝ ⌈ 合計kg ÷ 1口あたりkg ⌉
+// 合計kg ＝ 配布予定人数 × 1人あたりの年間配布予定kg数 → 口数 ＝ ⌈ 合計kg ÷ 1口あたりkg ⌉
 $KG_PER_KUCHI    = 216;     // 1口あたりの白米（kg）
 $GENMAI_PER_KUCHI = 240;    // 1口あたりの玄米（kg）。精米で約1割減 → 白米216kg（メール文面の説明用）
 $PRICE_PER_KUCHI = 250000;  // 参加費（1口）
@@ -54,7 +54,7 @@ $allowed_purpose   = ['社員への福利厚生', '取引先への贈答', '両�
 $allowed_packaging = ['通常30kg袋', '2kg・3kg・5kg', '450g贈答用', 'オリジナル包装', '相談して決めたい'];
 
 $MAX_PEOPLE = 100000;
-$MAX_KG_PER_PERSON = 1000; // 1人あたりの配布予定kg数の上限（誤入力防止。0.45 のような小数も可）
+$MAX_KG_PER_PERSON = 1000; // 1人あたりの年間配布予定kg数の上限（誤入力防止。0.45 のような小数も可）
 // ============================================================================
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
@@ -94,7 +94,7 @@ function kg_fmt(float $v): string {
 /**
  * 口数と概算予算を計算する（小分け手数料は含めない）。
  * @param int   $people         配布予定人数
- * @param float $kg_per_person  1人あたりの配布予定kg数（白米）
+ * @param float $kg_per_person  1人あたりの年間配布予定kg数（白米）
  * @return array{total_kg:float, kuchi:int, join_fee:int, total:int}
  */
 function estimate_for(int $people, float $kg_per_person): array {
@@ -142,7 +142,7 @@ if ($is_estimate && $people_raw === '') {
     $errors[] = '配布予定人数が未入力です。';
 }
 if ($is_estimate && $kg_raw === '') {
-    $errors[] = '1人あたりの配布予定kg数が未入力です。';
+    $errors[] = '1人あたりの年間配布予定kg数が未入力です。';
 }
 if ($people_raw !== '') {
     if (!preg_match('/^\d+$/', $people_raw) || (int)$people_raw < 1 || (int)$people_raw > $MAX_PEOPLE) {
@@ -151,15 +151,15 @@ if ($people_raw !== '') {
         $people = (int)$people_raw;
     }
     if ($kg_raw === '' && !$is_estimate) { // estimateは上で既にエラー追加済み
-        $errors[] = '配布予定人数を入力した場合は、1人あたりの配布予定kg数も入力してください。';
+        $errors[] = '配布予定人数を入力した場合は、1人あたりの年間配布予定kg数も入力してください。';
     }
 }
 if ($kg_raw !== '') {
     if ($people_raw === '' && !$is_estimate) { // estimateは上で既にエラー追加済み
-        $errors[] = '1人あたりの配布予定kg数を入力した場合は、配布予定人数も入力してください。';
+        $errors[] = '1人あたりの年間配布予定kg数を入力した場合は、配布予定人数も入力してください。';
     }
     if (!preg_match('/^\d+(\.\d+)?$/', $kg_raw) || (float)$kg_raw <= 0 || (float)$kg_raw > $MAX_KG_PER_PERSON) {
-        $errors[] = '1人あたりの配布予定kg数は、0より大きく' . number_format($MAX_KG_PER_PERSON) . '以下の半角数字で入力してください。';
+        $errors[] = '1人あたりの年間配布予定kg数は、0より大きく' . number_format($MAX_KG_PER_PERSON) . '以下の半角数字で入力してください。';
     } else {
         $kg = (float)$kg_raw;
     }
@@ -191,9 +191,9 @@ if ($est) {
            . "ご入力内容をもとに、必要な口数と概算予算をご案内いたします。\n\n"
            . "【ご入力内容】\n"
            . "・配布予定人数：{$people_disp}\n"
-           . "・1人あたりの配布予定量：白米{$kg_disp}\n"
-           . "・配布予定量の合計：白米{$total_disp}\n\n"
-           . "上記の量を1回配布する場合、必要な口数は{$est['kuchi']}口、概算予算は" . yen($est['total']) . "（税別）です。\n\n"
+           . "・1人あたりの年間配布予定量：白米{$kg_disp}\n"
+           . "・年間の配布予定量の合計：白米{$total_disp}\n\n"
+           . "上記の量を1年間で配布する場合、必要な口数は{$est['kuchi']}口、概算予算は" . yen($est['total']) . "（税別）です。\n\n"
            . "※1口あたり白米{$KG_PER_KUCHI}kgを基準に計算しています。玄米{$GENMAI_PER_KUCHI}kgを精米する際、重量が約1割減る想定です。\n\n"
            . "【内訳（税別）】\n"
            . "・参加費：{$est['kuchi']}口 × " . yen($PRICE_PER_KUCHI) . "＝" . yen($est['join_fee']) . "\n"
@@ -213,10 +213,10 @@ $reply_full = "{$company}\n{$name} 様\n\n{$reply}";
 // ---- 社内向けメール（入力内容 ＋ 自動計算 ＋ お客様へ送った自動返信）----
 $est_admin = $est
     ? "■ 自動計算（概算）： 大体{$est['kuchi']}口 / 予算 " . yen($est['total']) . "（税別）\n"
-      . "　配布予定量の合計： {$people_disp} × {$kg_disp} ＝ {$total_disp}（1口＝{$KG_PER_KUCHI}kg）\n"
+      . "　年間の配布予定量の合計： {$people_disp} × {$kg_disp} ＝ {$total_disp}（1口＝{$KG_PER_KUCHI}kg）\n"
       . "　参加費： {$est['kuchi']}口 × " . yen($PRICE_PER_KUCHI) . " ＝ " . yen($est['join_fee']) . "（税別）\n"
       . "　※小分け手数料（1袋" . yen($FEE_PER_BAG) . "・税別）は概算に含めていません。\n"
-    : "■ 自動計算（概算）： なし（人数・1人あたりkg数が未入力）\n";
+    : "■ 自動計算（概算）： なし（人数・1人あたりの年間kg数が未入力）\n";
 
 $body = <<<EOT
 【NeweZ LP】より以下の内容で{$source['received']}を受け付けました。
@@ -228,7 +228,7 @@ $body = <<<EOT
 ■ メール： {$email}
 ■ 電話番号： {$tel}
 ■ 配布予定人数（従業員数）： {$people_disp}
-■ 1人あたりの配布予定kg数（白米）： {$kg_disp}
+■ 1人あたりの年間配布予定kg数（白米）： {$kg_disp}
 ■ ご希望の用途： {$purpose}
 ■ 小分け・包装のご希望： {$packaging}
 ■ お問い合わせ内容：
