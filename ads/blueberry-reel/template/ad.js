@@ -45,6 +45,19 @@
       const b = el('div', `big glow ${c.bigSize || ''}`, p);
       c.big.forEach((l) => { const ln = el('span', 'ln', b); ln.innerHTML = markup(l).replace(/class="hl"/g, 'class="red"'); ln.dataset.text = '1'; });
     }
+    if (c.banners) c.banners.forEach((b, i) => T('div', `ban ban${i + 1}`, p, markup(b)));
+    if (c.giftbar) {
+      const g = el('div', 'giftbar', p);
+      const left = el('div', 'gbl', g);
+      T('div', 'gbadge', left, '10月限定');
+      T('div', 'gtxt', left, 'Zoom個別説明会参加特典');
+      T('div', 'gtxt2', left, '選べるプレゼント！');
+      ['gift-rice.jpg', 'gift-biss.jpg'].forEach((f, i) => {
+        const m = el('div', 'gmini', g);
+        el('div', 'gmphoto', m, { backgroundImage: `url(../assets/${f})` });
+        T('div', 'gmlabel', m, c.giftbar.labels[i]);
+      });
+    }
     if (c.img) {
       const im = el('img', 'flowimg', p, { width: `${c.img.width}px` });
       im.src = `../assets/${c.img.src}`;
@@ -112,7 +125,7 @@
         label.style.fontSize = `${parseFloat(getComputedStyle(label).fontSize) - 1}px`;
       }
     });
-    const fit = () => { fitBonus(); fitCta(); content.querySelectorAll('.band, .big .ln, .chips').forEach((n) => {
+    const fit = () => { fitBonus(); fitCta(); content.querySelectorAll('.band, .big .ln, .chips, .ban').forEach((n) => {
       if (n.classList.contains('chips')) {
         // チップ行は中身の幅（余白を除く）で判定し、収まらなければ行ごと縮める
         const inner = [...n.children].reduce((a, c) => a + c.getBoundingClientRect().width, 0) + (n.children.length - 1) * 22 * (n.getBoundingClientRect().width / n.offsetWidth || 1);
@@ -154,7 +167,7 @@
       g.className = 'layer on';
       g.innerHTML = '<div class="g" style="top:0;height:269px"></div><div class="g" style="bottom:0;height:672px"></div>';
     }
-    if (cfg.gifts) await L.loadImages(['../assets/gift-rice.jpg', '../assets/gift-biss.jpg']);
+    if (cfg.gifts || cfg.giftbar) await L.loadImages(['../assets/gift-rice.jpg', '../assets/gift-biss.jpg']);
     await L.loadFonts(document.body.innerText);
     await Promise.all(['900 60px "Noto Serif JP"', '900 60px "Noto Sans JP"'].map((s) => document.fonts.load(s, document.body.innerText)));
     await document.fonts.ready;

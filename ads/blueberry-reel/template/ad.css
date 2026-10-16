@@ -4,7 +4,7 @@
   #sky { position: absolute; left: 0; top: 0; width: 1080px; background: url(../assets/bg-sky.jpg) center top / cover; }
   #forest { position: absolute; left: 0; bottom: 0; width: 1080px; background: url(../assets/bg-village.jpg) center bottom / cover; -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 38%); mask-image: linear-gradient(to bottom, transparent 0%, #000 38%); }
   #fade { position: absolute; left: 0; width: 1080px; background: linear-gradient(180deg, rgba(196,224,246,0), rgba(120,170,110,0.55)); }
-  #content, .acontent { position: absolute; left: 0; display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  #content, .acontent { position: absolute; left: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; }
   .band { width: 100%; background: var(--dg); color: #fff; text-align: center; font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 74px; line-height: 1.3; padding: 18px 0 22px; white-space: nowrap; }
   .chips { display: flex; width: 100%; justify-content: center; gap: 22px; padding: 0 30px; }
   .chip { display: flex; align-items: center; gap: 12px; font-family: 'Noto Sans JP', sans-serif; font-weight: 900; font-size: 38px; color: var(--navy); white-space: nowrap; padding-bottom: 10px; border-bottom: 5px solid var(--red); }
@@ -41,3 +41,18 @@
   .badge { align-self: center; font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 128px; line-height: 1.1; color: #b3261e; padding: 14px 64px 22px; border-radius: 28px; border: 10px solid #fff; background: linear-gradient(160deg, #fff1b8 0%, #f6c445 48%, #e0a21f 100%); box-shadow: 0 18px 36px rgba(90,40,0,.35); transform-origin: 50% 60%; white-space: nowrap; }
   .flowimg { display: block; height: auto; align-self: center; filter: drop-shadow(0 18px 22px rgba(10,40,20,.35)); }
   .sflash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+
+  .ban { width: calc(100% - 80px); text-align: center; font-family: 'Noto Sans JP', sans-serif; font-weight: 900; font-size: 72px; line-height: 1.12; padding: 4px 0 9px; border-radius: 24px; white-space: nowrap; border: 6px solid #fff; box-shadow: 0 10px 22px rgba(0,30,20,.30); }
+  .ban1 { background: linear-gradient(180deg, #f2503f, #c4201a); color: #fff; }
+  .ban2 { background: var(--dg); color: #fff; }
+  .ban3 { background: #fff; color: var(--dg); }
+  .ban .hl { background: none; padding: 0; color: #ffe36a; }
+  .ban3 .hl { color: var(--red); }
+  .giftbar { width: calc(100% - 80px); display: flex; align-items: center; justify-content: center; gap: 16px; background: rgba(255,255,255,.95); border-radius: 24px; padding: 12px 16px; box-shadow: 0 10px 22px rgba(0,30,20,.28); }
+  .gbl { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 4px; white-space: nowrap; }
+  .gbadge { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 54px; line-height: 1.1; color: #b3261e; padding: 0 24px 4px; border-radius: 16px; border: 5px solid #fff; background: linear-gradient(160deg, #fff1b8, #f6c445 50%, #e0a21f); box-shadow: 0 6px 14px rgba(90,40,0,.3); }
+  .gtxt { font-family: 'Noto Sans JP', sans-serif; font-weight: 700; font-size: 27px; color: var(--dg); }
+  .gtxt2 { font-family: 'Noto Sans JP', sans-serif; font-weight: 900; font-size: 34px; color: var(--red); }
+  .gmini { flex: 0 0 190px; text-align: center; }
+  .gmphoto { height: 112px; background-size: cover; background-position: center; border-radius: 14px; }
+  .gmlabel { font-family: 'Noto Sans JP', sans-serif; font-weight: 700; font-size: 25px; color: #3a2a1c; padding-top: 4px; white-space: nowrap; }
