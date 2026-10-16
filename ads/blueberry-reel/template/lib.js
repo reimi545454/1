@@ -217,7 +217,7 @@
     const gift = L.el('div', 'gift', body, { fontSize: `${46 * scale}px`, padding: `${12 * scale}px ${26 * scale}px 0` });
     gift.textContent = bonus.gift || '';
     if (bonus.sub) {
-      const sub = L.el('div', 'sub', body, { fontSize: `${24 * scale}px`, padding: `${4 * scale}px ${26 * scale}px ${14 * scale}px` });
+      const sub = L.el('div', 'sub', body, { fontSize: `${30 * scale}px`, padding: `${4 * scale}px ${26 * scale}px ${14 * scale}px` });
       sub.textContent = bonus.sub;
     }
     return b;

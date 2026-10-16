@@ -35,6 +35,16 @@ def mix_in(buf, sig, at):
     buf[i:i + n] += sig[:n]
 
 
+def bell(freq, dur, amp=0.3):
+    """澄んだ鐘の音（サイン波＋倍音の減衰）。ノイズ成分なし。"""
+    t = np.arange(int(SR * dur)) / SR
+    env = np.minimum(1, t / 0.003) * np.exp(-3.2 * t)
+    tone = (np.sin(2 * np.pi * freq * t)
+            + 0.30 * np.sin(2 * np.pi * freq * 2.0 * t) * np.exp(-5 * t)
+            + 0.12 * np.sin(2 * np.pi * freq * 3.01 * t) * np.exp(-9 * t))
+    return amp * env * tone
+
+
 def kick(amp=0.5):
     t = np.arange(int(SR * 0.25)) / SR
     f = 120 * np.exp(-18 * t) + 45
@@ -75,21 +85,15 @@ def main():
         for step in range(8):
             tone = tones[[0, 1, 2, 3, 2, 1, 2, 1][step]]
             mix_in(buf, pluck(note_freq(tone + 12), BEAT, 0.16, 7), t0 + step * BEAT / 2)
-        for beat in range(4):
-            mix_in(buf, kick(0.45 if beat % 2 == 0 else 0.3), t0 + beat * BEAT)
-            mix_in(buf, hat(rng), t0 + beat * BEAT + BEAT / 2)
+        for beat in (0, 2):  # やわらかいキックだけ（ノイズ成分のハットは使わない）
+            mix_in(buf, kick(0.22), t0 + beat * BEAT)
 
-    # 効果音
-    for sc in cfg['scenes'][1:]:
-        mix_in(buf, whoosh(rng), max(0, sc['start'] - 0.3))
+    # 効果音は最後の「ピロン」だけ。切り替え音・クリック音は入れない
     last = cfg['scenes'][-1]
-    for tp in [1.5, 2.8]:
-        at = last['start'] + tp
-        if at < dur:
-            t = np.arange(int(SR * 0.12)) / SR
-            mix_in(buf, 0.25 * np.sin(2 * np.pi * 1500 * t) * np.exp(-40 * t), at)
-    for k, m in enumerate([76, 79, 84]):
-        mix_in(buf, pluck(note_freq(m), 0.8, 0.2, 4), last['start'] + 0.55 + k * 0.08)
+    buf *= 0.55  # BGMを控えめにして、ピロンが聞き取れるようにする
+    chime_at = last['start'] + 0.45
+    for k, (m, amp) in enumerate([(88, 0.34), (95, 0.30)]):  # E6 → B6
+        mix_in(buf, bell(note_freq(m), 1.6, amp), chime_at + k * 0.16)
 
     buf = buf[: int(SR * dur)]
     fade = int(SR * 0.6)
