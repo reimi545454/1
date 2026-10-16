@@ -104,7 +104,7 @@ def main():
         for beat in (0, 2):  # やわらかいキックだけ（ノイズ成分のハットは使わない）
             mix_in(buf, kick(0.22), t0 + beat * BEAT)
 
-    # 効果音。切り替えの「ザー」(ノイズ系)は入れない。すべて音程のある音で作る
+    # 効果音は強調の場面だけ（ドーン／バン）と最後のピロン。切り替わり時の音は入れない
     last = cfg['scenes'][-1]
     buf *= 0.45  # BGMを控えめにして、効果音を聞き取れるようにする
     IMPACT = 0.21  # テンプレートの着地タイミング(シーン開始からの秒)
@@ -117,11 +117,7 @@ def main():
                 first_slam = False
             else:            # 以降＝バン（短く締まる）
                 mix_in(buf, boom(dur=0.55, f0=70, drop=140, rate=24, decay=9.5, amp=0.7), sc['start'] + IMPACT)
-        elif p.get('badge'):
-            mix_in(buf, pop(880, 0.35, 0.26), sc['start'] + 0.28)
-            mix_in(buf, pop(1175, 0.35, 0.20), sc['start'] + 0.40)
-        elif sc is not last:  # 文字が出るタイミングに、ごく小さなポン
-            mix_in(buf, pop(660, 0.22, 0.16), sc['start'] + 0.22)
+
     chime_at = last['start'] + 0.45
     for k, (m, amp) in enumerate([(88, 0.34), (95, 0.30)]):  # E6 → B6
         mix_in(buf, bell(note_freq(m), 1.6, amp), chime_at + k * 0.16)
