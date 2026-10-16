@@ -12,7 +12,7 @@
     feed:   { W: 1080, H: 1350, top: 60,  bottom: 1350 - 150, side: 60, minScale: 0.8, maxUp: 1.15 },
     square: { W: 1080, H: 1080, top: 50,  bottom: 1080 - 120, side: 60, minScale: 0.7, maxUp: 1.0 },
   };
-  const BANNED = ['農園', '農業', 'ブルーベリー'];
+  const BANNED = ['農業'];
   const BONUS = { medal: '10月\n限定', head: 'Zoom個別説明で[特典プレゼント]', gift: 'お米 または BISSスキンケア', sub: 'お好きな特典を一つお選びいただけます。' };
 
   const ICONS = {
@@ -61,10 +61,11 @@
       const b = L.buildBonus(p, BONUS, 0.95);
       b.querySelectorAll('.head,.gift,.sub,.medal').forEach((n) => (n.dataset.text = '1'));
     }
-    if (c.noCta) return;
+    if (!c.noCta) {
     const btn = el('div', 'cta-btn', p);
     btn.dataset.text = 'box';
     btn.innerHTML = `<span>${escapeHtml(c.cta || 'Zoom個別説明を予約する')}</span><span class="arrow"><svg width="26" height="26" viewBox="0 0 10 10"><path d="M3 1 L7 5 L3 9" stroke="#b34a05" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+    }
     if (c.foot) T('div', 'foot', p, markup(c.foot));
   }
 

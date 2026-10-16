@@ -9,7 +9,7 @@
   const { clamp, lerp, prog, ease, el, sc } = L;
   const F = K.FORMATS.story;
   const SAFE = { top: 269, bottom: 1920 - 672, left: 64, right: 1080 - 64 };
-  const BANNED = ['農園', '農業', 'ブルーベリー'];
+  const BANNED = ['農業'];
   const FADE_IN = 0.3, FADE_OUT = 0.28;
   let state = null;
 
@@ -26,10 +26,26 @@
       K.build(c, { ...s.parts, noCta: !s.parts.cta }, 'story');
       return { s, c, last: i === cfg.scenes.length - 1 };
     });
-    if (cfg.scenes.some((x) => x.parts.gifts)) await L.loadImages(['../assets/gift-rice.jpg', '../assets/gift-biss.jpg']);
+    const imgs = new Set();
+    if (cfg.scenes.some((x) => x.parts.gifts)) ['gift-rice.jpg', 'gift-biss.jpg'].forEach((f) => imgs.add(f));
+    cfg.scenes.forEach((x) => { if (x.parts.bg) imgs.add(x.parts.bg); if (x.parts.deco) imgs.add(x.parts.deco.img); });
+    await L.loadImages([...imgs].map((f) => `../assets/${f}`));
     await L.loadFonts(document.body.innerText);
     await Promise.all(['900 60px "Noto Serif JP"', '900 60px "Noto Sans JP"'].map((f) => document.fonts.load(f, document.body.innerText)));
     await document.fonts.ready;
+    const stage = document.getElementById('stage');
+    for (const sn of scenes) {
+      const pt = sn.s.parts;
+      if (pt.bg) {
+        sn.bg = el('div', 'sbg', null, { backgroundImage: `url(../assets/${pt.bg})`, backgroundPosition: pt.bgPos || 'center' });
+        stage.insertBefore(sn.bg, root);
+      }
+      if (pt.deco) {
+        const d = pt.deco;
+        sn.deco = el('img', 'sdeco', root, { top: `${d.top}px`, width: `${d.width}px`, left: `${d.left ?? (1080 - d.width) / 2}px` });
+        sn.deco.src = `../assets/${d.img}`;
+      }
+    }
     for (const sn of scenes) {
       sn.c.style.opacity = 1; sn.c.style.visibility = 'visible';
       K.layout(sn.c, F, 'top');
@@ -54,11 +70,26 @@
       const { start, end } = sn.s;
       const vis = t >= start - 1e-6 && (t < end || sn.last);
       for (const e of [sn.c, sn.ripple, sn.hand]) if (e) e.style.visibility = vis ? 'visible' : 'hidden';
-      if (!vis) { sn.c.style.opacity = 0; continue; }
+      if (!vis) {
+        sn.c.style.opacity = 0;
+        if (sn.bg) sn.bg.style.opacity = 0;
+        if (sn.deco) sn.deco.style.opacity = 0;
+        continue;
+      }
       const lt = t - start;
       const pout = sn.last ? 0 : ease.inOutCubic(prog(t, end - FADE_OUT, FADE_OUT));
       const pin = start === 0 ? 1 : ease.outCubic(prog(lt, 0, FADE_IN));
-      sn.c.style.opacity = pin * (1 - pout);
+      const alpha = pin * (1 - pout);
+      sn.c.style.opacity = alpha;
+      if (sn.bg) {
+        sn.bg.style.opacity = alpha;
+        sn.bg.style.transform = `scale(${1 + 0.07 * clamp(lt / (end - start))})`;
+      }
+      if (sn.deco) {
+        const dp = ease.outBack(prog(lt, 0.35, 0.6));
+        sn.deco.style.opacity = alpha * clamp(dp * 1.5);
+        sn.deco.style.transform = `translateY(${(1 - dp) * 80}px) scale(${sc(lerp(0.6, 1, dp))}) rotate(${(1 - dp) * -8 + Math.sin(lt * 1.8) * 1.2}deg)`;
+      }
       sn.kids.forEach((k, i) => {
         const p = ease.outBack(prog(lt, 0.08 + 0.3 * i, 0.5));
         const fp = clamp(p * 1.4);

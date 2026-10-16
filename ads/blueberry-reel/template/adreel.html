@@ -13,6 +13,9 @@
   #sky { transform-origin: 50% 0; }
   .acontent > * { will-change: transform, opacity; }
   .acontent.scene { opacity: 0; }
+  .sbg { position: absolute; inset: 0; background-size: cover; opacity: 0; transform-origin: 50% 40%; will-change: transform, opacity; }
+  .sbg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,.64) 0%, rgba(255,255,255,.50) 55%, rgba(255,255,255,.30) 100%); }
+  .sdeco { position: absolute; height: auto; filter: drop-shadow(0 18px 22px rgba(10,40,20,.35)); will-change: transform, opacity; }
 </style>
 </head>
 <body>
