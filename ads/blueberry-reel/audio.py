@@ -45,6 +45,22 @@ def bell(freq, dur, amp=0.3):
     return amp * env * tone
 
 
+def boom(dur=1.1, f0=48.0, drop=105.0, rate=17.0, decay=4.8, amp=0.85):
+    """ドーン：音程が急降下する低音のサイン波（ノイズ成分なし）＋短い『コツ』。"""
+    t = np.arange(int(SR * dur)) / SR
+    f = f0 + drop * np.exp(-rate * t)
+    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-decay * t)
+    knock = np.sin(2 * np.pi * 170 * t) * np.exp(-55 * t) * 0.45
+    return amp * (body + knock) * np.minimum(1, t / 0.002)
+
+
+def pop(freq=660.0, dur=0.28, amp=0.22):
+    """ポン：やわらかい短い音。"""
+    t = np.arange(int(SR * dur)) / SR
+    env = np.minimum(1, t / 0.004) * np.exp(-16 * t)
+    return amp * env * (np.sin(2 * np.pi * freq * t) + 0.25 * np.sin(2 * np.pi * freq * 2 * t))
+
+
 def kick(amp=0.5):
     t = np.arange(int(SR * 0.25)) / SR
     f = 120 * np.exp(-18 * t) + 45
@@ -88,13 +104,29 @@ def main():
         for beat in (0, 2):  # やわらかいキックだけ（ノイズ成分のハットは使わない）
             mix_in(buf, kick(0.22), t0 + beat * BEAT)
 
-    # 効果音は最後の「ピロン」だけ。切り替え音・クリック音は入れない
+    # 効果音。切り替えの「ザー」(ノイズ系)は入れない。すべて音程のある音で作る
     last = cfg['scenes'][-1]
-    buf *= 0.55  # BGMを控えめにして、ピロンが聞き取れるようにする
+    buf *= 0.45  # BGMを控えめにして、効果音を聞き取れるようにする
+    IMPACT = 0.21  # テンプレートの着地タイミング(シーン開始からの秒)
+    first_slam = True
+    for sc in cfg['scenes']:
+        p = sc.get('parts', {})
+        if p.get('slam'):
+            if first_slam:   # 最初の特大演出＝ドーン（深く長い）
+                mix_in(buf, boom(), sc['start'] + IMPACT)
+                first_slam = False
+            else:            # 以降＝バン（短く締まる）
+                mix_in(buf, boom(dur=0.55, f0=70, drop=140, rate=24, decay=9.5, amp=0.7), sc['start'] + IMPACT)
+        elif p.get('badge'):
+            mix_in(buf, pop(880, 0.35, 0.26), sc['start'] + 0.28)
+            mix_in(buf, pop(1175, 0.35, 0.20), sc['start'] + 0.40)
+        elif sc is not last:  # 文字が出るタイミングに、ごく小さなポン
+            mix_in(buf, pop(660, 0.22, 0.16), sc['start'] + 0.22)
     chime_at = last['start'] + 0.45
     for k, (m, amp) in enumerate([(88, 0.34), (95, 0.30)]):  # E6 → B6
         mix_in(buf, bell(note_freq(m), 1.6, amp), chime_at + k * 0.16)
 
+    buf = np.tanh(buf * 1.15)  # ソフトリミッタ（音割れ防止）
     buf = buf[: int(SR * dur)]
     fade = int(SR * 0.6)
     buf[-fade:] *= np.linspace(1, 0, fade)
