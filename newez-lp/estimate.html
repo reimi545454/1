@@ -8,21 +8,32 @@
 <!-- TODO(公開前): 公開時にこの noindex を削除する -->
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#315e43">
-<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+
+<!-- OGP / X（ブルーベリーLPと同じ構成）。TODO(公開前): og:url・canonical・og:image（1200×630px）は公開URLが決まってから追加 -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="簡単お見積もり｜法人向け 田んぼオーナー制度｜NeweZ株式会社">
+<meta property="og:description" content="配布予定人数とお米のkg数を入力するだけで、大体の口数とご予算を自動返信メールでお知らせします。">
+<meta property="og:site_name" content="NeweZ">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="簡単お見積もり｜法人向け 田んぼオーナー制度｜NeweZ株式会社">
+<meta name="twitter:description" content="配布予定人数とお米のkg数を入力するだけで、大体の口数とご予算を自動返信メールでお知らせします。">
+<!-- favicon: NeweZ本体サイトと同じ（ブルーベリーLPと共通） -->
+<link rel="icon" href="https://newez.jp/wp-content/themes/NeweZ/img/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="https://newez.jp/wp-content/themes/NeweZ/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="style.css?261016_01">
 </head>
 
 <body data-page="estimate">
 <a class="skip-link" href="#main">本文へスキップ</a>
 
-<header class="site-header">
-  <div class="site-header__inner">
-    <p class="site-header__logo">NeweZ</p>
-    <p class="site-header__label">法人向け 田んぼオーナー制度</p>
-    <a class="btn site-header__cta" href="index.html">LPへ戻る</a>
+<header class="header">
+  <div class="header__inner">
+    <p class="header__logo">NeweZ</p>
+    <p class="header__label">法人向け 田んぼオーナー制度</p>
+    <a class="btn btn--cta header__cta" href="index.html">LPへ戻る</a>
   </div>
 </header>
 
@@ -32,7 +43,7 @@
   ・項目は index.html の問い合わせフォームと同じ（フォームを変更したら、両方を同じに直すこと）。
   ・違いは hidden の source=estimate だけ。submit.php が件名・本文に「簡単お見積もり経由」と付ける。
 ============================================================ -->
-<section class="section section--white" id="contact" aria-labelledby="contact-title">
+<section class="section section--form" id="contact" aria-labelledby="contact-title">
   <div class="container container--stack">
 
     <p class="eyebrow">簡単お見積もり</p>
@@ -40,7 +51,7 @@
     <p class="lead">配布予定人数（従業員数）と白米のkg数は必須です。<br>お見積もり依頼の自動返信メールで、大体の口数とご予算をお送りします。</p>
 
     <!-- data-require-estimate: この見積もりページでは「配布予定人数」と「配布予定kg数」を両方必須にする（form.js / submit.php が見る） -->
-    <form class="form" id="contact-form" action="submit.php" method="POST" novalidate data-require-estimate>
+    <form class="form" id="contactForm" action="submit.php" method="POST" novalidate data-require-estimate>
 
       <!-- bot対策（honeypot）。人間には見えない欄。入力があったら submit.php が破棄する -->
       <div class="honeypot" aria-hidden="true">
@@ -50,58 +61,58 @@
       </div>
 
       <!-- 送信元ページ（form.js が現在のURLを入れる） -->
-      <input type="hidden" name="form_url" id="form-url" value="">
+      <input type="hidden" name="form_url" id="formUrl" value="">
       <!-- 流入元: この簡単お見積もりページは estimate（受信メールの件名・本文に「簡単お見積もり経由」と出る） -->
       <input type="hidden" name="source" value="estimate">
 
-      <div class="field">
-        <label class="field__label" for="company">会社名<span class="tag tag--required">必須</span></label>
-        <input class="field__control" type="text" id="company" name="company" autocomplete="organization" maxlength="100" required placeholder="例：株式会社○○" aria-describedby="company-error">
-        <p class="field__error" id="company-error" aria-live="polite" hidden></p>
+      <div class="form__group">
+        <label class="form__label" for="company">会社名<span class="form__required">必須</span></label>
+        <input class="form__input" type="text" id="company" name="company" autocomplete="organization" maxlength="100" required placeholder="例：株式会社○○" aria-describedby="company-error">
+        <p class="form__error" id="company-error" aria-live="polite" hidden></p>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="name">ご担当者名<span class="tag tag--required">必須</span></label>
-        <input class="field__control" type="text" id="name" name="name" autocomplete="name" maxlength="100" required placeholder="例：山田 太郎" aria-describedby="name-error">
-        <p class="field__error" id="name-error" aria-live="polite" hidden></p>
+      <div class="form__group">
+        <label class="form__label" for="name">ご担当者名<span class="form__required">必須</span></label>
+        <input class="form__input" type="text" id="name" name="name" autocomplete="name" maxlength="100" required placeholder="例：山田 太郎" aria-describedby="name-error">
+        <p class="form__error" id="name-error" aria-live="polite" hidden></p>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="email">メールアドレス<span class="tag tag--required">必須</span></label>
-        <input class="field__control" type="email" id="email" name="email" autocomplete="email" inputmode="email" maxlength="254" required placeholder="例：name@example.com" aria-describedby="email-error">
-        <p class="field__error" id="email-error" aria-live="polite" hidden></p>
+      <div class="form__group">
+        <label class="form__label" for="email">メールアドレス<span class="form__required">必須</span></label>
+        <input class="form__input" type="email" id="email" name="email" autocomplete="email" inputmode="email" maxlength="254" required placeholder="例：name@example.com" aria-describedby="email-error">
+        <p class="form__error" id="email-error" aria-live="polite" hidden></p>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="tel">電話番号<span class="tag">任意</span></label>
-        <input class="field__control" type="tel" id="tel" name="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="例：03-1234-5678">
+      <div class="form__group">
+        <label class="form__label" for="tel">電話番号<span class="form__optional">任意</span></label>
+        <input class="form__input" type="tel" id="tel" name="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="例：03-1234-5678">
       </div>
 
       <!-- 配布予定人数・kg数: 人数を入力したら kg数も必須（form.js / submit.php で検証）。
            両方入力された方には、自動返信メールで口数と概算予算を案内（計算は submit.php 冒頭の設定） -->
-      <div class="field">
-        <label class="field__label" for="people">配布予定人数（従業員数）<span class="tag tag--required" id="people-tag">必須</span></label>
-        <div class="field__unit">
-          <input class="field__control" type="text" id="people" name="people" required inputmode="numeric" autocomplete="off" maxlength="7" placeholder="例：50" aria-describedby="people-hint people-error">
-          <span class="field__unit-label">人</span>
+      <div class="form__group">
+        <label class="form__label" for="people">配布予定人数（従業員数）<span class="form__required" id="people-tag">必須</span></label>
+        <div class="form__unit">
+          <input class="form__input" type="text" id="people" name="people" required inputmode="numeric" autocomplete="off" maxlength="7" placeholder="例：50" aria-describedby="people-hint people-error">
+          <span class="form__unit-label">人</span>
         </div>
-        <p class="field__hint" id="people-hint">お見積もりに必要です。社員の方の人数をご入力ください。</p>
-        <p class="field__error" id="people-error" aria-live="polite" hidden></p>
+        <p class="form__hint" id="people-hint">お見積もりに必要です。社員の方の人数をご入力ください。</p>
+        <p class="form__error" id="people-error" aria-live="polite" hidden></p>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="kg">配布予定kg数（白米）<span class="tag tag--required" id="kg-tag">必須</span></label>
-        <div class="field__unit">
-          <input class="field__control" type="text" id="kg" name="kg" required inputmode="decimal" autocomplete="off" maxlength="9" placeholder="例：300" aria-describedby="kg-hint kg-error">
-          <span class="field__unit-label">kg</span>
+      <div class="form__group">
+        <label class="form__label" for="kg">配布予定kg数（白米）<span class="form__required" id="kg-tag">必須</span></label>
+        <div class="form__unit">
+          <input class="form__input" type="text" id="kg" name="kg" required inputmode="decimal" autocomplete="off" maxlength="9" placeholder="例：300" aria-describedby="kg-hint kg-error">
+          <span class="form__unit-label">kg</span>
         </div>
-        <p class="field__hint" id="kg-hint">お見積もりに必要です。配布したい白米の合計kg数をご入力ください。自動返信メールで、大体の口数とご予算をお知らせします。</p>
-        <p class="field__error" id="kg-error" aria-live="polite" hidden></p>
+        <p class="form__hint" id="kg-hint">お見積もりに必要です。配布したい白米の合計kg数をご入力ください。自動返信メールで、大体の口数とご予算をお知らせします。</p>
+        <p class="form__error" id="kg-error" aria-live="polite" hidden></p>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="purpose">ご希望の用途<span class="tag">任意</span></label>
-        <select class="field__control field__control--select" id="purpose" name="purpose">
+      <div class="form__group">
+        <label class="form__label" for="purpose">ご希望の用途<span class="form__optional">任意</span></label>
+        <select class="form__input form__select" id="purpose" name="purpose">
           <option value="">選択してください（未定でも可）</option>
           <option>社員への福利厚生</option>
           <option>取引先への贈答</option>
@@ -111,9 +122,9 @@
         </select>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="packaging">小分け・包装のご希望<span class="tag">任意</span></label>
-        <select class="field__control field__control--select" id="packaging" name="packaging">
+      <div class="form__group">
+        <label class="form__label" for="packaging">小分け・包装のご希望<span class="form__optional">任意</span></label>
+        <select class="form__input form__select" id="packaging" name="packaging">
           <option value="">選択してください（未定でも可）</option>
           <option>通常30kg袋</option>
           <option>2kg・3kg・5kg</option>
@@ -123,25 +134,40 @@
         </select>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="message">お問い合わせ内容<span class="tag">任意</span></label>
-        <textarea class="field__control field__control--textarea" id="message" name="message" rows="5" maxlength="2000" placeholder="導入時期・申込口数・ご質問などをご記入ください。"></textarea>
+      <div class="form__group">
+        <label class="form__label" for="message">お問い合わせ内容<span class="form__optional">任意</span></label>
+        <textarea class="form__input form__textarea" id="message" name="message" rows="5" maxlength="2000" placeholder="導入時期・申込口数・ご質問などをご記入ください。"></textarea>
       </div>
 
-      <div class="field field--agree">
-        <label class="agree">
+      <div class="form__group form__agreement">
+        <label class="form__checkbox">
           <input type="checkbox" id="agree" name="agree" value="1" required aria-describedby="agree-error">
           <span>個人情報の取扱いに同意する（必須）</span>
         </label>
-        <!-- TODO(URL): プライバシーポリシーのURLが確定したら href を追加（未確定のため仮置き。URL捏造禁止）。ブルーベリーLPのように同ページ内に本文を載せる場合は #policy 等のアンカーでも可 -->
-        <a class="policy-link" data-todo="privacy-policy-url">プライバシーポリシー</a>
-        <p class="field__error" id="agree-error" aria-live="polite" hidden></p>
+        <a class="form__policy-link" href="#policy">プライバシーポリシー</a>
+        <p class="form__error" id="agree-error" aria-live="polite" hidden></p>
       </div>
 
       <p class="form__status" id="form-status" role="alert" hidden></p>
 
-      <button class="btn btn--block" type="submit" id="form-submit">お見積もりを依頼する</button>
+      <button class="btn btn--submit" type="submit" id="form-submit">お見積もりを依頼する</button>
     </form>
+
+    <!-- プライバシーポリシー（ブルーベリーLPと同じ本文。フォームの「プライバシーポリシー」リンクとフッターから #policy で飛ぶ）
+         ※田んぼオーナー制度の問い合わせ対応として内容が合っているか、公開前に確認 -->
+    <div class="form__privacy">
+      <h3 class="form__privacy-title" id="policy">プライバシーポリシー</h3>
+      <div class="form__privacy-box">
+        <p>当社（NeweZ株式会社）は、以下の目的のためにお客様の個人情報を利用します。</p>
+        <ul>
+          <li>事業のご案内、連絡、および資料送付</li>
+          <li>イベント・キャンペーン等のご案内</li>
+          <li>サービス改善のためのアンケート等の実施</li>
+          <li>取引・契約に関する手続きおよび与信管理</li>
+        </ul>
+        <p>当社は、法令に基づく場合を除き、本人の同意なく第三者に提供しません。</p>
+      </div>
+    </div>
 
     <p class="note"><a href="index.html">← 田んぼオーナー制度のご案内（LP）へ戻る</a></p>
 
@@ -149,18 +175,22 @@
 </section>
 </main>
 
-<footer class="site-footer">
-  <div class="site-footer__inner">
-    <p class="site-footer__name">NeweZ株式会社</p>
-    <ul class="site-footer__links">
-      <li><a data-todo="company-url">会社情報</a></li>
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__info">
+      <p class="footer__company">NeweZ株式会社</p>
+      <p class="footer__address">千葉県君津市寺沢146</p>
+    </div>
+    <ul class="footer__nav">
+      <li><a href="https://newez.jp/">会社情報</a></li>
       <li><a href="#contact">お問い合わせ</a></li>
-      <li><a data-todo="privacy-policy-url">プライバシーポリシー</a></li>
+      <li><a href="#policy">プライバシーポリシー</a></li>
     </ul>
+    <p class="footer__copy">© NeweZ Co., Ltd. All Rights Reserved.</p>
   </div>
 </footer>
 
-<script src="assets/js/form.js" defer></script>
-<script src="assets/js/tracking.js" defer></script>
+<script src="form.js" defer></script>
+<script src="tracking.js" defer></script>
 </body>
 </html>

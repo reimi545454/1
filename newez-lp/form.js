@@ -11,7 +11,7 @@
 (function () {
   'use strict';
 
-  var form = document.getElementById('contact-form');
+  var form = document.getElementById('contactForm');
   if (!form) return;
 
   // estimate.html: 人数・kg数を両方必須にする
@@ -19,7 +19,7 @@
   var submitBtn = document.getElementById('form-submit');
   var submitLabel = submitBtn.textContent;
   var statusBox = document.getElementById('form-status');
-  var formUrl = document.getElementById('form-url');
+  var formUrl = document.getElementById('formUrl');
   if (formUrl) formUrl.value = window.location.href.split('#')[0];
 
   // 全角数字・カンマ・空白を取り除いて半角数字の文字列にする（submit.php 側も同じ処理）
@@ -68,16 +68,16 @@
   function setError(name, message) {
     var el = form.elements[name];
     var box = document.getElementById(name + '-error');
-    var field = el.closest('.field');
+    var group = el.closest('.form__group');
     if (message) {
       box.textContent = message;
       box.hidden = false;
-      field.classList.add('is-invalid');
+      group.classList.add('is-invalid');
       el.setAttribute('aria-invalid', 'true');
     } else {
       box.textContent = '';
       box.hidden = true;
-      field.classList.remove('is-invalid');
+      group.classList.remove('is-invalid');
       el.removeAttribute('aria-invalid');
     }
     return !message;
@@ -91,7 +91,8 @@
   function setTag(tag, input, need) {
     if (tag) {
       tag.textContent = need ? '必須' : '任意';
-      tag.classList.toggle('tag--required', need);
+      tag.classList.toggle('form__required', need);
+      tag.classList.toggle('form__optional', !need);
     }
     input.setAttribute('aria-required', need ? 'true' : 'false');
   }
@@ -113,9 +114,9 @@
         syncRequired();
         // 相手側が「入力してください」エラー表示中なら、入力に合わせて再検証
         var other = name === 'people' ? 'kg' : 'people';
-        if (form.elements[other].closest('.field').classList.contains('is-invalid')) validate(other);
+        if (form.elements[other].closest('.form__group').classList.contains('is-invalid')) validate(other);
       }
-      if (el.closest('.field').classList.contains('is-invalid')) validate(name);
+      if (el.closest('.form__group').classList.contains('is-invalid')) validate(name);
     });
   });
 

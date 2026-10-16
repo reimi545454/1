@@ -7,14 +7,24 @@
 <meta name="description" content="収穫したお米を社員へ配布する福利厚生として、法人向け田んぼオーナー制度をご提案します。社員とその家族の食卓を支え、米農家の営農支援にもつながります。">
 <!-- TODO(公開前): 公開時にこの noindex を削除する（制作中の検索エンジン登録を防ぐため） -->
 <meta name="robots" content="noindex, nofollow">
-<!-- TODO(公開前): 公開URLが決まったら canonical / OGP（og:image は 1200×630px）を設定する -->
 <meta name="theme-color" content="#315e43">
 
-<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<!-- OGP / X（ブルーベリーLPと同じ構成）。TODO(公開前): og:url・canonical・og:image（1200×630px）は公開URLが決まってから追加 -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="法人向け 田んぼオーナー制度｜NeweZ株式会社">
+<meta property="og:description" content="収穫したお米を社員へ配布する福利厚生として、法人向け田んぼオーナー制度をご提案します。社員とその家族の食卓を支え、米農家の営農支援にもつながります。">
+<meta property="og:site_name" content="NeweZ">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="法人向け 田んぼオーナー制度｜NeweZ株式会社">
+<meta name="twitter:description" content="収穫したお米を社員へ配布する福利厚生として、法人向け田んぼオーナー制度をご提案します。社員とその家族の食卓を支え、米農家の営農支援にもつながります。">
+
+<!-- favicon: NeweZ本体サイトと同じ（ブルーベリーLPと共通） -->
+<link rel="icon" href="https://newez.jp/wp-content/themes/NeweZ/img/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="https://newez.jp/wp-content/themes/NeweZ/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="style.css?261016_01">
 </head>
 
 <body data-page="lp">
@@ -24,11 +34,11 @@
   1. ヘッダー（Figma: ヘッダー）
   SPではCTAなし（Figmaでも非表示）。ロゴ・ラベルのみ。
 ============================================================ -->
-<header class="site-header">
-  <div class="site-header__inner">
-    <p class="site-header__logo">NeweZ</p>
-    <p class="site-header__label">法人向け 田んぼオーナー制度</p>
-    <a class="btn site-header__cta" href="#contact">導入を相談する</a>
+<header class="header">
+  <div class="header__inner">
+    <p class="header__logo">NeweZ</p>
+    <p class="header__label">法人向け 田んぼオーナー制度</p>
+    <a class="btn btn--cta header__cta" href="#contact">導入を相談する</a>
   </div>
 </header>
 
@@ -38,14 +48,14 @@
   2. ファーストビュー（Figma: 01｜ファーストビュー）
   h1 はページ内でここだけ。
 ============================================================ -->
-<section class="section section--cream hero" aria-labelledby="hero-title">
+<section class="section section--hero hero" aria-labelledby="hero-title">
   <div class="container">
 
     <div class="hero__news">
       <p class="hero__kicker">社員への還元が、日本の米づくりの力になる。</p>
       <!-- 新聞記事タイトルの引用。サービス説明文とは区別（blockquote + 媒体名・掲載日） -->
       <blockquote class="hero__quote">
-        <p class="hero__quote-title">「第3の賃上げ」<br class="br-sp">広がる</p>
+        <p class="hero__quote-title">「第3の賃上げ」<br class="sp-br">広がる</p>
         <p class="hero__quote-sub">社食・弁当補助・コメ支給で実質賃金アップ</p>
       </blockquote>
       <p class="hero__cite">日本経済新聞 <time datetime="2025-10-09">2025年10月9日</time> 掲載記事タイトルより</p>
@@ -58,7 +68,7 @@
           <p class="hero__text-lead">社員と、その家族の食卓を支える。</p>
           <p>田んぼオーナー制度で収穫したお米を、社員への配布に活用できます。企業の取り組みが、暮らしに届く福利厚生です。</p>
         </div>
-        <a class="btn" href="#contact">福利厚生としての導入を相談する</a>
+        <a class="btn btn--cta" href="#contact">福利厚生としての導入を相談する</a>
       </div>
 
       <!--
@@ -81,7 +91,7 @@
 <!-- ============================================================
   3. 米農家の課題・最新統計・制度による支援（Figma: 02｜米農家の課題）
 ============================================================ -->
-<section class="section section--white" id="support" aria-labelledby="support-title">
+<section class="section section--issues" id="support" aria-labelledby="support-title">
   <div class="container container--stack">
 
     <p class="eyebrow">02 / 日本の米づくりを支える</p>
@@ -156,7 +166,7 @@
   4. 通常納品・小分け・オリジナル包装（Figma: 03｜小分け・オリジナル包装）
   ※通常納品は30kg袋。2kg・3kg・5kg／3合（450g）／オリジナル包装はオプション。
 ============================================================ -->
-<section class="section section--cream" id="packaging-options" aria-labelledby="packaging-title">
+<section class="section section--packaging" id="packaging-options" aria-labelledby="packaging-title">
   <div class="container container--stack">
 
     <p class="eyebrow">03 / 福利厚生にも、贈答にも</p>
@@ -210,11 +220,11 @@
   簡単お見積もりボタン（セクション間のCTA）
   遷移先 estimate.html（LPと同じ項目の別フォーム。受信メールで「簡単お見積もり経由」と分かる）
 ============================================================ -->
-<section class="section section--white estimate-band" aria-label="簡単お見積もり">
+<section class="section section--estimate estimate-band" aria-label="簡単お見積もり">
   <div class="container">
     <div class="estimate-box">
       <p class="estimate-box__text">配布人数とお米の量を入れるだけで、大体の口数とご予算をメールでお知らせします。</p>
-      <a class="btn" href="estimate.html">簡単お見積もりはこちら</a>
+      <a class="btn btn--cta" href="estimate.html">簡単お見積もりはこちら</a>
     </div>
   </div>
 </section>
@@ -223,7 +233,7 @@
   5. メディア掲載（Figma: 04｜メディア掲載）
   記事見出しは「紹介文」と区別し、媒体名・掲載日を明記。
 ============================================================ -->
-<section class="section section--white" id="media" aria-labelledby="media-title">
+<section class="section section--media" id="media" aria-labelledby="media-title">
   <div class="container container--stack">
 
     <p class="eyebrow">04 / メディア掲載</p>
@@ -288,7 +298,7 @@
   6. お客様の声（Figma: 05｜お客様の声）
   ※仮掲載。実際の感想は創作しない。確定したら該当カードの文言を差し替える。
 ============================================================ -->
-<section class="section section--cream" id="voice" aria-labelledby="voice-title">
+<section class="section section--voice" id="voice" aria-labelledby="voice-title">
   <div class="container container--stack">
 
     <p class="eyebrow">05 / 導入企業の声</p>
@@ -348,7 +358,7 @@
   ※Figma PC版では「25万円（税別）／1口」「240kg／1口」、SP版では「○」表記で食い違いあり。
     確定したら下の .terms__value を書き換える（README「要確認」参照）。
 ============================================================ -->
-<section class="section section--green" id="join" aria-labelledby="join-title">
+<section class="section section--join" id="join" aria-labelledby="join-title">
   <div class="container container--stack">
 
     <h2 class="join__title" id="join-title">御社も、田んぼオーナー制度に<br>参加しませんか？</h2>
@@ -372,7 +382,7 @@
 
     <div class="consult">
       <p class="consult__text">人数・用途・お届け方法など、お気軽にご相談ください。</p>
-      <a class="btn" href="#contact">田んぼオーナー制度について相談する</a>
+      <a class="btn btn--cta" href="#contact">田んぼオーナー制度について相談する</a>
     </div>
 
   </div>
@@ -385,14 +395,14 @@
   - 送信先メールアドレス等は submit.php 冒頭の「設定」で変更。
   - フォーム項目を増減したら form.js の FIELDS と submit.php の取得部分も合わせて修正。
 ============================================================ -->
-<section class="section section--white" id="contact" aria-labelledby="contact-title">
+<section class="section section--form" id="contact" aria-labelledby="contact-title">
   <div class="container container--stack">
 
     <p class="eyebrow">07 / お問い合わせ</p>
     <h2 class="section-title section-title--sans" id="contact-title">田んぼオーナー制度の<br>導入をご相談ください。</h2>
     <p class="lead">配布人数や包装のご希望に合わせてご案内します。<br>内容が決まっていない段階でも、お気軽にご相談ください。</p>
 
-    <form class="form" id="contact-form" action="submit.php" method="POST" novalidate>
+    <form class="form" id="contactForm" action="submit.php" method="POST" novalidate>
 
       <!-- bot対策（honeypot）。人間には見えない欄。入力があったら submit.php が破棄する -->
       <div class="honeypot" aria-hidden="true">
@@ -402,58 +412,58 @@
       </div>
 
       <!-- 送信元ページ（form.js が現在のURLを入れる） -->
-      <input type="hidden" name="form_url" id="form-url" value="">
+      <input type="hidden" name="form_url" id="formUrl" value="">
       <!-- 流入元（社内でどこから来たか分かるように、受信メールの件名・本文に反映）: lp / estimate -->
       <input type="hidden" name="source" value="lp">
 
-      <div class="field">
-        <label class="field__label" for="company">会社名<span class="tag tag--required">必須</span></label>
-        <input class="field__control" type="text" id="company" name="company" autocomplete="organization" maxlength="100" required placeholder="例：株式会社○○" aria-describedby="company-error">
-        <p class="field__error" id="company-error" aria-live="polite" hidden></p>
+      <div class="form__group">
+        <label class="form__label" for="company">会社名<span class="form__required">必須</span></label>
+        <input class="form__input" type="text" id="company" name="company" autocomplete="organization" maxlength="100" required placeholder="例：株式会社○○" aria-describedby="company-error">
+        <p class="form__error" id="company-error" aria-live="polite" hidden></p>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="name">ご担当者名<span class="tag tag--required">必須</span></label>
-        <input class="field__control" type="text" id="name" name="name" autocomplete="name" maxlength="100" required placeholder="例：山田 太郎" aria-describedby="name-error">
-        <p class="field__error" id="name-error" aria-live="polite" hidden></p>
+      <div class="form__group">
+        <label class="form__label" for="name">ご担当者名<span class="form__required">必須</span></label>
+        <input class="form__input" type="text" id="name" name="name" autocomplete="name" maxlength="100" required placeholder="例：山田 太郎" aria-describedby="name-error">
+        <p class="form__error" id="name-error" aria-live="polite" hidden></p>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="email">メールアドレス<span class="tag tag--required">必須</span></label>
-        <input class="field__control" type="email" id="email" name="email" autocomplete="email" inputmode="email" maxlength="254" required placeholder="例：name@example.com" aria-describedby="email-error">
-        <p class="field__error" id="email-error" aria-live="polite" hidden></p>
+      <div class="form__group">
+        <label class="form__label" for="email">メールアドレス<span class="form__required">必須</span></label>
+        <input class="form__input" type="email" id="email" name="email" autocomplete="email" inputmode="email" maxlength="254" required placeholder="例：name@example.com" aria-describedby="email-error">
+        <p class="form__error" id="email-error" aria-live="polite" hidden></p>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="tel">電話番号<span class="tag">任意</span></label>
-        <input class="field__control" type="tel" id="tel" name="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="例：03-1234-5678">
+      <div class="form__group">
+        <label class="form__label" for="tel">電話番号<span class="form__optional">任意</span></label>
+        <input class="form__input" type="tel" id="tel" name="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="例：03-1234-5678">
       </div>
 
       <!-- 配布予定人数・kg数: 片方を入力したらもう片方も必須（form.js / submit.php で検証）。
            両方入力された方には、自動返信メールで口数と概算予算を案内（計算は submit.php 冒頭の設定） -->
-      <div class="field">
-        <label class="field__label" for="people">配布予定人数（従業員数）<span class="tag" id="people-tag">任意</span></label>
-        <div class="field__unit">
-          <input class="field__control" type="text" id="people" name="people" inputmode="numeric" autocomplete="off" maxlength="7" placeholder="例：50" aria-describedby="people-hint people-error">
-          <span class="field__unit-label">人</span>
+      <div class="form__group">
+        <label class="form__label" for="people">配布予定人数（従業員数）<span class="form__optional" id="people-tag">任意</span></label>
+        <div class="form__unit">
+          <input class="form__input" type="text" id="people" name="people" inputmode="numeric" autocomplete="off" maxlength="7" placeholder="例：50" aria-describedby="people-hint people-error">
+          <span class="form__unit-label">人</span>
         </div>
-        <p class="field__hint" id="people-hint">人数とkg数は、どちらか一方を入力した場合、両方の入力が必要です。</p>
-        <p class="field__error" id="people-error" aria-live="polite" hidden></p>
+        <p class="form__hint" id="people-hint">人数とkg数は、どちらか一方を入力した場合、両方の入力が必要です。</p>
+        <p class="form__error" id="people-error" aria-live="polite" hidden></p>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="kg">配布予定kg数（白米）<span class="tag" id="kg-tag">任意</span></label>
-        <div class="field__unit">
-          <input class="field__control" type="text" id="kg" name="kg" inputmode="decimal" autocomplete="off" maxlength="9" placeholder="例：300" aria-describedby="kg-hint kg-error">
-          <span class="field__unit-label">kg</span>
+      <div class="form__group">
+        <label class="form__label" for="kg">配布予定kg数（白米）<span class="form__optional" id="kg-tag">任意</span></label>
+        <div class="form__unit">
+          <input class="form__input" type="text" id="kg" name="kg" inputmode="decimal" autocomplete="off" maxlength="9" placeholder="例：300" aria-describedby="kg-hint kg-error">
+          <span class="form__unit-label">kg</span>
         </div>
-        <p class="field__hint" id="kg-hint">両方をご入力いただくと、大体の口数とご予算を自動返信メールでお知らせします。</p>
-        <p class="field__error" id="kg-error" aria-live="polite" hidden></p>
+        <p class="form__hint" id="kg-hint">両方をご入力いただくと、大体の口数とご予算を自動返信メールでお知らせします。</p>
+        <p class="form__error" id="kg-error" aria-live="polite" hidden></p>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="purpose">ご希望の用途<span class="tag">任意</span></label>
-        <select class="field__control field__control--select" id="purpose" name="purpose">
+      <div class="form__group">
+        <label class="form__label" for="purpose">ご希望の用途<span class="form__optional">任意</span></label>
+        <select class="form__input form__select" id="purpose" name="purpose">
           <option value="">選択してください（未定でも可）</option>
           <option>社員への福利厚生</option>
           <option>取引先への贈答</option>
@@ -463,9 +473,9 @@
         </select>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="packaging">小分け・包装のご希望<span class="tag">任意</span></label>
-        <select class="field__control field__control--select" id="packaging" name="packaging">
+      <div class="form__group">
+        <label class="form__label" for="packaging">小分け・包装のご希望<span class="form__optional">任意</span></label>
+        <select class="form__input form__select" id="packaging" name="packaging">
           <option value="">選択してください（未定でも可）</option>
           <option>通常30kg袋</option>
           <option>2kg・3kg・5kg</option>
@@ -475,25 +485,40 @@
         </select>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="message">お問い合わせ内容<span class="tag">任意</span></label>
-        <textarea class="field__control field__control--textarea" id="message" name="message" rows="5" maxlength="2000" placeholder="導入時期・申込口数・ご質問などをご記入ください。"></textarea>
+      <div class="form__group">
+        <label class="form__label" for="message">お問い合わせ内容<span class="form__optional">任意</span></label>
+        <textarea class="form__input form__textarea" id="message" name="message" rows="5" maxlength="2000" placeholder="導入時期・申込口数・ご質問などをご記入ください。"></textarea>
       </div>
 
-      <div class="field field--agree">
-        <label class="agree">
+      <div class="form__group form__agreement">
+        <label class="form__checkbox">
           <input type="checkbox" id="agree" name="agree" value="1" required aria-describedby="agree-error">
           <span>個人情報の取扱いに同意する（必須）</span>
         </label>
-        <!-- TODO(URL): プライバシーポリシーのURLが確定したら href を追加（未確定のため仮置き。URL捏造禁止）。ブルーベリーLPのように同ページ内に本文を載せる場合は #policy 等のアンカーでも可 -->
-        <a class="policy-link" data-todo="privacy-policy-url">プライバシーポリシー</a>
-        <p class="field__error" id="agree-error" aria-live="polite" hidden></p>
+        <a class="form__policy-link" href="#policy">プライバシーポリシー</a>
+        <p class="form__error" id="agree-error" aria-live="polite" hidden></p>
       </div>
 
       <p class="form__status" id="form-status" role="alert" hidden></p>
 
-      <button class="btn btn--block" type="submit" id="form-submit">お問い合わせを送信する</button>
+      <button class="btn btn--submit" type="submit" id="form-submit">お問い合わせを送信する</button>
     </form>
+
+    <!-- プライバシーポリシー（ブルーベリーLPと同じ本文。フォームの「プライバシーポリシー」リンクとフッターから #policy で飛ぶ）
+         ※田んぼオーナー制度の問い合わせ対応として内容が合っているか、公開前に確認 -->
+    <div class="form__privacy">
+      <h3 class="form__privacy-title" id="policy">プライバシーポリシー</h3>
+      <div class="form__privacy-box">
+        <p>当社（NeweZ株式会社）は、以下の目的のためにお客様の個人情報を利用します。</p>
+        <ul>
+          <li>事業のご案内、連絡、および資料送付</li>
+          <li>イベント・キャンペーン等のご案内</li>
+          <li>サービス改善のためのアンケート等の実施</li>
+          <li>取引・契約に関する手続きおよび与信管理</li>
+        </ul>
+        <p>当社は、法令に基づく場合を除き、本人の同意なく第三者に提供しません。</p>
+      </div>
+    </div>
 
   </div>
 </section>
@@ -503,21 +528,23 @@
 <!-- ============================================================
   9. フッター（Figma: フッター）
 ============================================================ -->
-<footer class="site-footer">
-  <div class="site-footer__inner">
-    <p class="site-footer__name">NeweZ株式会社</p>
-    <ul class="site-footer__links">
-      <!-- TODO(URL): 会社情報ページのURL確定後に href を追加 -->
-      <li><a data-todo="company-url">会社情報</a></li>
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__info">
+      <p class="footer__company">NeweZ株式会社</p>
+      <p class="footer__address">千葉県君津市寺沢146</p>
+    </div>
+    <ul class="footer__nav">
+      <li><a href="https://newez.jp/">会社情報</a></li>
       <li><a href="#contact">お問い合わせ</a></li>
-      <!-- TODO(URL): プライバシーポリシーのURL確定後に href を追加 -->
-      <li><a data-todo="privacy-policy-url">プライバシーポリシー</a></li>
+      <li><a href="#policy">プライバシーポリシー</a></li>
     </ul>
+    <p class="footer__copy">© NeweZ Co., Ltd. All Rights Reserved.</p>
   </div>
 </footer>
 
-<script src="assets/js/form.js" defer></script>
+<script src="form.js" defer></script>
 <!-- 計測タグ: 使うIDは assets/js/tracking.js の TRACKING に設定（未設定なら何も読み込まない） -->
-<script src="assets/js/tracking.js" defer></script>
+<script src="tracking.js" defer></script>
 </body>
 </html>

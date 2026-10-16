@@ -3,17 +3,26 @@
 Figma（PC 1440px / SP 390px）をもとにした静的LP。HTML + CSS + 最小限のJS + PHP（フォーム送信）。
 ※ 未公開・未デプロイ。`<meta name="robots" content="noindex">` を入れてあります（公開時に削除）。
 
-## ファイル構成
+## ファイル構成（ブルーベリーLPと同じ「フラット構成」）
 | ファイル | 役割 |
 |---|---|
 | `index.html` | ページ本体（文言・画像枠・差し替えコメント） |
-| `assets/css/style.css` | スタイル。冒頭の「デザイントークン」で色・フォント・余白・文字サイズを一括管理 |
-| `assets/js/form.js` | フォームのブラウザ側入力検証 |
-| `assets/js/tracking.js` | 計測タグ（Meta Pixel / GA4 / GTM）。IDを入れると有効化 |
-| `submit.php` | フォーム送信処理（メール送信 → `thanks.html` へ遷移）。ブルーベリーLPの方式を踏襲 |
 | `estimate.html` | 「簡単お見積もり」ページ（LPのボタンから遷移。フォーム項目はLPと同じ） |
 | `thanks.html` | 送信完了ページ |
-| `assets/img/` | 画像置き場（現在はfaviconのみ） |
+| `submit.php` | フォーム送信処理（メール送信 → `thanks.html` へ遷移）。ブルーベリーLPの方式を踏襲 |
+| `style.css` | スタイル。冒頭の「デザイントークン」で色・フォント・余白・文字サイズを一括管理。読み込みは `style.css?261016_01`（修正したら数字を変えてキャッシュ更新。ブルーベリーLPと同じ運用） |
+| `form.js` | フォームのブラウザ側入力検証 |
+| `tracking.js` | 計測タグ（Meta Pixel / GA4 / GTM）。このLP専用のIDを入れると有効化 |
+| `images/` | 画像置き場（`index.html` の画像枠のコメントに沿って追加） |
+
+### ブルーベリーLPに合わせた点
+- **構成**: `index.html` / `style.css` / `submit.php` / `thanks.html` / `images/` を同じ階層に置く（ブルーベリーLPと同じ）。
+- **クラス名（BEM）**: `header` `header__inner` / `footer` `footer__company` `footer__nav` / `form__group` `form__label` `form__required` `form__input` `form__select` `form__textarea` `form__checkbox` `form__agreement` `form__privacy` / `btn` `btn--cta` `btn--submit` / `section--◯◯`（意味のある名前）/ `sp-br` など。
+- **フォームのID**: `contactForm`、送信元URLの隠し項目 `formUrl`、プライバシーポリシーは `#policy`。
+- **head**: OGP/X、favicon（NeweZ本体サイトと共通のURL）。計測タグだけは別ID（`tracking.js`）。
+- **フッター**: 会社名・住所・ナビ・コピーライト（ブルーベリーLPと同じ要素）。
+- **プライバシーポリシー**: ブルーベリーLPと同じ本文をフォーム下に掲載（`#policy`）。
+- 合わせていない点: デザイン（色・フォント・レイアウト）は田んぼオーナー制度のFigma準拠のため、ブルーベリーLPとは別。メディアクエリはモバイルファースト（ブルーベリーLPはPC基準）。
 
 ## ローカルでの表示確認
 ```bash
@@ -28,13 +37,11 @@ php -S 127.0.0.1:8000        # フォーム送信（submit.php）まで確認で
 ## 修正のしかた
 - **配色・フォント・余白・文字サイズ**: `style.css` 冒頭の `:root`（`--tanbo-*` はFigma変数と同名）。文字サイズはSP値が基本、1024px以上でPC値に上書き。
 - **文言**: `index.html` を直接編集（セクションごとにコメントで区切り済み）。
-- **画像差し替え**: `index.html` の各 `.placeholder` を `<img>` に置き換える。
+- **画像差し替え**: `index.html` の各 `.placeholder` を `<img src="images/…">` に置き換える（画像は `images/` に置く）。
   推奨サイズ・縦横比は各箇所のコメントに記載。枠の縦横比は CSS の `.media--xxx` が維持するので、画像が差し替わってもレイアウトは崩れません。
 - **URL未確定の箇所**（捏造せず `data-todo` 付きの仮リンクにしてあります。`href` を足せばリンクになります）:
-  `grep -rn "TODO" index.html` / `grep -rn "data-todo" index.html` で一覧できます。
+  `grep -n "TODO\|data-todo" index.html` で一覧できます。
   - 日本経済新聞・月刊「石垣」の掲載記事URL（`nikkei-article-url` / `ishigaki-article-url`）
-  - プライバシーポリシーURL（フォーム内・フッター）
-  - 会社情報URL（フッター）
 - **お客様の声**: 仮掲載（「○口申込（従業員数○人）」「コメント掲載予定」）。実際の内容が確定したら該当カードのみ差し替え。感想は創作しないこと。
 
 ## お問い合わせフォーム
@@ -69,9 +76,9 @@ php -S 127.0.0.1:8000        # フォーム送信（submit.php）まで確認で
 0. **料金・計算の前提（要確認）**: 参加費25万円／1口、1口216kg、小分け1袋1,000円（税別）は依頼時のご指定。小分けの袋数は「配布予定人数＝袋数（1人1袋）」と仮定しています。違う場合は `submit.php` の `estimate_for()` を修正。LP上の「参加費」表示は引き続き「○万円／1口」の仮表示のままです（`index.html`）。
 1. **`submit.php` の宛先**: 問い合わせは `info-ricefield@newez-farming.jp` に届く設定（自動返信の返信先も同じ）。送信元（From）の `noreply@newez-farming.jp` と件名はブルーベリーLPから引き継いだ値なので、サーバーで送信できるアドレスか確認（冒頭の「設定」で変更）。
 2. **本番サーバーでのメール到達確認**（`mb_send_mail` / sendmail 設定、迷惑メール判定）。ローカルでは未確認。
-3. **計測タグ（このLP専用のIDを設定）**: ブルーベリーLPとは別に新規作成したMeta Pixel（必要ならGA4・GTMも）のIDを `assets/js/tracking.js` の `TRACKING` に貼る。未設定（空）の間は何も読み込まず、計測されません。LPは PageView、`thanks.html` は PageView + Lead（GA4は generate_lead）を送信。ブルーベリーLPのIDは区別のため入れないこと。
+3. **計測タグ（このLP専用のIDを設定）**: ブルーベリーLPとは別に新規作成したMeta Pixel（必要ならGA4・GTMも）のIDを `tracking.js` の `TRACKING` に貼る。未設定（空）の間は何も読み込まず、計測されません。LPは PageView、`thanks.html` は PageView + Lead（GA4は generate_lead）を送信。ブルーベリーLPのIDは区別のため入れないこと。
 4. スパム対策はハニーポットのみ。必要に応じて reCAPTCHA / Turnstile 等を追加。
-5. プライバシーポリシー本文・URL、自動返信メールの文面。
+5. プライバシーポリシー本文（ブルーベリーLPと同じ文面をフォーム下に掲載済み。この制度の問い合わせ対応として合っているか確認）、自動返信メールの文面。
 
 ## Figmaとの差異・要確認メモ
 - **参加費・数量**: 自動返信では 25万円（税別）／1口・216kg／1口 を使用（ご指定）。LP上の表示は未更新。Figma PC版は「25万円（税別）／1口」「240kg／1口」、SP版は「○万円／1口」「○kg／1口」と食い違い。未確定条件を確定させないため **「○」の仮表示のまま**にしています。確定後 `index.html` の `.terms__value` を書き換え。
