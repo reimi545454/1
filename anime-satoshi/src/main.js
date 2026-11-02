@@ -115,7 +115,7 @@ function satState(t) {
     P.hipsY += 0.02 * Math.abs(Math.sin(t * 4)) * w2;
   } else {                                          // シーン2(船上・出港)
     onBoat = true; const k = t - 20.0; pos = [0.9, DECK_L.y, 0.0];
-    const turn = sm(25.0, 25.9, t); ry = PI + (PI / 2) * turn;
+    const turn = sm(25.0, 25.9, t); ry = PI + (PI / 4) * turn;
     const cheer = 1 - sm(20.5, 20.9, t), talk = sm(20.8, 21.2, t) * (1 - sm(25, 25.4, t)), visor = sm(25.8, 26.4, t) * (1 - sm(28.0, 28.5, t)), yay = sm(28.5, 28.9, t);
     E.smile = 0.9; E.blush = 0.7;
     P.hipsY += 0.03 * Math.abs(Math.sin(t * 4.6)) * (cheer + yay) + 0.012 * Math.sin(t * 7) * talk;
@@ -166,8 +166,8 @@ const CAM1 = [
 const CAM2 = [ // ボート基準の相対オフセット [cx,cy,cz, lx,ly,lz]
   [20.0, [4.8, 2.3, -7.5, 0.7, 1.8, 0]],
   [23.0, [2.6, 2.1, -5.0, 0.8, 1.8, 0]],
-  [26.0, [-2.8, 1.9, -5.0, 0.9, 1.8, 0]],
-  [30.0, [-4.5, 2.0, -3.6, 0.8, 1.7, 0]],
+  [26.0, [1.6, 2.0, -4.8, 0.2, 1.8, 0]],
+  [30.0, [3.0, 2.0, -4.0, -0.3, 1.7, 0]],
 ];
 function updateCamera(t) {
   let c;
