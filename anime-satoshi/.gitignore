@@ -1,0 +1,5 @@
+node_modules/
+frames/
+preview/
+render.log
+audio/mix.wav

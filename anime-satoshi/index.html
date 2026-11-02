@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><title>サトシと大海原の大冒険！ 試作</title>
+<style>
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:"IPAGothic","IPAPGothic","Noto Sans CJK JP",sans-serif}
+#stage canvas{position:absolute;left:0;top:0}
+#title{position:absolute;left:70px;top:56px;opacity:0;color:#fff;font-weight:bold;font-size:54px;letter-spacing:3px;
+ -webkit-text-stroke:9px #1c4fa0;paint-order:stroke fill;text-shadow:0 6px 0 rgba(10,40,90,.5);line-height:1.2}
+#title small{display:block;font-size:30px;-webkit-text-stroke:7px #1c4fa0;color:#ffe45c;letter-spacing:6px}
+#sub{position:absolute;left:0;right:0;bottom:62px;text-align:center;opacity:0}
+#sub span{display:inline-block;padding:10px 40px 14px;border-radius:30px;background:rgba(14,40,86,.55);color:#fff;font-weight:bold;font-size:52px;white-space:nowrap;
+ letter-spacing:2px;-webkit-text-stroke:9px #14325f;paint-order:stroke fill}
+#sub b{color:#ffe45c;margin-right:18px;font-size:44px;-webkit-text-stroke:8px #14325f}
+#iris{position:absolute;inset:0;background:#2a86d4;display:none;
+ -webkit-mask-image:radial-gradient(circle at 50% 56%,transparent var(--r),#000 calc(var(--r) + 3px));mask-image:radial-gradient(circle at 50% 56%,transparent var(--r),#000 calc(var(--r) + 3px))}
+#fade{position:absolute;inset:0;background:#000;opacity:0}
+</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<div id="stage"><div id="title">第1話「サトシと大海原の大冒険！」<small>～ はじめての大物！でも船にトラブル！？ ～</small></div>
+<div id="sub"><span><b></b><i style="font-style:normal"></i></span></div><div id="iris"></div><div id="fade"></div></div>
+<script type="module" src="/src/main.js"></script>
+</body></html>
