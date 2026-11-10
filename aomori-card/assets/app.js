@@ -23,13 +23,7 @@
   const FF_JP = '"' + CFG.fonts.jp.family + '", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif';
   const FF_HEAVY = '"Arial Black", Impact, "Helvetica Neue", Arial, sans-serif';
 
-  // 青森県の簡易シルエット(0-100 の座標)
-  const AOMORI = [
-    [20, 10], [27, 6], [32, 16], [31, 28], [36, 38], [46, 42], [56, 40], [60, 34],
-    [56, 22], [58, 10], [68, 4], [78, 8], [86, 6], [88, 16], [80, 22], [74, 32],
-    [80, 46], [90, 58], [86, 72], [72, 86], [54, 92], [34, 86], [22, 72], [14, 58],
-    [12, 42], [14, 28], [16, 18],
-  ];
+  const GEO = window.AomoriGeo; // 青森県の輪郭(assets/geo.js)
 
   /* ================================================================
    * 状態
@@ -223,18 +217,12 @@
     ctx.restore();
   }
 
-  function aomoriPath(ctx, ox, oy, sx, sy) {
-    const p = AOMORI.map(function (q) { return [ox + q[0] * sx, oy + q[1] * sy]; });
-    const n = p.length;
+  /** 青森県の輪郭パス。(ox,oy)=左上、s=拡大率 */
+  function aomoriPath(ctx, ox, oy, s) {
+    const p = GEO.points;
     ctx.beginPath();
-    ctx.moveTo(p[0][0], p[0][1]);
-    for (let i = 0; i < n; i++) {
-      const p0 = p[(i - 1 + n) % n], p1 = p[i], p2 = p[(i + 1) % n], p3 = p[(i + 2) % n];
-      ctx.bezierCurveTo(
-        p1[0] + (p2[0] - p0[0]) / 8, p1[1] + (p2[1] - p0[1]) / 8,
-        p2[0] - (p3[0] - p1[0]) / 8, p2[1] - (p3[1] - p1[1]) / 8,
-        p2[0], p2[1]);
-    }
+    ctx.moveTo(ox + p[0][0] * s, oy + p[0][1] * s);
+    for (let i = 1; i < p.length; i++) ctx.lineTo(ox + p[i][0] * s, oy + p[i][1] * s);
     ctx.closePath();
   }
 
@@ -479,9 +467,21 @@
     rg.addColorStop(0, c.light); rg.addColorStop(1, c.base);
     ctx.beginPath(); ctx.arc(bx, by, bp.r - 11 * k, 0, Math.PI * 2);
     ctx.fillStyle = rg; ctx.fill();
-    aomoriPath(ctx, bx - 103 * k, by - 140 * k, 2.0 * k, 1.8 * k);
+    // 地図(中央やや上)と、選んだ市町村の位置を示す丸印
+    const ms = bp.r * 1.18 / GEO.width;
+    const mx = bx - (GEO.width * ms) / 2;
+    const my = by - bp.r * 0.86;
+    aomoriPath(ctx, mx, my, ms);
     ctx.fillStyle = '#fff';
     ctx.fill();
+    if (state.region && state.region.x != null) {
+      const dx = mx + state.region.x * ms;
+      const dy = my + state.region.y * ms;
+      ctx.beginPath(); ctx.arc(dx, dy, 15 * k, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff'; ctx.fill();
+      ctx.beginPath(); ctx.arc(dx, dy, 10 * k, 0, Math.PI * 2);
+      ctx.fillStyle = '#ff7a00'; ctx.fill();
+    }
     const [l1, l2] = badgeLines();
     ctx.fillStyle = '#fff';
     ctx.textAlign = 'center';
@@ -665,7 +665,8 @@
   }
 
   function updateGenerateButton() {
-    $('btnGenerate').disabled = !state.source || state.busy || namesInvalid();
+    const needRegion = !!$('region') && !state.region;
+    $('btnGenerate').disabled = !state.source || state.busy || namesInvalid() || needRegion;
   }
 
   /* ================================================================
@@ -982,6 +983,7 @@
     if (state.busy) return;
     if (!state.source) { toast('先に写真を入れてね'); return; }
     if (namesInvalid()) { toast('名前はローマ字で入力してね'); return; }
+    if ($('region') && !state.region) { toast('地域(市町村)をえらんでね'); return; }
     state.busy = true;
     updateGenerateButton();
     try {
@@ -1139,7 +1141,8 @@
     });
     sel.addEventListener('change', function () {
       const r = sel.value === '' ? null : CFG.regions[Number(sel.value)];
-      state.region = r ? { ja: r[0], en: r[1], type: r[2] } : null;
+      state.region = r ? { ja: r[0], en: r[1], type: r[2], x: r[3], y: r[4] } : null;
+      updateGenerateButton();
       requestRender();
     });
   }
