@@ -11,8 +11,8 @@ window.AomoriConfig = {
 
   // 書き出し・描画に使う書体(アプリに同梱。端末に依存せず常に同じ見た目)
   fonts: {
-    // 名前: Futura Condensed ExtraBold に近い Big Shoulders Display Black(仮)。斜体はブラウザが自動で付ける
-    name: { family: 'AomoriName', url: 'assets/fonts/BigShouldersDisplay-Black-Latin.woff2', weight: '900', style: 'normal' },
+    // 名前: Helvetica Neue Condensed Black Italic に近い Archivo Black Italic(幅75)(仮)
+    name: { family: 'AomoriName', url: 'assets/fonts/Archivo-BlackItalic-w75-Latin.woff2', weight: '900', style: 'italic' },
     jp: { family: 'AomoriJP', url: 'assets/fonts/NotoSansJP-Medium-subset.woff2', weight: '500', style: 'normal' },
   },
 
@@ -47,10 +47,10 @@ window.AomoriConfig = {
       slogan: { drawn: true, x: 994, top: 175, height: 1100, maxSize: 72, color: '#111111', halo: '#ffffff' },
       // 名前は写真の左下に重ねる(後ろに暗いぼかし影が入る)
       name: {
-        size: 124, weight: 900, spacing: 7,
-        first: { x: 40, y: 1580, maxW: 700 },
-        last: { x: 240, y: 1700, maxW: 640 },
-        single: { x: 40, y: 1690, maxW: 760 },
+        size: 120, weight: 900, spacing: 6,
+        first: { x: 40, y: 1580, maxW: 640 },
+        last: { x: 240, y: 1700, maxW: 450 },
+        single: { x: 40, y: 1690, maxW: 640 },
       },
       headline: '',
       badge: ['AOMORI', 'PREFECTURE'], // 地域を選ばなかったときのバッジ文字
