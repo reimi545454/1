@@ -1107,6 +1107,7 @@
   /* ---- 地域(バッジ) ---- */
   function initRegions() {
     const sel = $('region');
+    if (!sel) return;
     CFG.regions.forEach(function (r, i) {
       const o = document.createElement('option');
       o.value = String(i);
@@ -1156,8 +1157,21 @@
     requestRender();
   }
 
+  /** 画面に出す部品の出し分け(config.ui)と番号の振り直し */
+  function applyUi() {
+    const ui = CFG.ui || {};
+    if (!ui.frameChooser) $('frameBlock').remove();
+    if (!ui.regionSelect) $('regionField').remove();
+    if (!ui.camera) $('btnCamera').remove();
+    if (!ui.modeSwitch) { $('modeBlock').remove(); $('customBlock').remove(); }
+    $('nameTitle').textContent = ui.regionSelect ? 'おなまえと地域' : 'おなまえ';
+    let n = 0;
+    document.querySelectorAll('.step-block[data-step] .num').forEach(function (el) { el.textContent = String(++n); });
+  }
+
   function initCustomMode() {
     const cm = CFG.customMode;
+    if (!$('modeBlock')) return;
     const ranks = L.RANKS.filter(function (r) { return cm.ranks.indexOf(r.id) >= 0; });
     if (!cm.enabled || !ranks.length) {
       $('modeBlock').remove();
@@ -1202,7 +1216,8 @@
 
   // 書体・フレームPNGの読み込みが終わったらプレビューを描き直す
   fontsReady = loadFonts().then(function () { requestRender(); });
-  initFrames();
+  applyUi();
+  if ($('frames')) initFrames();
   initRegions();
   initCustomMode();
   refreshPreviewFrame();

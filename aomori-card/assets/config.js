@@ -17,6 +17,15 @@ window.AomoriConfig = {
 
   defaultFrame: 'fisherman',
 
+  /*
+   * 画面に出す部品。標準は「写真 → 名前 → つくる」の最小構成。
+   *   modeSwitch  : 「ガチャでおまかせ / じぶんで えらぶ」の切替(customMode と併用)
+   *   frameChooser: フレーム選択(複数フレームを出すとき true)
+   *   regionSelect: バッジの市町村選択
+   *   camera      : 「カメラでその場でとる」ボタン
+   */
+  ui: { modeSwitch: false, frameChooser: false, regionSelect: false, camera: true },
+
   frames: {
     /* ---- 漁師カード風(出来上がりイメージの基本) ---- */
     fisherman: {

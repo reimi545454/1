@@ -62,12 +62,12 @@
         <p class="note" id="modeNote"></p>
       </div>
 
-      <div class="step-block">
+      <div class="step-block" id="frameBlock" data-step>
         <h2><span class="num">1</span>フレームをえらぶ</h2>
         <div id="frames" class="chips" role="radiogroup" aria-label="フレーム"></div>
       </div>
 
-      <div class="step-block">
+      <div class="step-block" id="photoBlock" data-step>
         <h2><span class="num">2</span>写真をいれる</h2>
         <button type="button" class="btn-upload" id="btnPick">
           <span class="up-ico" aria-hidden="true">📷</span>
@@ -86,8 +86,8 @@
         <p class="note">ドラッグで位置、ピンチ/スライダーで大きさを調整できるよ。写真はこの端末の中だけで処理されて、サーバーには送信されません。</p>
       </div>
 
-      <div class="step-block">
-        <h2><span class="num">3</span>おなまえと地域</h2>
+      <div class="step-block" id="nameBlock" data-step>
+        <h2><span class="num">3</span><span id="nameTitle">おなまえ</span></h2>
         <div class="name-grid">
           <div>
             <label for="nameLast">苗字 (SURNAME)</label>
@@ -100,7 +100,7 @@
         </div>
         <p class="name-msg" id="nameMsg" aria-live="polite">ローマ字で入力(ひらがなでもOK。自動でローマ字になります)</p>
         <p class="note">カードには金色の文字で「名前 / 苗字」の順に入ります。</p>
-        <div class="slogan-field">
+        <div class="slogan-field" id="regionField">
           <label for="region">地域(右下のバッジに入るよ)</label>
           <select id="region"><option value="">青森県(全体)</option></select>
         </div>
@@ -116,7 +116,7 @@
         <p class="name-msg" id="sloganMsg" aria-live="polite"></p>
       </div>
 
-      <div class="step-block gacha-block">
+      <div class="step-block gacha-block" id="makeBlock" data-step>
         <h2><span class="num">4</span>カードをつくる</h2>
         <button type="button" class="btn-gacha" id="btnGenerate" disabled>
           <svg class="gacha-apple" viewBox="0 0 120 120" aria-hidden="true"><use href="#mark"/></svg>
