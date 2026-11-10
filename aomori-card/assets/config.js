@@ -18,13 +18,12 @@ window.AomoriConfig = {
   defaultFrame: 'fisherman',
 
   /*
-   * 画面に出す部品(全部 false にすると「写真 → 名前 → つくる」だけの最小構成)。
-   *   modeSwitch  : 「ガチャでおまかせ / じぶんで えらぶ」の切替(customMode と併用)
+   * 画面に出す部品。標準は「写真アップロード → 名前 → つくる」のみ(+ カメラ)。
    *   frameChooser: フレーム選択(複数フレームを出すとき true)
    *   regionSelect: バッジの市町村選択
    *   camera      : 「カメラでその場でとる」ボタン
    */
-  ui: { modeSwitch: true, frameChooser: true, regionSelect: true, camera: true },
+  ui: { frameChooser: false, regionSelect: false, camera: true },
 
   // 待ち時間・ロゴのマスコット: 'apple'(りんご) / 'mark'(青森県マーク)
   mascot: 'apple',
@@ -107,13 +106,6 @@ window.AomoriConfig = {
       sloganPreview: 'ひとことは\u3000ガチャで決まる',
     },
   },
-
-  /*
-   * 「じぶんで えらぶ」モード(別枠): ランクと縦文字を自由に指定してガチャなしで作る。
-   *   enabled=false でモード切替ごと非表示。ranks で選べるランクを制限できる
-   *   (ガチャの希少性を守りたい場合は ['N','R'] などに絞る)。
-   */
-  customMode: { enabled: true, ranks: ['N', 'R', 'SR', 'UR', 'SP'], sloganMaxLength: 20 },
 
   // バッジに入れる地域(青森県40市町村)。[日本語, ローマ字, 種別]
   regions: [

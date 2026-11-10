@@ -48,9 +48,6 @@
     source: null, // HTMLCanvasElement (取り込み済みの写真)
     view: { zoom: 1, ox: 0, oy: 0 },
     busy: false,
-    mode: 'gacha', // 'gacha' | 'custom'
-    customRank: null,
-    customSlogan: { text: '', invalid: false },
     resultUrl: null,
     resultBlob: null,
     lastFocus: null,
@@ -153,10 +150,13 @@
     ctx.translate(spec.x, spec.y);
     ctx.scale(k, 1);
     const g = ctx.createLinearGradient(0, -size * 0.72, 0, 0);
-    g.addColorStop(0, '#fff7c9');
-    g.addColorStop(0.38, '#ffd84a');
-    g.addColorStop(0.62, '#e0a010');
-    g.addColorStop(1, '#ffe58a');
+    // 金属らしい金: ハイライト → 明るい金 → 濃い金 → 反射光 の縦グラデーション
+    g.addColorStop(0, '#fffbe3');
+    g.addColorStop(0.2, '#ffe36b');
+    g.addColorStop(0.48, '#f6b800');
+    g.addColorStop(0.62, '#b87800');
+    g.addColorStop(0.8, '#ffd23f');
+    g.addColorStop(1, '#fff1a8');
     ctx.lineJoin = 'round';
     ctx.lineWidth = Math.max(4, size * 0.07);
     ctx.strokeStyle = '#4a2d00';
@@ -582,18 +582,14 @@
 
   function renderPreview() {
     rafId = 0;
-    const custom = state.mode === 'custom';
-    const rank = custom ? state.customRank : L.MYSTERY_RANK;
-    const slogan = custom ? state.customSlogan.text : state.frame.sloganPreview;
-    drawCard(pctx, cardOptions(rank, 1, slogan, previewFrameImg), PREVIEW_SCALE);
+    drawCard(pctx, cardOptions(L.MYSTERY_RANK, 1, state.frame.sloganPreview, previewFrameImg), PREVIEW_SCALE);
   }
 
   /** プレビュー用のフレームPNGを(ランク/モードに合わせて)読み直す */
   let previewToken = 0;
   function refreshPreviewFrame() {
     const token = ++previewToken;
-    const id = state.mode === 'custom' ? state.customRank.id : '?';
-    return loadFrameImage(id).then(function (img) {
+    return loadFrameImage('?').then(function (img) {
       if (token !== previewToken) return;
       previewFrameImg = img;
       requestRender();
@@ -645,8 +641,7 @@
   }
 
   function updateGenerateButton() {
-    $('btnGenerate').disabled = !state.source || state.busy || namesInvalid() ||
-      (state.mode === 'custom' && state.customSlogan.invalid);
+    $('btnGenerate').disabled = !state.source || state.busy || namesInvalid();
   }
 
   /* ================================================================
@@ -936,7 +931,7 @@
     });
   }
 
-  function showResult(blob, rank, custom) {
+  function showResult(blob, rank) {
     if (state.resultUrl) URL.revokeObjectURL(state.resultUrl);
     state.resultBlob = blob;
     state.resultUrl = URL.createObjectURL(blob);
@@ -948,8 +943,7 @@
     label.textContent = '';
     const b = document.createElement('b');
     b.textContent = rank.id;
-    label.append(b, custom ? rank.name + ' のカードができたよ!' : rank.name + ' が出たよ!');
-    $('btnAgain').hidden = !!custom;
+    label.append(b, rank.name + ' が出たよ!');
     const tilt = $('tilt');
     tilt.classList.toggle('foil', rank.foil > 0);
     tilt.style.animation = 'none';
@@ -964,24 +958,15 @@
     if (state.busy) return;
     if (!state.source) { toast('先に写真を入れてね'); return; }
     if (namesInvalid()) { toast('名前はローマ字で入力してね'); return; }
-    const custom = state.mode === 'custom';
-    if (custom && state.customSlogan.invalid) { toast('ひとことに使えない文字が入っています'); return; }
     state.busy = true;
     updateGenerateButton();
     try {
       const seed = Math.floor(secureRandom() * 1e9) + 1;
-      if (custom) {
-        // 別枠: ランクも縦文字も本人が指定(ガチャ演出なし)
-        const rank = state.customRank;
-        const blob = await renderFinal(rank, seed, state.customSlogan.text);
-        showResult(blob, rank, true);
-      } else {
-        const rank = L.pickRank(secureRandom);
-        const slogan = L.pickFrom(secureRandom, state.frame.slogans[rank.id]);
-        const rendering = renderFinal(rank, seed, slogan);
-        await playGacha(rank);
-        showResult(await rendering, rank, false);
-      }
+      const rank = L.pickRank(secureRandom);
+      const slogan = L.pickFrom(secureRandom, state.frame.slogans[rank.id]);
+      const rendering = renderFinal(rank, seed, slogan);
+      await playGacha(rank);
+      showResult(await rendering, rank);
     } catch (e) {
       setModal(false, $('gacha'));
       toast('カードの生成に失敗しました。もう一度ためしてね');
@@ -1055,13 +1040,6 @@
   /* ================================================================
    * 初期化 & スプラッシュ
    * ================================================================ */
-  function initRates() {
-    const total = L.RANKS.reduce(function (s, r) { return s + r.weight; }, 0);
-    $('rates').textContent = '排出率: ' + L.RANKS.slice().reverse().map(function (r) {
-      return r.id + ' ' + Math.round((r.weight / total) * 100) + '%';
-    }).join(' / ');
-  }
-
   function initSplash() {
     const splash = $('splash');
     const apple = splash.querySelector('.splash-apple');
@@ -1143,94 +1121,20 @@
   }
 
   /* ---- つくりかた(ガチャ / じぶんで えらぶ) ---- */
-  const SLOGAN_NG = /[\p{Extended_Pictographic}\p{Cc}\u200d\ufe0f]/u;
-
-  function onSloganInput() {
-    const max = CFG.customMode.sloganMaxLength;
-    const raw = $('customSlogan').value.normalize('NFC').replace(/\s+/g, '\u3000').replace(/^\u3000+|\u3000+$/g, '');
-    const chars = Array.from(raw);
-    const msg = $('sloganMsg');
-    const bad = SLOGAN_NG.test(raw);
-    const over = chars.length > max;
-    state.customSlogan = { text: chars.slice(0, max).join(''), invalid: bad };
-    msg.classList.toggle('error', bad || over);
-    msg.textContent = bad ? '絵文字や記号の一部は使えません'
-      : over ? max + '文字までです(超えた分は入りません)'
-      : chars.length + ' / ' + max + ' 文字(縦書きで入ります)';
-    updateGenerateButton();
-    requestRender();
-  }
-
-  function setMode(mode) {
-    state.mode = mode;
-    document.querySelectorAll('#modes .chip').forEach(function (b) {
-      b.setAttribute('aria-checked', String(b.dataset.mode === mode));
-    });
-    const custom = mode === 'custom';
-    $('customBlock').hidden = !custom;
-    $('rates').hidden = custom;
-    $('modeNote').textContent = custom
-      ? 'ランクとひとことを自分で決めて、ガチャなしで作れます。'
-      : 'ランクとひとことはガチャで決まるよ! 写真と名前だけ入れてね。';
-    $('btnGenerate').querySelector('.gacha-label').textContent = custom ? 'このカードをつくる!' : 'ガチャッとカードをつくる!';
-    updateGenerateButton();
-    refreshPreviewFrame();
-    requestRender();
-  }
-
   /** 画面に出す部品の出し分け(config.ui)と番号の振り直し */
   function applyUi() {
     const ui = CFG.ui || {};
     if (!ui.frameChooser) $('frameBlock').remove();
     if (!ui.regionSelect) $('regionField').remove();
     if (!ui.camera) $('btnCamera').remove();
-    if (!ui.modeSwitch) { $('modeBlock').remove(); $('customBlock').remove(); }
     $('nameTitle').textContent = ui.regionSelect ? 'おなまえと地域' : 'おなまえ';
     let n = 0;
     document.querySelectorAll('.step-block[data-step] .num').forEach(function (el) { el.textContent = String(++n); });
   }
 
-  function initCustomMode() {
-    const cm = CFG.customMode;
-    if (!$('modeBlock')) return;
-    const ranks = L.RANKS.filter(function (r) { return cm.ranks.indexOf(r.id) >= 0; });
-    if (!cm.enabled || !ranks.length) {
-      $('modeBlock').remove();
-      $('customBlock').remove();
-      return;
-    }
-    state.customRank = ranks[0];
-    const box = $('customRanks');
-    ranks.forEach(function (r, i) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'chip';
-      b.setAttribute('role', 'radio');
-      b.setAttribute('aria-checked', String(i === 0));
-      b.dataset.rank = r.id;
-      const id = document.createElement('b');
-      id.textContent = r.id;
-      b.append(id, ' ' + r.name);
-      b.addEventListener('click', function () {
-        state.customRank = r;
-        box.querySelectorAll('.chip').forEach(function (x) { x.setAttribute('aria-checked', String(x === b)); });
-        refreshPreviewFrame();
-        requestRender();
-      });
-      box.appendChild(b);
-    });
-    document.querySelectorAll('#modes .chip').forEach(function (b) {
-      b.addEventListener('click', function () { setMode(b.dataset.mode); });
-    });
-    $('customSlogan').addEventListener('input', onSloganInput);
-    onSloganInput();
-    setMode('gacha');
-  }
-
   $('nameLast').addEventListener('input', onNameInput);
   $('nameFirst').addEventListener('input', onNameInput);
 
-  initRates();
   updateHint();
   renderPreview();
   initSplash();
@@ -1248,7 +1152,6 @@
   applyUi();
   if ($('frames')) initFrames();
   initRegions();
-  initCustomMode();
   refreshPreviewFrame();
 
   // テスト・デバッグ用に最小限を公開
