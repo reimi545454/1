@@ -8,30 +8,25 @@
   <meta name="description" content="写真をアップするだけで、青森を盛り上げる人のカードが生成できるWebアプリ。ランダムでレア度が決まるガチャ形式。">
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
-  <link rel="icon" href="assets/apple.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 
-<!-- りんごのパーツ(各所で <use> 再利用) -->
+<!-- 青森県マーク(各所で <use> 再利用。公式ロゴに差し替えるなら assets/mark.svg とここを入れ替え) -->
 <svg width="0" height="0" class="sr-only" aria-hidden="true" focusable="false">
-  <symbol id="apple" viewBox="0 0 120 120">
-    <path d="M60 34C48 24 24 26 20 52C16 78 34 104 50 104C56 104 58 101 60 101C62 101 64 104 70 104C86 104 104 78 100 52C96 26 72 24 60 34Z" fill="#e8384f"/>
-    <path d="M60 34C60 27 62 19 68 12" fill="none" stroke="#7a4a2b" stroke-width="5" stroke-linecap="round"/>
-    <path d="M64 24C69 9 88 8 95 14C89 27 75 30 64 24Z" fill="#4caf6a"/>
-    <path d="M30 50C32 40 38 36 44 35" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="5" stroke-linecap="round"/>
-    <circle cx="46" cy="64" r="4.2" fill="#3b1d1d"/>
-    <circle cx="74" cy="64" r="4.2" fill="#3b1d1d"/>
-    <ellipse cx="38" cy="73" rx="7" ry="4.5" fill="#ff9fb0"/>
-    <ellipse cx="82" cy="73" rx="7" ry="4.5" fill="#ff9fb0"/>
-    <path d="M53 74Q60 82 67 74" fill="none" stroke="#3b1d1d" stroke-width="3.2" stroke-linecap="round"/>
+  <symbol id="mark" viewBox="0 0 120 120">
+    <circle cx="60" cy="60" r="59" fill="#0f5fb0"/>
+  <circle cx="60" cy="60" r="55" fill="#fff"/>
+  <circle cx="60" cy="60" r="51" fill="#1e88e5"/>
+  <path d="M37.7 32.6C38.7 31.6 41.6 29.2 42.7 29.8C43.8 30.3 46.0 35.0 46.3 37.0C46.7 38.9 45.2 43.6 45.6 45.6C46.0 47.6 47.9 51.5 49.2 52.8C50.6 54.1 54.6 55.5 56.4 55.7C58.2 55.9 62.3 55.0 63.6 54.2C64.9 53.5 66.5 51.5 66.5 49.9C66.5 48.3 63.8 43.4 63.6 41.3C63.4 39.1 64.0 34.3 65.0 32.6C66.1 31.0 70.4 28.5 72.2 28.3C74.0 28.1 77.8 31.0 79.4 31.2C81.1 31.4 84.3 29.0 85.2 29.8C86.1 30.5 87.2 35.5 86.6 37.0C86.1 38.4 82.1 39.8 80.9 41.3C79.6 42.7 76.6 46.3 76.6 48.5C76.6 50.6 79.4 56.2 80.9 58.6C82.3 60.9 87.5 64.9 88.1 67.2C88.6 69.5 86.8 74.8 85.2 77.3C83.6 79.8 78.0 85.6 75.1 87.4C72.2 89.2 65.6 91.7 62.2 91.7C58.7 91.7 50.6 89.2 47.8 87.4C44.9 85.6 40.9 79.8 39.1 77.3C37.3 74.8 34.3 69.9 33.4 67.2C32.5 64.5 31.9 58.4 31.9 55.7C31.9 53.0 33.0 47.8 33.4 45.6C33.7 43.4 34.3 40.0 34.8 38.4C35.3 36.8 36.7 33.7 37.7 32.6Z" fill="#fff"/>
   </symbol>
 </svg>
 
 <!-- オープニング: くるくるりんご → ぐわっと広がって本編へ -->
 <div id="splash" role="status" aria-label="読み込み中">
   <div class="splash-stage">
-    <svg class="splash-apple" viewBox="0 0 120 120" aria-hidden="true"><use href="#apple"/></svg>
+    <svg class="splash-apple" viewBox="0 0 120 120" aria-hidden="true"><use href="#mark"/></svg>
   </div>
   <p class="splash-title">あおもり カードメーカー</p>
   <button type="button" class="splash-skip" id="splashSkip">スキップ</button>
@@ -39,7 +34,7 @@
 
 <div id="app">
   <header class="top">
-    <svg class="logo" viewBox="0 0 120 120" aria-hidden="true"><use href="#apple"/></svg>
+    <svg class="logo" viewBox="0 0 120 120" aria-hidden="true"><use href="#mark"/></svg>
     <div>
       <h1>あおもりカードメーカー</h1>
       <p class="sub">写真1枚で、あなたも青森のカードに。</p>
@@ -124,7 +119,7 @@
       <div class="step-block gacha-block">
         <h2><span class="num">4</span>カードをつくる</h2>
         <button type="button" class="btn-gacha" id="btnGenerate" disabled>
-          <svg class="gacha-apple" viewBox="0 0 120 120" aria-hidden="true"><use href="#apple"/></svg>
+          <svg class="gacha-apple" viewBox="0 0 120 120" aria-hidden="true"><use href="#mark"/></svg>
           <span class="gacha-label">ガチャッとカードをつくる!</span>
         </button>
         <p class="note" id="rates"></p>
@@ -155,7 +150,7 @@
 <!-- ガチャ演出 -->
 <div id="gacha" class="overlay gacha" aria-live="assertive" hidden>
   <div class="gacha-center">
-    <svg class="capsule" viewBox="0 0 120 120" aria-hidden="true"><use href="#apple"/></svg>
+    <svg class="capsule" viewBox="0 0 120 120" aria-hidden="true"><use href="#mark"/></svg>
     <p class="gacha-text" id="gachaText">ガチャッ…</p>
     <p class="gacha-rank" id="gachaRank"></p>
   </div>
