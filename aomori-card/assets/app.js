@@ -23,6 +23,13 @@
   const FF_JP = '"' + CFG.fonts.jp.family + '", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif';
   const FF_HEAVY = '"Arial Black", Impact, "Helvetica Neue", Arial, sans-serif';
 
+  // りんご(写真プレースホルダ用。index.html の symbol と同じ形)
+  const APPLE = {
+    body: new Path2D('M60 34C48 24 24 26 20 52C16 78 34 104 50 104C56 104 58 101 60 101C62 101 64 104 70 104C86 104 104 78 100 52C96 26 72 24 60 34Z'),
+    stem: new Path2D('M60 34C60 27 62 19 68 12'),
+    leaf: new Path2D('M64 24C69 9 88 8 95 14C89 27 75 30 64 24Z'),
+  };
+
   // 青森県の簡易シルエット(0-100 の座標)
   const AOMORI = [
     [20, 10], [27, 6], [32, 16], [31, 28], [36, 38], [46, 42], [56, 40], [60, 34],
@@ -252,6 +259,19 @@
     ctx.fillRect(PHOTO.x, PHOTO.y, PHOTO.w, PHOTO.h);
     const cx = PHOTO.x + PHOTO.w / 2;
     const py = PHOTO.y + PHOTO.h * 0.38;
+    if (CFG.mascot === 'apple') {
+      ctx.save();
+      ctx.translate(cx - 170, py - 170);
+      ctx.scale(340 / 120, 340 / 120);
+      ctx.fillStyle = '#e8384f'; ctx.fill(APPLE.body);
+      ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.strokeStyle = '#7a4a2b'; ctx.stroke(APPLE.stem);
+      ctx.fillStyle = '#4caf6a'; ctx.fill(APPLE.leaf);
+      ctx.fillStyle = '#3b1d1d';
+      ctx.beginPath(); ctx.arc(46, 64, 4.2, 0, Math.PI * 2); ctx.arc(74, 64, 4.2, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#3b1d1d'; ctx.lineWidth = 3.2;
+      ctx.beginPath(); ctx.moveTo(53, 74); ctx.quadraticCurveTo(60, 82, 67, 74); ctx.stroke();
+      ctx.restore();
+    } else {
     // 青森県マーク(仮の待機表示)
     ctx.beginPath(); ctx.arc(cx, py, 170, 0, Math.PI * 2);
     ctx.fillStyle = '#0f5fb0'; ctx.fill();
@@ -261,6 +281,7 @@
     ctx.fillStyle = '#1e88e5'; ctx.fill();
     aomoriPath(ctx, cx - 128, py - 130, 2.5, 2.5);
     ctx.fillStyle = '#fff'; ctx.fill();
+    }
     ctx.fillStyle = '#1e5f9f';
     ctx.textAlign = 'center';
     ctx.font = '900 58px ' + FF_JP;
@@ -1216,6 +1237,14 @@
 
   // 書体・フレームPNGの読み込みが終わったらプレビューを描き直す
   fontsReady = loadFonts().then(function () { requestRender(); });
+  // マスコット(りんご / 青森県マーク)の反映
+  (function applyMascot() {
+    const m = CFG.mascot === 'mark' ? 'mark' : 'apple';
+    document.documentElement.dataset.mascot = m;
+    document.querySelectorAll('use[data-mascot]').forEach(function (u) { u.setAttribute('href', '#' + m); });
+    const fav = $('favicon');
+    if (fav) fav.href = 'assets/' + m + '.svg';
+  })();
   applyUi();
   if ($('frames')) initFrames();
   initRegions();

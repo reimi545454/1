@@ -289,3 +289,12 @@ button:disabled { cursor: not-allowed; }
   font: inherit; font-size: 1rem; background: #fffdf9; color: var(--ink);
 }
 .slogan-field select:focus { border-color: var(--sky); outline: none; box-shadow: 0 0 0 3px rgba(30, 136, 229, .2); }
+
+/* ---------- マスコットがりんごのときの配色(赤系・ピンクの背景) ---------- */
+[data-mascot="apple"] .splash-apple { filter: drop-shadow(0 10px 8px rgba(184, 34, 55, .25)); }
+[data-mascot="apple"] .splash-title,
+[data-mascot="apple"] .top h1,
+[data-mascot="apple"] .gacha-text { color: var(--apple-dark); }
+[data-mascot="apple"] .gacha { background: radial-gradient(circle at 50% 45%, #fff3c4, #ffd2d8 55%, #ffb3c0); }
+[data-mascot="apple"] .capsule { filter: drop-shadow(0 14px 10px rgba(184, 34, 55, .3)); }
+[data-mascot="apple"] .gacha-rank { text-shadow: 0 4px 0 rgba(0, 0, 0, .25), 0 0 24px rgba(255, 255, 255, .9); }

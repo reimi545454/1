@@ -18,13 +18,16 @@ window.AomoriConfig = {
   defaultFrame: 'fisherman',
 
   /*
-   * 画面に出す部品。標準は「写真 → 名前 → つくる」の最小構成。
+   * 画面に出す部品(全部 false にすると「写真 → 名前 → つくる」だけの最小構成)。
    *   modeSwitch  : 「ガチャでおまかせ / じぶんで えらぶ」の切替(customMode と併用)
    *   frameChooser: フレーム選択(複数フレームを出すとき true)
    *   regionSelect: バッジの市町村選択
    *   camera      : 「カメラでその場でとる」ボタン
    */
-  ui: { modeSwitch: false, frameChooser: false, regionSelect: false, camera: true },
+  ui: { modeSwitch: true, frameChooser: true, regionSelect: true, camera: true },
+
+  // 待ち時間・ロゴのマスコット: 'apple'(りんご) / 'mark'(青森県マーク)
+  mascot: 'apple',
 
   frames: {
     /* ---- 漁師カード風(出来上がりイメージの基本) ---- */

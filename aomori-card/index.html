@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja">
+<html lang="ja" data-mascot="apple">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -8,13 +8,24 @@
   <meta name="description" content="写真をアップするだけで、青森を盛り上げる人のカードが生成できるWebアプリ。ランダムでレア度が決まるガチャ形式。">
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
-  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/apple.svg" type="image/svg+xml" id="favicon">
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 
 <!-- 青森県マーク(各所で <use> 再利用。公式ロゴに差し替えるなら assets/mark.svg とここを入れ替え) -->
 <svg width="0" height="0" class="sr-only" aria-hidden="true" focusable="false">
+  <symbol id="apple" viewBox="0 0 120 120">
+    <path d="M60 34C48 24 24 26 20 52C16 78 34 104 50 104C56 104 58 101 60 101C62 101 64 104 70 104C86 104 104 78 100 52C96 26 72 24 60 34Z" fill="#e8384f"/>
+  <path d="M60 34C60 27 62 19 68 12" fill="none" stroke="#7a4a2b" stroke-width="5" stroke-linecap="round"/>
+  <path d="M64 24C69 9 88 8 95 14C89 27 75 30 64 24Z" fill="#4caf6a"/>
+  <path d="M30 50C32 40 38 36 44 35" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="46" cy="64" r="4.2" fill="#3b1d1d"/>
+  <circle cx="74" cy="64" r="4.2" fill="#3b1d1d"/>
+  <ellipse cx="38" cy="73" rx="7" ry="4.5" fill="#ff9fb0"/>
+  <ellipse cx="82" cy="73" rx="7" ry="4.5" fill="#ff9fb0"/>
+  <path d="M53 74Q60 82 67 74" fill="none" stroke="#3b1d1d" stroke-width="3.2" stroke-linecap="round"/>
+  </symbol>
   <symbol id="mark" viewBox="0 0 120 120">
     <circle cx="60" cy="60" r="59" fill="#0f5fb0"/>
   <circle cx="60" cy="60" r="55" fill="#fff"/>
@@ -26,7 +37,7 @@
 <!-- オープニング: くるくるりんご → ぐわっと広がって本編へ -->
 <div id="splash" role="status" aria-label="読み込み中">
   <div class="splash-stage">
-    <svg class="splash-apple" viewBox="0 0 120 120" aria-hidden="true"><use href="#mark"/></svg>
+    <svg class="splash-apple" viewBox="0 0 120 120" aria-hidden="true"><use href="#mark" data-mascot/></svg>
   </div>
   <p class="splash-title">あおもり カードメーカー</p>
   <button type="button" class="splash-skip" id="splashSkip">スキップ</button>
@@ -34,7 +45,7 @@
 
 <div id="app">
   <header class="top">
-    <svg class="logo" viewBox="0 0 120 120" aria-hidden="true"><use href="#mark"/></svg>
+    <svg class="logo" viewBox="0 0 120 120" aria-hidden="true"><use href="#mark" data-mascot/></svg>
     <div>
       <h1>あおもりカードメーカー</h1>
       <p class="sub">写真1枚で、あなたも青森のカードに。</p>
@@ -119,7 +130,7 @@
       <div class="step-block gacha-block" id="makeBlock" data-step>
         <h2><span class="num">4</span>カードをつくる</h2>
         <button type="button" class="btn-gacha" id="btnGenerate" disabled>
-          <svg class="gacha-apple" viewBox="0 0 120 120" aria-hidden="true"><use href="#mark"/></svg>
+          <svg class="gacha-apple" viewBox="0 0 120 120" aria-hidden="true"><use href="#mark" data-mascot/></svg>
           <span class="gacha-label">ガチャッとカードをつくる!</span>
         </button>
         <p class="note" id="rates"></p>
@@ -150,7 +161,7 @@
 <!-- ガチャ演出 -->
 <div id="gacha" class="overlay gacha" aria-live="assertive" hidden>
   <div class="gacha-center">
-    <svg class="capsule" viewBox="0 0 120 120" aria-hidden="true"><use href="#mark"/></svg>
+    <svg class="capsule" viewBox="0 0 120 120" aria-hidden="true"><use href="#mark" data-mascot/></svg>
     <p class="gacha-text" id="gachaText">ガチャッ…</p>
     <p class="gacha-rank" id="gachaRank"></p>
   </div>
