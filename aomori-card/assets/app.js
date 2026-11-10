@@ -23,13 +23,6 @@
   const FF_JP = '"' + CFG.fonts.jp.family + '", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif';
   const FF_HEAVY = '"Arial Black", Impact, "Helvetica Neue", Arial, sans-serif';
 
-  // りんご(写真プレースホルダ用。index.html の symbol と同じ形)
-  const APPLE = {
-    body: new Path2D('M60 34C48 24 24 26 20 52C16 78 34 104 50 104C56 104 58 101 60 101C62 101 64 104 70 104C86 104 104 78 100 52C96 26 72 24 60 34Z'),
-    stem: new Path2D('M60 34C60 27 62 19 68 12'),
-    leaf: new Path2D('M64 24C69 9 88 8 95 14C89 27 75 30 64 24Z'),
-  };
-
   // 青森県の簡易シルエット(0-100 の座標)
   const AOMORI = [
     [20, 10], [27, 6], [32, 16], [31, 28], [36, 38], [46, 42], [56, 40], [60, 34],
@@ -258,37 +251,42 @@
     ctx.fillStyle = g;
     ctx.fillRect(PHOTO.x, PHOTO.y, PHOTO.w, PHOTO.h);
     const cx = PHOTO.x + PHOTO.w / 2;
-    const py = PHOTO.y + PHOTO.h * 0.38;
-    if (CFG.mascot === 'apple') {
-      ctx.save();
-      ctx.translate(cx - 170, py - 170);
-      ctx.scale(340 / 120, 340 / 120);
-      ctx.fillStyle = '#e8384f'; ctx.fill(APPLE.body);
-      ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.strokeStyle = '#7a4a2b'; ctx.stroke(APPLE.stem);
-      ctx.fillStyle = '#4caf6a'; ctx.fill(APPLE.leaf);
-      ctx.fillStyle = '#3b1d1d';
-      ctx.beginPath(); ctx.arc(46, 64, 4.2, 0, Math.PI * 2); ctx.arc(74, 64, 4.2, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = '#3b1d1d'; ctx.lineWidth = 3.2;
-      ctx.beginPath(); ctx.moveTo(53, 74); ctx.quadraticCurveTo(60, 82, 67, 74); ctx.stroke();
-      ctx.restore();
-    } else {
-    // 青森県マーク(仮の待機表示)
-    ctx.beginPath(); ctx.arc(cx, py, 170, 0, Math.PI * 2);
-    ctx.fillStyle = '#0f5fb0'; ctx.fill();
-    ctx.beginPath(); ctx.arc(cx, py, 160, 0, Math.PI * 2);
-    ctx.fillStyle = '#fff'; ctx.fill();
-    ctx.beginPath(); ctx.arc(cx, py, 148, 0, Math.PI * 2);
-    ctx.fillStyle = '#1e88e5'; ctx.fill();
-    aomoriPath(ctx, cx - 128, py - 130, 2.5, 2.5);
-    ctx.fillStyle = '#fff'; ctx.fill();
-    }
+    // 写真が入るまでの仮表示: 「犯人の影」風の真っ黒な人影(白い目とニヤリ口)
+    const figH = PHOTO.h * 0.55;
+    const k = figH / 400;
+    const top = PHOTO.y + PHOTO.h * 0.09;
+    ctx.save();
+    ctx.translate(cx, top);
+    ctx.scale(k, k);
+    ctx.fillStyle = 'rgba(0,40,90,.18)';
+    ctx.beginPath(); ctx.ellipse(0, 346, 78, 13, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#0b0b10'; ctx.strokeStyle = '#0b0b10';
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.ellipse(0, 40, 30, 34, 0, 0, Math.PI * 2); ctx.fill();          // 頭
+    ctx.fillRect(-9, 66, 18, 16);                                                         // 首
+    ctx.beginPath(); ctx.moveTo(-46, 94); ctx.quadraticCurveTo(0, 74, 46, 94);            // 胴体
+    ctx.lineTo(52, 204); ctx.lineTo(-52, 204); ctx.closePath(); ctx.fill();
+    ctx.lineWidth = 20;                                                                   // 腕
+    ctx.beginPath(); ctx.moveTo(-42, 106); ctx.lineTo(-64, 196); ctx.moveTo(42, 106); ctx.lineTo(64, 196); ctx.stroke();
+    ctx.beginPath(); ctx.arc(-65, 204, 12, 0, Math.PI * 2); ctx.arc(65, 204, 12, 0, Math.PI * 2); ctx.fill();
+    ctx.lineWidth = 30;                                                                   // 脚
+    ctx.beginPath(); ctx.moveTo(-20, 198); ctx.lineTo(-24, 330); ctx.moveTo(20, 198); ctx.lineTo(24, 330); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(-28, 340, 24, 9, 0, 0, Math.PI * 2); ctx.ellipse(28, 340, 24, 9, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff';                                                               // 目と口
+    ctx.shadowColor = 'rgba(255,255,255,.9)';
+    ctx.shadowBlur = 10;
+    ctx.beginPath(); ctx.ellipse(-12, 36, 9, 4.8, -0.35, 0, Math.PI * 2); ctx.ellipse(12, 36, 9, 4.8, 0.35, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.beginPath(); ctx.moveTo(-18, 52); ctx.quadraticCurveTo(0, 76, 18, 52); ctx.quadraticCurveTo(0, 61, -18, 52); ctx.fill();
+    ctx.restore();
+    const ty = top + figH + 100;
     ctx.fillStyle = '#1e5f9f';
     ctx.textAlign = 'center';
     ctx.font = '700 58px ' + FF_JP;
-    ctx.fillText('ここに写真が入るよ', cx, py + 320);
+    ctx.fillText('ここに写真が入るよ', cx, ty);
     ctx.font = '700 40px ' + FF_JP;
     ctx.fillStyle = '#4a82b8';
-    ctx.fillText('タップして写真をえらぶ', cx, py + 396);
+    ctx.fillText('タップして写真をえらぶ', cx, ty + 76);
     ctx.textAlign = 'left';
   }
 
@@ -407,7 +405,8 @@
   function drawFisherFrame(ctx, o) {
     const rank = o.rank;
     fillPhotoWindow(ctx, o);
-    // 名前を読みやすくする左下の暗い影
+    // 名前を読みやすくする左下の暗い影(名前があるときだけ)
+    if (o.names.first || o.names.last) {
     ctx.save();
     polyPath(ctx, state.frame.photo.polygon);
     ctx.clip();
@@ -420,6 +419,7 @@
     ctx.fillStyle = sh;
     ctx.fillRect(-400, -520, 1400, 560);
     ctx.restore();
+    }
     // 上部の波飾り
     drawWave(ctx, 380, 1076, 92, 7, 70, 5, 'rgba(255,255,255,.92)');
     drawWave(ctx, 380, 1076, 106, 7, 70, 3, 'rgba(190,235,255,.8)');
