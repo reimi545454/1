@@ -978,7 +978,6 @@
     tilt.style.animation = 'none';
     void tilt.offsetWidth;
     tilt.style.animation = '';
-    $('btnShare').hidden = !canShareFiles();
     setModal(false, $('gacha'));
     setModal(true, $('result'), $('btnSave'));
   }
@@ -1025,7 +1024,7 @@
   $('btnGenerate').addEventListener('click', generate);
   $('btnAgain').addEventListener('click', function () { closeResult(); generate(); });
   $('btnBack').addEventListener('click', closeResult);
-  $('btnSave').addEventListener('click', function () {
+  function saveResult() {
     if (!state.resultUrl) return;
     const a = document.createElement('a');
     a.href = state.resultUrl;
@@ -1033,16 +1032,32 @@
     document.body.appendChild(a);
     a.click();
     a.remove();
+  }
+  $('btnSave').addEventListener('click', function () {
+    if (!state.resultUrl) return;
+    saveResult();
     toast('保存しました(うまくいかないときは画像を長押ししてね)');
   });
+  // シェア: 画像ごと共有できる端末はそのまま共有。できない端末は、保存してSNSへの投稿を案内する
   $('btnShare').addEventListener('click', async function () {
     if (!state.resultBlob) return;
+    const text = '#あおもりカードメーカー';
     try {
-      const file = new File([state.resultBlob], fileName(), { type: 'image/png' });
-      await navigator.share({ files: [file], title: 'あおもりカード', text: '#あおもりカードメーカー' });
+      if (canShareFiles()) {
+        const file = new File([state.resultBlob], fileName(), { type: 'image/png' });
+        await navigator.share({ files: [file], title: 'あおもりカード', text: text });
+        return;
+      }
+      if (navigator.share) {
+        await navigator.share({ title: 'あおもりカードメーカー', text: text, url: location.href });
+        toast('カード画像は「保存する」から保存して、投稿に添付してね');
+        return;
+      }
     } catch (e) {
-      if (e && e.name !== 'AbortError') toast('シェアできませんでした。保存してから投稿してね');
+      if (e && e.name === 'AbortError') return;
     }
+    saveResult();
+    toast('画像を保存しました。SNSに投稿してね');
   });
 
   (function setupTilt() {
