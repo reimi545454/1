@@ -1187,14 +1187,6 @@
 
   // 書体・フレームPNGの読み込みが終わったらプレビューを描き直す
   fontsReady = loadFonts().then(function () { requestRender(); });
-  // マスコット(りんご / 青森県マーク)の反映
-  (function applyMascot() {
-    const m = CFG.mascot === 'mark' ? 'mark' : 'apple';
-    document.documentElement.dataset.mascot = m;
-    document.querySelectorAll('use[data-mascot]').forEach(function (u) { u.setAttribute('href', '#' + m); });
-    const fav = $('favicon');
-    if (fav) fav.href = 'assets/' + m + '.svg';
-  })();
   applyUi();
   if ($('frames')) initFrames();
   initRegions();

@@ -26,8 +26,6 @@ window.AomoriConfig = {
    */
   ui: { frameChooser: false, regionSelect: true, camera: true },
 
-  // 待ち時間・ロゴのマスコット: 'apple'(りんご) / 'mark'(青森県マーク)
-  mascot: 'apple',
 
   // 名前が未入力のときにプレビューへ薄く出す見本(first=名前 / last=苗字)
   sampleName: { first: 'TARO', last: 'AOMORI' },
