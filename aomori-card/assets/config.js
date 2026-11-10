@@ -112,22 +112,22 @@ window.AomoriConfig = {
     },
   },
 
-  // バッジに入れる地域(青森県40市町村)。[日本語, ローマ字, 種別, 地図上のx, y(assets/geo.js の座標系)]
+  // バッジに入れる地域(青森県40市町村)。[日本語, ローマ字, 種別, 地図上のx, y(assets/geo.js の座標系。市町村の地図のラベル位置から算出)]
   regions: [
-    ['青森市', 'AOMORI', 'CITY', 48.4, 52.4], ['弘前市', 'HIROSAKI', 'CITY', 33.3, 68.4], ['八戸市', 'HACHINOHE', 'CITY', 89.4, 75.0],
-    ['黒石市', 'KUROISHI', 'CITY', 40.3, 65.5], ['五所川原市', 'GOSHOGAWARA', 'CITY', 32.0, 53.6], ['十和田市', 'TOWADA', 'CITY', 74.0, 67.7],
-    ['三沢市', 'MISAWA', 'CITY', 82.8, 62.6], ['むつ市', 'MUTSU', 'CITY', 72.8, 18.4], ['つがる市', 'TSUGARU', 'CITY', 28.7, 53.6],
-    ['平川市', 'HIRAKAWA', 'CITY', 38.9, 68.1],
-    ['平内町', 'HIRANAI', 'TOWN', 61.6, 45.4], ['今別町', 'IMABETSU', 'TOWN', 34.2, 26.6], ['蓬田村', 'YOMOGITA', 'VILLAGE', 42.9, 44.0],
-    ['外ヶ浜町', 'SOTOGAHAMA', 'TOWN', 42.9, 36.0], ['鰺ヶ沢町', 'AJIGASAWA', 'TOWN', 18.8, 55.6], ['深浦町', 'FUKAURA', 'TOWN', 4.0, 65.0],
-    ['西目屋村', 'NISHIMEYA', 'VILLAGE', 23.7, 75.2], ['藤崎町', 'FUJISAKI', 'TOWN', 35.3, 64.3], ['大鰐町', 'OWANI', 'TOWN', 39.1, 75.2],
-    ['田舎館村', 'INAKADATE', 'VILLAGE', 38.5, 69.0], ['板柳町', 'ITAYANAGI', 'TOWN', 32.5, 61.4], ['鶴田町', 'TSURUTA', 'TOWN', 32.5, 59.2],
-    ['中泊町', 'NAKADOMARI', 'TOWN', 30.9, 39.6], ['野辺地町', 'NOHEJI', 'TOWN', 69.8, 49.1], ['七戸町', 'SHICHINOHE', 'TOWN', 69.8, 61.4],
-    ['六戸町', 'ROKUNOHE', 'TOWN', 80.2, 65.7], ['横浜町', 'YOKOHAMA', 'TOWN', 78.0, 36.0], ['東北町', 'TOHOKU', 'TOWN', 73.6, 54.1],
-    ['六ヶ所村', 'ROKKASHO', 'VILLAGE', 83.0, 41.8], ['おいらせ町', 'OIRASE', 'TOWN', 85.7, 70.8], ['大間町', 'OMA', 'TOWN', 57.7, 1.9],
-    ['東通村', 'HIGASHIDORI', 'VILLAGE', 81.9, 25.1], ['風間浦村', 'KAZAMAURA', 'VILLAGE', 60.5, 2.7], ['佐井村', 'SAI', 'VILLAGE', 55.0, 10.6],
-    ['三戸町', 'SANNOHE', 'TOWN', 76.4, 84.6], ['五戸町', 'GONOHE', 'TOWN', 80.2, 77.3], ['田子町', 'TAKKO', 'TOWN', 70.9, 86.8],
-    ['南部町', 'NANBU', 'TOWN', 80.2, 80.2], ['階上町', 'HASHIKAMI', 'TOWN', 97.8, 79.5], ['新郷村', 'SHINGO', 'VILLAGE', 68.2, 83.1],
+    ['青森市', 'AOMORI', 'CITY', 48.3, 57.4], ['弘前市', 'HIROSAKI', 'CITY', 29.5, 67.3], ['八戸市', 'HACHINOHE', 'CITY', 88.7, 76.8],
+    ['黒石市', 'KUROISHI', 'CITY', 46.7, 67.6], ['五所川原市', 'GOSHOGAWARA', 'CITY', 33.9, 49.9], ['十和田市', 'TOWADA', 'CITY', 66.6, 71.0],
+    ['三沢市', 'MISAWA', 'CITY', 83.6, 61.4], ['むつ市', 'MUTSU', 'CITY', 63.6, 17.6], ['つがる市', 'TSUGARU', 'CITY', 27.3, 47.5],
+    ['平川市', 'HIRAKAWA', 'CITY', 47.1, 77.0],
+    ['平内町', 'HIRANAI', 'TOWN', 60.8, 47.1], ['今別町', 'IMABETSU', 'TOWN', 35.4, 29.7], ['蓬田村', 'YOMOGITA', 'VILLAGE', 40.5, 39.6],
+    ['外ヶ浜町', 'SOTOGAHAMA', 'TOWN', 39.0, 34.4], ['鰺ヶ沢町', 'AJIGASAWA', 'TOWN', 18.8, 63.0], ['深浦町', 'FUKAURA', 'TOWN', 7.9, 68.7],
+    ['西目屋村', 'NISHIMEYA', 'VILLAGE', 20.0, 75.7], ['藤崎町', 'FUJISAKI', 'TOWN', 35.9, 63.1], ['大鰐町', 'OWANI', 'TOWN', 36.6, 77.4],
+    ['田舎館村', 'INAKADATE', 'VILLAGE', 37.3, 65.5], ['板柳町', 'ITAYANAGI', 'TOWN', 34.5, 59.7], ['鶴田町', 'TSURUTA', 'TOWN', 31.4, 57.4],
+    ['中泊町', 'NAKADOMARI', 'TOWN', 32.5, 40.2], ['野辺地町', 'NOHEJI', 'TOWN', 68.9, 49.6], ['七戸町', 'SHICHINOHE', 'TOWN', 66.3, 59.3],
+    ['六戸町', 'ROKUNOHE', 'TOWN', 79.6, 65.4], ['横浜町', 'YOKOHAMA', 'TOWN', 78.6, 34.2], ['東北町', 'TOHOKU', 'TOWN', 77.3, 54.1],
+    ['六ヶ所村', 'ROKKASHO', 'VILLAGE', 80.4, 43.5], ['おいらせ町', 'OIRASE', 'TOWN', 83.4, 67.3], ['大間町', 'OMA', 'TOWN', 57.4, 4.3],
+    ['東通村', 'HIGASHIDORI', 'VILLAGE', 81.5, 18.6], ['風間浦村', 'KAZAMAURA', 'VILLAGE', 64.7, 7.3], ['佐井村', 'SAI', 'VILLAGE', 56.6, 12.1],
+    ['三戸町', 'SANNOHE', 'TOWN', 71.6, 84.2], ['五戸町', 'GONOHE', 'TOWN', 78.4, 75.6], ['田子町', 'TAKKO', 'TOWN', 65.2, 89.9],
+    ['南部町', 'NANBU', 'TOWN', 81.4, 81.7], ['階上町', 'HASHIKAMI', 'TOWN', 95.0, 80.7], ['新郷村', 'SHINGO', 'VILLAGE', 68.5, 79.8],
   ],
 
   // SR以上にかける虹色ホイル/キラキラ(フレームPNG側で表現するなら false)
