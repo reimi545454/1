@@ -219,11 +219,12 @@
 
   /** 青森県の輪郭パス。(ox,oy)=左上、s=拡大率 */
   function aomoriPath(ctx, ox, oy, s) {
-    const p = GEO.points;
     ctx.beginPath();
-    ctx.moveTo(ox + p[0][0] * s, oy + p[0][1] * s);
-    for (let i = 1; i < p.length; i++) ctx.lineTo(ox + p[i][0] * s, oy + p[i][1] * s);
-    ctx.closePath();
+    GEO.rings.forEach(function (p) {
+      ctx.moveTo(ox + p[0][0] * s, oy + p[0][1] * s);
+      for (let i = 1; i < p.length; i++) ctx.lineTo(ox + p[i][0] * s, oy + p[i][1] * s);
+      ctx.closePath();
+    });
   }
 
   function mulberry32(a) {

@@ -41,3 +41,8 @@ PNGを置いて `assets/config.js` の `png` に登録するだけで、その�
 2. `assets/config.js` の `fonts.name`(名前)または `fonts.jp`(縦文字)の `url` / `weight` / `style` を書き換える
 3. 名前の太さは `frames.*.name.weight`、字間は `spacing` で調整
 ※ 縦文字(日本語)の書体は容量が大きいので、使う文字だけに絞って(サブセット化して)同梱します。
+
+## 地図データの出典
+バッジの青森県の地図と、市町村ごとの丸印の位置は、国土数値情報(行政区域データ・国土交通省)を
+SmartNews Media Research Institute が加工した japan-topography(https://github.com/smartnews-smri/japan-topography)を
+さらに簡略化して作成しています。丸印は、各市町村(飛び地がある場合は最大の領域)の最大内接円の中心です。
