@@ -37,7 +37,7 @@ window.AomoriConfig = {
     fisherman: {
       label: '漁師カード風',
       style: 'fisher', // 仮フレームの描き分け: 'fisher'(写真いっぱい) / 'strip'(右に白い縦帯)
-      png: {}, // ローカルプレナーと同じ形式でランク別PNGを登録できる
+      png: {}, // ランク別PNGを登録できる。例: N: 'assets/frames/fisherman/N.png'(作り方は assets/frames/README.md)
 
       photo: {
         x: 24, y: 112, w: 1052, h: 1596,

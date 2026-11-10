@@ -438,7 +438,7 @@
   }
 
   /** 仮フレームの右下バッジ(名前より前面) */
-  function drawFallbackBadge(ctx, o) {
+  function drawFallbackBadge(ctx, o, contentOnly) {
     const c = colorsFor(o.rank);
     const fisher = state.frame.style === 'fisher';
     const bp = state.frame.badgePos;
@@ -447,6 +447,7 @@
     ctx.save();
     roundRect(ctx, 0, 0, W, H, 44);
     ctx.clip();
+    if (!contentOnly) {
     if (fisher) {
       // 金と水色のリング(光彩つき)
       ctx.shadowColor = 'rgba(255,230,140,.85)';
@@ -468,6 +469,7 @@
     rg.addColorStop(0, c.light); rg.addColorStop(1, c.base);
     ctx.beginPath(); ctx.arc(bx, by, bp.r - 11 * k, 0, Math.PI * 2);
     ctx.fillStyle = rg; ctx.fill();
+    }
     // 地図(中央やや上)と、選んだ市町村の位置を示す丸印
     const ms = bp.r * 1.18 / GEO.width;
     const mx = bx - (GEO.width * ms) / 2;
@@ -541,7 +543,8 @@
 
     drawSlogan(ctx, o.slogan);
     drawNames(ctx, o.names, o.nameAlpha);
-    if (!o.frameImg) drawFallbackBadge(ctx, o);
+    // フレームPNGがある場合は、バッジの円(リング・背景)はPNG側に任せ、中身(地図・丸印・市町村名)だけ描く
+    drawFallbackBadge(ctx, o, !!o.frameImg);
     if (CFG.foilEffect && o.rank.foil > 0) drawFoil(ctx, o.rank, o.seed || 1);
     ctx.restore();
   }

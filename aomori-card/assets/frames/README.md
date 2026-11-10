@@ -1,16 +1,31 @@
 # フレームPNGの作り方(Photoshop)
 
-1. `_guide.png` を Photoshop で開く(**1650 × 2730 px** = 縦名刺 55×91mm)
-   - ピンクの枠が「写真の窓」。**透明のまま**にしてください(写真はPNGの**下**に敷かれます)
-   - 黄の枠が名前(金文字)、青の帯が縦書きコメントの位置(アプリが後から描きます)
-2. ランクごとに N / R / SR / UR / SP の5枚を作り、**透過PNG**で `assets/frames/local-preneur/` に保存
-   (ファイル名例: `N.png` `R.png` `SR.png` `UR.png` `SP.png`、生成前プレビュー用に `PREVIEW.png` も任意)
-3. `assets/config.js` の `png` に登録するとアプリに反映されます(未登録のランクは仮フレーム)
-   ```js
-   png: {
-     N: 'assets/frames/local-preneur/N.png',
-     SP: 'assets/frames/local-preneur/SP.png',
-   },
-   ```
-4. 縦文字コメントもPNGに入れる場合は `slogan.drawn: false` にしてください
-5. 角丸の外側は透明にしてください(アプリ側でも半径44(論理座標)で角を丸めます)
+漁師カード風フレーム(標準)の制作手順です。`_guide.png` を下敷きに使います。
+
+## サイズと形式
+- **1650 × 2730 px** の透過PNG(縦名刺 55×91mm の比率)。角丸は半径66px(アプリ側も角を丸めます)
+- ランクごとに5枚: `N.png` `R.png` `SR.png` `UR.png` `SP.png`。生成前のプレビュー用に `PREVIEW.png`(任意)
+
+## 窓(写真が見える部分)は透明にする
+- ガイド画像のピンクの枠が窓です。**透明のまま**にしてください。写真はPNGの**下**に敷かれます
+- 窓は左上が斜めにカットされた五角形です(論理座標 1100×1820 で (24,252) → (450,112) → (1076,112) → (1076,1708) → (24,1708))
+
+## アプリが後から描くもの(その場所は空けておく)
+| 要素 | 位置(ガイド画像の枠) | 備考 |
+|---|---|---|
+| 縦文字 | 右端の白い枠 | 「人と人、酒と肴、つなぐ青森。」(PNGに入れる場合は `slogan.drawn: false`) |
+| 名前 | 左下の黄色の枠 | 金文字。名前の後ろの暗い影はアプリが重ねる |
+| 市町村バッジの中身 | 右下の円の中 | 地図・丸印・市町村名。**円(リング・背景)はPNGに描く**。地図と文字は白で描くので、円の中は青系などの背景にする |
+
+ランク文字(UR など)、星、飾り、下帯はPNGに自由にデザインしてください。
+
+## 登録
+PNGを `assets/frames/fisherman/` に置き、`assets/config.js` の `frames.fisherman.png` に登録します。未登録のランクは仮の自動描画フレームで表示されます。
+```js
+png: {
+  N: 'assets/frames/fisherman/N.png',
+  SP: 'assets/frames/fisherman/SP.png',
+  PREVIEW: 'assets/frames/fisherman/PREVIEW.png',
+},
+```
+SR以上のキラキラ(ホイル)をPNG側で表現する場合は、`config.js` の `foilEffect: false` にします。
