@@ -58,6 +58,15 @@
 
     <!-- 右(スマホでは下): 操作パネル -->
     <section class="panel" aria-label="カードの設定">
+      <div class="step-block" id="modeBlock">
+        <h2><span class="num">★</span>つくりかた</h2>
+        <div id="modes" class="chips" role="radiogroup" aria-label="つくりかた">
+          <button type="button" class="chip" role="radio" aria-checked="true" data-mode="gacha"><span aria-hidden="true">🎲</span>ガチャでおまかせ</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-mode="custom"><span aria-hidden="true">✏️</span>じぶんで えらぶ</button>
+        </div>
+        <p class="note" id="modeNote"></p>
+      </div>
+
       <div class="step-block">
         <h2><span class="num">1</span>フレームをえらぶ</h2>
         <div id="frames" class="chips" role="radiogroup" aria-label="フレーム">
@@ -107,6 +116,16 @@
         </div>
         <p class="name-msg" id="nameMsg" aria-live="polite">ローマ字で入力(ひらがなでもOK。自動でローマ字になります)</p>
         <p class="note">カードには金色の文字で「名前 / 苗字」の順に入ります。</p>
+      </div>
+
+      <div class="step-block" id="customBlock" hidden>
+        <h2><span class="num">★</span>ランクとひとこと</h2>
+        <div id="customRanks" class="chips" role="radiogroup" aria-label="ランク"></div>
+        <div class="slogan-field">
+          <label for="customSlogan">縦文字のひとこと</label>
+          <input type="text" id="customSlogan" autocomplete="off" spellcheck="false" placeholder="例: 青森の未来をつくる">
+        </div>
+        <p class="name-msg" id="sloganMsg" aria-live="polite"></p>
       </div>
 
       <div class="step-block gacha-block">

@@ -48,6 +48,9 @@
     source: null, // HTMLCanvasElement (取り込み済みの写真)
     view: { zoom: 1, ox: 0, oy: 0 },
     busy: false,
+    mode: 'gacha', // 'gacha' | 'custom'
+    customRank: null,
+    customSlogan: { text: '', invalid: false },
     resultUrl: null,
     resultBlob: null,
     lastFocus: null,
@@ -504,7 +507,22 @@
 
   function renderPreview() {
     rafId = 0;
-    drawCard(pctx, cardOptions(L.MYSTERY_RANK, 1, CFG.sloganPreview, previewFrameImg), PREVIEW_SCALE);
+    const custom = state.mode === 'custom';
+    const rank = custom ? state.customRank : L.MYSTERY_RANK;
+    const slogan = custom ? state.customSlogan.text : CFG.sloganPreview;
+    drawCard(pctx, cardOptions(rank, 1, slogan, previewFrameImg), PREVIEW_SCALE);
+  }
+
+  /** プレビュー用のフレームPNGを(ランク/モードに合わせて)読み直す */
+  let previewToken = 0;
+  function refreshPreviewFrame() {
+    const token = ++previewToken;
+    const id = state.mode === 'custom' ? state.customRank.id : '?';
+    return loadFrameImage(id).then(function (img) {
+      if (token !== previewToken) return;
+      previewFrameImg = img;
+      requestRender();
+    });
   }
   function requestRender() {
     if (!rafId) rafId = requestAnimationFrame(renderPreview);
@@ -552,7 +570,8 @@
   }
 
   function updateGenerateButton() {
-    $('btnGenerate').disabled = !state.source || state.busy || namesInvalid();
+    $('btnGenerate').disabled = !state.source || state.busy || namesInvalid() ||
+      (state.mode === 'custom' && state.customSlogan.invalid);
   }
 
   /* ================================================================
@@ -841,7 +860,7 @@
     });
   }
 
-  function showResult(blob, rank) {
+  function showResult(blob, rank, custom) {
     if (state.resultUrl) URL.revokeObjectURL(state.resultUrl);
     state.resultBlob = blob;
     state.resultUrl = URL.createObjectURL(blob);
@@ -853,7 +872,8 @@
     label.textContent = '';
     const b = document.createElement('b');
     b.textContent = rank.id;
-    label.append(b, rank.name + ' が出たよ!');
+    label.append(b, custom ? rank.name + ' のカードができたよ!' : rank.name + ' が出たよ!');
+    $('btnAgain').hidden = !!custom;
     const tilt = $('tilt');
     tilt.classList.toggle('foil', rank.foil > 0);
     tilt.style.animation = 'none';
@@ -868,15 +888,24 @@
     if (state.busy) return;
     if (!state.source) { toast('先に写真を入れてね'); return; }
     if (namesInvalid()) { toast('名前はローマ字で入力してね'); return; }
+    const custom = state.mode === 'custom';
+    if (custom && state.customSlogan.invalid) { toast('ひとことに使えない文字が入っています'); return; }
     state.busy = true;
     updateGenerateButton();
     try {
-      const rank = L.pickRank(secureRandom);
-      const slogan = L.pickFrom(secureRandom, CFG.slogans[rank.id]);
       const seed = Math.floor(secureRandom() * 1e9) + 1;
-      const rendering = renderFinal(rank, seed, slogan);
-      await playGacha(rank);
-      showResult(await rendering, rank);
+      if (custom) {
+        // 別枠: ランクも縦文字も本人が指定(ガチャ演出なし)
+        const rank = state.customRank;
+        const blob = await renderFinal(rank, seed, state.customSlogan.text);
+        showResult(blob, rank, true);
+      } else {
+        const rank = L.pickRank(secureRandom);
+        const slogan = L.pickFrom(secureRandom, CFG.slogans[rank.id]);
+        const rendering = renderFinal(rank, seed, slogan);
+        await playGacha(rank);
+        showResult(await rendering, rank, false);
+      }
     } catch (e) {
       setModal(false, $('gacha'));
       toast('カードの生成に失敗しました。もう一度ためしてね');
@@ -981,6 +1010,78 @@
     setTimeout(expand, 3200);
   }
 
+  /* ---- つくりかた(ガチャ / じぶんで えらぶ) ---- */
+  const SLOGAN_NG = /[\p{Extended_Pictographic}\p{Cc}\u200d\ufe0f]/u;
+
+  function onSloganInput() {
+    const max = CFG.customMode.sloganMaxLength;
+    const raw = $('customSlogan').value.normalize('NFC').replace(/\s+/g, '\u3000').replace(/^\u3000+|\u3000+$/g, '');
+    const chars = Array.from(raw);
+    const msg = $('sloganMsg');
+    const bad = SLOGAN_NG.test(raw);
+    const over = chars.length > max;
+    state.customSlogan = { text: chars.slice(0, max).join(''), invalid: bad };
+    msg.classList.toggle('error', bad || over);
+    msg.textContent = bad ? '絵文字や記号の一部は使えません'
+      : over ? max + '文字までです(超えた分は入りません)'
+      : chars.length + ' / ' + max + ' 文字(縦書きで入ります)';
+    updateGenerateButton();
+    requestRender();
+  }
+
+  function setMode(mode) {
+    state.mode = mode;
+    document.querySelectorAll('#modes .chip').forEach(function (b) {
+      b.setAttribute('aria-checked', String(b.dataset.mode === mode));
+    });
+    const custom = mode === 'custom';
+    $('customBlock').hidden = !custom;
+    $('rates').hidden = custom;
+    $('modeNote').textContent = custom
+      ? 'ランクとひとことを自分で決めて、ガチャなしで作れます。'
+      : 'ランクとひとことはガチャで決まるよ! 写真と名前だけ入れてね。';
+    $('btnGenerate').querySelector('.gacha-label').textContent = custom ? 'このカードをつくる!' : 'ガチャッとカードをつくる!';
+    updateGenerateButton();
+    refreshPreviewFrame();
+    requestRender();
+  }
+
+  function initCustomMode() {
+    const cm = CFG.customMode;
+    const ranks = L.RANKS.filter(function (r) { return cm.ranks.indexOf(r.id) >= 0; });
+    if (!cm.enabled || !ranks.length) {
+      $('modeBlock').remove();
+      $('customBlock').remove();
+      return;
+    }
+    state.customRank = ranks[0];
+    const box = $('customRanks');
+    ranks.forEach(function (r, i) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip';
+      b.setAttribute('role', 'radio');
+      b.setAttribute('aria-checked', String(i === 0));
+      b.dataset.rank = r.id;
+      const id = document.createElement('b');
+      id.textContent = r.id;
+      b.append(id, ' ' + r.name);
+      b.addEventListener('click', function () {
+        state.customRank = r;
+        box.querySelectorAll('.chip').forEach(function (x) { x.setAttribute('aria-checked', String(x === b)); });
+        refreshPreviewFrame();
+        requestRender();
+      });
+      box.appendChild(b);
+    });
+    document.querySelectorAll('#modes .chip').forEach(function (b) {
+      b.addEventListener('click', function () { setMode(b.dataset.mode); });
+    });
+    $('customSlogan').addEventListener('input', onSloganInput);
+    onSloganInput();
+    setMode('gacha');
+  }
+
   $('nameLast').addEventListener('input', onNameInput);
   $('nameFirst').addEventListener('input', onNameInput);
 
@@ -991,7 +1092,8 @@
 
   // 書体・フレームPNGの読み込みが終わったらプレビューを描き直す
   fontsReady = loadFonts().then(function () { requestRender(); });
-  loadFrameImage('?').then(function (img) { previewFrameImg = img; requestRender(); });
+  initCustomMode();
+  refreshPreviewFrame();
 
   // テスト・デバッグ用に最小限を公開
   window.__aomoriCard = { state: state, drawCard: drawCard, cardOptions: cardOptions, ready: function () { return fontsReady; } };

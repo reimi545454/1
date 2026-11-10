@@ -158,6 +158,15 @@ button:disabled { cursor: not-allowed; }
 .name-msg.error { color: var(--apple-dark); font-weight: 700; }
 .name-msg b { color: var(--sky-dark); letter-spacing: .08em; }
 
+.slogan-field { margin-top: 12px; }
+.slogan-field label { display: block; font-size: .78rem; font-weight: 700; color: var(--mute); margin-bottom: 4px; }
+.slogan-field input {
+  width: 100%; min-height: 48px; padding: 8px 14px; border: 3px solid var(--line); border-radius: 14px;
+  font: inherit; font-size: 1rem; background: #fffdf9; color: var(--ink);
+}
+.slogan-field input:focus { border-color: var(--sky); outline: none; box-shadow: 0 0 0 3px rgba(30, 136, 229, .2); }
+.chip b { font-style: italic; font-weight: 900; }
+
 /* ガチャボタン */
 .gacha-block { background: linear-gradient(#fff, #fff4f4); }
 .btn-gacha {
