@@ -171,8 +171,10 @@
     ctx.restore();
   }
 
-  function drawNames(ctx, names) {
+  function drawNames(ctx, names, alpha) {
     const spec = state.frame.name;
+    ctx.save();
+    if (alpha != null) ctx.globalAlpha = alpha;
     const first = names.first;
     const last = names.last;
     if (first && last) {
@@ -181,6 +183,7 @@
     } else if (first || last) {
       goldName(ctx, first || last, spec.single, spec.size, spec.spacing);
     }
+    ctx.restore();
   }
 
   /** 縦書きコメント(1文字ずつ縦に並べる) */
@@ -251,29 +254,19 @@
     ctx.fillStyle = g;
     ctx.fillRect(PHOTO.x, PHOTO.y, PHOTO.w, PHOTO.h);
     const cx = PHOTO.x + PHOTO.w / 2;
-    // 写真が入るまでの仮表示: ごく普通の人影(顔のない立ち姿のシルエット)
-    const figH = PHOTO.h * 0.55;
-    const k = figH / 400;
-    const top = PHOTO.y + PHOTO.h * 0.09;
+    // 写真が入るまでの仮表示: 大きな「？」
     ctx.save();
-    ctx.translate(cx, top);
-    ctx.scale(k, k);
-    ctx.fillStyle = 'rgba(0,40,90,.16)';
-    ctx.beginPath(); ctx.ellipse(0, 346, 78, 13, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#34485f'; ctx.strokeStyle = '#34485f';
-    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    ctx.beginPath(); ctx.ellipse(0, 40, 30, 34, 0, 0, Math.PI * 2); ctx.fill();          // 頭
-    ctx.fillRect(-10, 66, 20, 18);                                                        // 首
-    ctx.beginPath(); ctx.moveTo(-50, 112); ctx.quadraticCurveTo(-48, 84, -14, 82);       // 胴体(なで肩)
-    ctx.lineTo(14, 82); ctx.quadraticCurveTo(48, 84, 50, 112);
-    ctx.lineTo(46, 204); ctx.lineTo(-46, 204); ctx.closePath(); ctx.fill();
-    ctx.lineWidth = 20;                                                                   // 腕
-    ctx.beginPath(); ctx.moveTo(-44, 112); ctx.lineTo(-62, 198); ctx.moveTo(44, 112); ctx.lineTo(62, 198); ctx.stroke();
-    ctx.lineWidth = 30;                                                                   // 脚
-    ctx.beginPath(); ctx.moveTo(-20, 198); ctx.lineTo(-24, 332); ctx.moveTo(20, 198); ctx.lineTo(24, 332); ctx.stroke();
-    ctx.beginPath(); ctx.ellipse(-28, 340, 24, 9, 0, 0, Math.PI * 2); ctx.ellipse(28, 340, 24, 9, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = '900 ' + Math.round(PHOTO.h * 0.46) + 'px ' + FF_HEAVY;
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = PHOTO.h * 0.03;
+    ctx.strokeStyle = '#ffffff';
+    ctx.fillStyle = '#5b9fd8';
+    ctx.strokeText('?', cx, PHOTO.y + PHOTO.h * 0.36);
+    ctx.fillText('?', cx, PHOTO.y + PHOTO.h * 0.36);
     ctx.restore();
-    const ty = top + figH + 100;
+    const ty = PHOTO.y + PHOTO.h * 0.7;
     ctx.fillStyle = '#1e5f9f';
     ctx.textAlign = 'center';
     ctx.font = '700 58px ' + FF_JP;
@@ -546,7 +539,7 @@
     }
 
     drawSlogan(ctx, o.slogan);
-    drawNames(ctx, o.names);
+    drawNames(ctx, o.names, o.nameAlpha);
     if (!o.frameImg) drawFallbackBadge(ctx, o);
     if (CFG.foilEffect && o.rank.foil > 0) drawFoil(ctx, o.rank, o.seed || 1);
     ctx.restore();
@@ -607,7 +600,13 @@
 
   function renderPreview() {
     rafId = 0;
-    drawCard(pctx, cardOptions(L.MYSTERY_RANK, 1, state.frame.sloganPreview, previewFrameImg), PREVIEW_SCALE);
+    const opts = cardOptions(L.MYSTERY_RANK, 1, state.frame.sloganPreview, previewFrameImg);
+    if (!opts.names.first && !opts.names.last && CFG.sampleName) {
+      // 名前が空のあいだは見本の名前を薄く表示
+      opts.names = CFG.sampleName;
+      opts.nameAlpha = 0.55;
+    }
+    drawCard(pctx, opts, PREVIEW_SCALE);
   }
 
   /** プレビュー用のフレームPNGを(ランク/モードに合わせて)読み直す */

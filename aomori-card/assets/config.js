@@ -11,7 +11,8 @@ window.AomoriConfig = {
 
   // 書き出し・描画に使う書体(アプリに同梱。端末に依存せず常に同じ見た目)
   fonts: {
-    name: { family: 'AomoriName', url: 'assets/fonts/Exo2-Italic-VF-latin.woff2', weight: '100 900', style: 'italic' },
+    // 名前: ステンシル系の Saira Stencil One(仮)。斜体はブラウザが自動で付ける
+    name: { family: 'AomoriName', url: 'assets/fonts/SairaStencilOne-Latin.woff2', weight: '400', style: 'normal' },
     jp: { family: 'AomoriJP', url: 'assets/fonts/NotoSansJP-Medium-subset.woff2', weight: '500', style: 'normal' },
   },
 
@@ -28,6 +29,9 @@ window.AomoriConfig = {
   // 待ち時間・ロゴのマスコット: 'apple'(りんご) / 'mark'(青森県マーク)
   mascot: 'apple',
 
+  // 名前が未入力のときにプレビューへ薄く出す見本(first=名前 / last=苗字)
+  sampleName: { first: 'TARO', last: 'AOMORI' },
+
   frames: {
     /* ---- 漁師カード風(出来上がりイメージの基本) ---- */
     fisherman: {
@@ -43,7 +47,7 @@ window.AomoriConfig = {
       slogan: { drawn: true, x: 994, top: 175, height: 1100, maxSize: 72, color: '#111111', halo: '#ffffff' },
       // 名前は写真の左下に重ねる(後ろに暗いぼかし影が入る)
       name: {
-        size: 112, weight: 800, spacing: 5,
+        size: 104, weight: 400, spacing: 6,
         first: { x: 40, y: 1580, maxW: 700 },
         last: { x: 240, y: 1700, maxW: 640 },
         single: { x: 40, y: 1690, maxW: 760 },
