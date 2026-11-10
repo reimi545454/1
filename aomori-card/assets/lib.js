@@ -41,6 +41,12 @@
     return list[list.length - 1];
   }
 
+  /** 配列から1つランダムに選ぶ(空なら空文字)。 */
+  function pickFrom(rand, list) {
+    if (!list || !list.length) return '';
+    return list[Math.min(list.length - 1, Math.floor(Math.max(rand(), 0) * list.length))];
+  }
+
   /* ---------- 名前(かな → ローマ字) ---------- */
   const BASE = {
     あ: 'a', い: 'i', う: 'u', え: 'e', お: 'o',
@@ -158,7 +164,7 @@
   }
 
   return {
-    RANKS: RANKS, MYSTERY_RANK: MYSTERY_RANK, pickRank: pickRank,
+    RANKS: RANKS, MYSTERY_RANK: MYSTERY_RANK, pickRank: pickRank, pickFrom: pickFrom,
     kanaToRomaji: kanaToRomaji, toRomajiName: toRomajiName,
     coverRect: coverRect, centerCrop: centerCrop, fitWithin: fitWithin,
   };

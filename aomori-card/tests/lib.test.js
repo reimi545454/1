@@ -81,3 +81,11 @@ test('fitWithin: 長辺を上限に収め、拡大はしない', () => {
   assert.deepEqual(L.fitWithin(4000, 3000, 2000), { w: 2000, h: 1500 });
   assert.deepEqual(L.fitWithin(800, 600, 2000), { w: 800, h: 600 });
 });
+
+test('pickFrom: 配列から選ぶ。空は空文字、乱数の両端でも範囲内', () => {
+  assert.equal(L.pickFrom(() => 0, ['a', 'b', 'c']), 'a');
+  assert.equal(L.pickFrom(() => 0.9999999, ['a', 'b', 'c']), 'c');
+  assert.equal(L.pickFrom(() => 5, ['a']), 'a');
+  assert.equal(L.pickFrom(() => 0.5, []), '');
+  assert.equal(L.pickFrom(() => 0.5, undefined), '');
+});

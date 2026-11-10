@@ -92,7 +92,7 @@ button:disabled { cursor: not-allowed; }
   background: #fff;
   line-height: 0;
 }
-#preview { width: 100%; height: auto; aspect-ratio: 2 / 3; border-radius: 22px; touch-action: none; cursor: grab; display: block; }
+#preview { width: 100%; height: auto; aspect-ratio: 55 / 91; border-radius: 22px; touch-action: none; cursor: grab; display: block; }
 #preview.dragging { cursor: grabbing; }
 .hint { margin: 0; font-size: .85rem; color: var(--mute); text-align: center; }
 
@@ -187,10 +187,10 @@ button:disabled { cursor: not-allowed; }
 .cam-box { width: min(100%, 520px); height: 100%; display: grid; grid-template-rows: 1fr auto; padding: 12px; gap: 12px; }
 .cam-view { position: relative; min-height: 0; display: grid; place-items: center; }
 #camVideo {
-  height: 100%; max-width: 100%; aspect-ratio: 864 / 1188; object-fit: cover; border-radius: 18px; background: #000;
+  height: 100%; max-width: 100%; aspect-ratio: 926 / 1388; object-fit: cover; border-radius: 18px; background: #000;
 }
 #camVideo.mirror { transform: scaleX(-1); }
-.cam-guide { position: absolute; inset: 0; margin: auto; height: 100%; max-width: 100%; aspect-ratio: 864 / 1188; border: 3px dashed rgba(255, 255, 255, .6); border-radius: 18px; pointer-events: none; }
+.cam-guide { position: absolute; inset: 0; margin: auto; height: 100%; max-width: 100%; aspect-ratio: 926 / 1388; border: 3px dashed rgba(255, 255, 255, .6); border-radius: 18px; pointer-events: none; }
 .cam-bar { display: flex; align-items: center; justify-content: space-around; padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
 .btn-round { width: 56px; height: 56px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, .2); color: #fff; font-size: 1.4rem; }
 .shutter { width: 76px; height: 76px; border-radius: 50%; border: 6px solid #fff; background: var(--apple); box-shadow: 0 0 0 4px rgba(255, 255, 255, .3); }
@@ -231,7 +231,7 @@ button:disabled { cursor: not-allowed; }
 .result-actions { width: 100%; }
 .tilt {
   --rx: 0deg; --ry: 0deg; --mx: 50%; --my: 50%;
-  position: relative; width: min(78vw, 360px, 52vh * .667); line-height: 0; border-radius: 20px;
+  position: relative; width: min(78vw, 360px, 52vh * .604); line-height: 0; border-radius: 20px;
   transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
   transition: transform .15s ease-out; box-shadow: 0 22px 40px rgba(30, 80, 140, .3);
   animation: cardIn .7s cubic-bezier(.2, 1.3, .4, 1) both;

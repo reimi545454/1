@@ -1,38 +1,27 @@
-/* あおもりカードメーカー: 画面制御とカード描画 */
+/* あおもりカードメーカー: 画面制御とカード描画 (設定は assets/config.js) */
 (function () {
   'use strict';
 
   const L = window.AomoriLib;
+  const CFG = window.AomoriConfig;
   const $ = function (id) { return document.getElementById(id); };
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
 
   /* ================================================================
-   * 定数: カードの座標系は 1024 x 1536 (ローカルプレナー枠を基準)
+   * 定数
    * ================================================================ */
-  const W = 1024;
-  const H = 1536;
-  const PHOTO = { x: 22, y: 104, w: 864, h: 1188 };
-  const PHOTO_PATH = [[22, 222], [312, 104], [886, 104], [886, 1292], [22, 1292]];
-  const PREVIEW_SCALE = 0.75;
-  const EXPORT_SCALE = 1.5;
-  const MAX_SOURCE_SIDE = 2400;
+  const W = CFG.card.width;
+  const H = CFG.card.height;
+  const PREVIEW_SCALE = 0.7;
+  const EXPORT_SCALE = CFG.card.exportScale || 1.5;
+  const MAX_SOURCE_SIDE = 2800;
   const MAX_FILE_BYTES = 30 * 1024 * 1024;
   const ZOOM_MAX = 4;
 
-  const FONT_HEAVY = '"Arial Black", Impact, "Helvetica Neue", Arial, sans-serif';
-  const FONT_NAME = '"Helvetica Neue", Helvetica, Arial, sans-serif';
-  const FONT_JP = '"Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", "Meiryo", sans-serif';
-
-  // フレーム定義(今後ここに追加していく)
-  const FRAMES = {
-    'local-preneur': {
-      id: 'local-preneur',
-      headline: 'LOCAL PRENEUR',
-      slogan: '地域の課題を未来の価値へ　未来を拓く青森',
-      badge: ['AOMORI', 'SUPPORT'],
-    },
-  };
+  const FF_NAME = '"' + CFG.fonts.name.family + '", "Helvetica Neue", Arial, sans-serif';
+  const FF_JP = '"' + CFG.fonts.jp.family + '", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif';
+  const FF_HEAVY = '"Arial Black", Impact, "Helvetica Neue", Arial, sans-serif';
 
   // りんご(プレースホルダ描画用。index.html の symbol と同じ形)
   const APPLE = {
@@ -52,19 +41,52 @@
   /* ================================================================
    * 状態
    * ================================================================ */
+  const frameId = 'local-preneur';
   const state = {
-    frame: FRAMES['local-preneur'],
+    frameId: frameId,
+    frame: CFG.frames[frameId],
     source: null, // HTMLCanvasElement (取り込み済みの写真)
     view: { zoom: 1, ox: 0, oy: 0 },
-    names: { first: '', last: '' },
     busy: false,
     resultUrl: null,
     resultBlob: null,
     lastFocus: null,
   };
+  const PHOTO = state.frame.photo;
 
   /* ================================================================
-   * カード描画
+   * フォント・フレームPNGの読み込み
+   * ================================================================ */
+  let fontsReady = Promise.resolve();
+  function loadFonts() {
+    if (!window.FontFace) return Promise.resolve();
+    const jobs = ['name', 'jp'].map(function (k) {
+      const f = CFG.fonts[k];
+      const face = new FontFace(f.family, 'url(' + f.url + ')', { weight: f.weight, style: f.style });
+      return face.load().then(function (loaded) { document.fonts.add(loaded); }).catch(function () { /* 代替書体で継続 */ });
+    });
+    return Promise.all(jobs);
+  }
+
+  const frameImages = new Map();
+  /** ランクに対応するフレームPNG。未指定・読込失敗なら null(=仮フレームで描く) */
+  function loadFrameImage(rankId) {
+    const key = rankId === '?' ? 'PREVIEW' : rankId;
+    const url = state.frame.png && state.frame.png[key];
+    if (!url) return Promise.resolve(null);
+    if (!frameImages.has(url)) {
+      frameImages.set(url, new Promise(function (resolve) {
+        const img = new Image();
+        img.onload = function () { resolve(img); };
+        img.onerror = function () { resolve(null); };
+        img.src = url;
+      }));
+    }
+    return frameImages.get(url);
+  }
+
+  /* ================================================================
+   * 描画ヘルパー
    * ================================================================ */
   function roundRect(ctx, x, y, w, h, r) {
     ctx.beginPath();
@@ -106,29 +128,91 @@
   }
 
   /** 幅 targetW ぴったりに横方向へ伸縮して描く(見出し用) */
-  function fitText(ctx, text, x, y, targetW) {
+  function fitText(ctx, text, x, y, targetW, stroke) {
     const m = ctx.measureText(text).width;
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(targetW / m, 1);
-    if (ctx.lineWidth > 0 && ctx.strokeStyle) ctx.strokeText(text, 0, 0);
+    if (stroke) ctx.strokeText(text, 0, 0);
     ctx.fillText(text, 0, 0);
     ctx.restore();
   }
 
-  /** 字間つきの文字列。長すぎる場合は横に縮める */
-  function spacedText(ctx, text, x, y, spacing, maxW) {
+  /** 金色の名前文字。字間つき、長すぎる場合は横に縮める */
+  function goldName(ctx, text, spec, size, spacing) {
+    ctx.save();
+    ctx.font = 'italic 600 ' + size + 'px ' + FF_NAME;
+    ctx.textBaseline = 'alphabetic';
     const chars = Array.from(text);
     const widths = chars.map(function (c) { return ctx.measureText(c).width; });
     const total = widths.reduce(function (a, b) { return a + b; }, 0) + spacing * Math.max(0, chars.length - 1);
-    const k = total > maxW ? maxW / total : 1;
-    ctx.save();
-    ctx.translate(x, y);
+    const k = total > spec.maxW ? spec.maxW / total : 1;
+    ctx.translate(spec.x, spec.y);
     ctx.scale(k, 1);
+    const g = ctx.createLinearGradient(0, -size * 0.72, 0, 0);
+    g.addColorStop(0, '#fff7c9');
+    g.addColorStop(0.38, '#ffd84a');
+    g.addColorStop(0.62, '#e0a010');
+    g.addColorStop(1, '#ffe58a');
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = Math.max(4, size * 0.07);
+    ctx.strokeStyle = '#4a2d00';
+    ctx.shadowColor = 'rgba(0,0,0,.55)';
+    ctx.shadowBlur = size * 0.14;
+    ctx.shadowOffsetY = size * 0.04;
     let cx = 0;
+    chars.forEach(function (c, i) {
+      ctx.strokeText(c, cx, 0);
+      cx += widths[i] + spacing;
+    });
+    ctx.shadowColor = 'transparent';
+    cx = 0;
+    ctx.fillStyle = g;
     chars.forEach(function (c, i) {
       ctx.fillText(c, cx, 0);
       cx += widths[i] + spacing;
+    });
+    ctx.restore();
+  }
+
+  function drawNames(ctx, names) {
+    const spec = state.frame.name;
+    const first = names.first;
+    const last = names.last;
+    if (first && last) {
+      goldName(ctx, first, spec.first, spec.size, spec.spacing);
+      goldName(ctx, last, spec.last, spec.size, spec.spacing);
+    } else if (first || last) {
+      goldName(ctx, first || last, spec.single, spec.size, spec.spacing);
+    }
+  }
+
+  /** 縦書きコメント(1文字ずつ縦に並べる) */
+  function drawSlogan(ctx, text) {
+    const s = state.frame.slogan;
+    if (!s.drawn || !text) return;
+    const chars = Array.from(text);
+    const step = Math.min(s.maxSize, s.height / chars.length);
+    ctx.save();
+    ctx.fillStyle = s.color;
+    ctx.font = '900 ' + Math.round(step * 0.96) + 'px ' + FF_JP;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    chars.forEach(function (ch, i) {
+      if (ch === '　' || ch === ' ') return;
+      const cy = s.top + step * (i + 0.5);
+      if (/[、。，．]/.test(ch)) {
+        // 縦書きでは句読点はマスの右上に寄る
+        ctx.fillText(ch, s.x + step * 0.5, cy - step * 0.5);
+      } else if (ch === 'ー' || ch === '～' || ch === '〜') {
+        ctx.save();
+        ctx.translate(s.x, cy);
+        ctx.rotate(Math.PI / 2);
+        ctx.fillText(ch, 0, 0);
+        ctx.restore();
+      } else {
+        ctx.fillText(ch, s.x, cy);
+      }
     });
     ctx.restore();
   }
@@ -163,8 +247,9 @@
     g.addColorStop(1, '#cfe6fb');
     ctx.fillStyle = g;
     ctx.fillRect(PHOTO.x, PHOTO.y, PHOTO.w, PHOTO.h);
+    const cx = PHOTO.x + PHOTO.w / 2;
     ctx.save();
-    ctx.translate(454 - 170, 520 - 170);
+    ctx.translate(cx - 170, 640 - 170);
     ctx.scale(340 / 120, 340 / 120);
     ctx.fillStyle = '#e8384f';
     ctx.fill(APPLE.body);
@@ -179,17 +264,17 @@
     ctx.restore();
     ctx.fillStyle = '#1e5f9f';
     ctx.textAlign = 'center';
-    ctx.font = '800 56px ' + FONT_JP;
-    ctx.fillText('ここに写真が入るよ', 454, 850);
-    ctx.font = '700 38px ' + FONT_JP;
+    ctx.font = '900 58px ' + FF_JP;
+    ctx.fillText('ここに写真が入るよ', cx, 960);
+    ctx.font = '900 40px ' + FF_JP;
     ctx.fillStyle = '#4a82b8';
-    ctx.fillText('タップして写真をえらぶ', 454, 920);
+    ctx.fillText('タップして写真をえらぶ', cx, 1036);
     ctx.textAlign = 'left';
   }
 
   function drawFoil(ctx, rank, seed) {
     ctx.save();
-    roundRect(ctx, 0, 0, W, H, 40);
+    roundRect(ctx, 0, 0, W, H, 44);
     ctx.clip();
     const g = ctx.createLinearGradient(0, 0, W, H);
     ['#ff6b6b', '#ffd93d', '#6bff95', '#4dd2ff', '#b36bff', '#ff6bd6', '#ff6b6b'].forEach(function (c, i, a) {
@@ -200,14 +285,13 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
     ctx.globalCompositeOperation = 'source-over';
-    // きらきら
     const rnd = mulberry32(seed);
     const n = rank.id === 'SP' ? 26 : rank.id === 'UR' ? 18 : 10;
     ctx.fillStyle = '#fff';
     for (let i = 0; i < n; i++) {
       const x = 40 + rnd() * (W - 80);
       const y = 40 + rnd() * (H - 80);
-      const r = 8 + rnd() * 16;
+      const r = 8 + rnd() * 17;
       ctx.globalAlpha = 0.5 + rnd() * 0.4;
       ctx.beginPath();
       ctx.moveTo(x, y - r); ctx.quadraticCurveTo(x, y, x + r, y);
@@ -218,32 +302,30 @@
     ctx.restore();
   }
 
-  /**
-   * カード全体を描画する。
-   * o: { rank, frame, source, view, names:{first,last}, seed }
-   */
-  function drawCard(ctx, o, scale) {
+  /** PNGが無いランク用の仮フレーム(photo / slogan の窓位置は設定と共通) */
+  function drawFallbackFrame(ctx, o) {
     const rank = o.rank;
     const c = rank.colors;
+    const fr = state.frame;
     ctx.save();
-    ctx.setTransform(scale, 0, 0, scale, 0, 0);
-    ctx.clearRect(0, 0, W, H);
-    roundRect(ctx, 0, 0, W, H, 40);
+    roundRect(ctx, 0, 0, W, H, 44);
     ctx.clip();
-
-    // 地 + フレーム色
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, W, H);
     const bg = ctx.createLinearGradient(0, 0, W, H);
     bg.addColorStop(0, c.light); bg.addColorStop(0.5, c.base); bg.addColorStop(1, c.dark);
     ctx.fillStyle = bg;
-    ctx.fillRect(10, 10, W - 20, H - 20);
+    ctx.fillRect(12, 12, W - 24, H - 24);
 
-    // 写真エリア(左上が斜めにカットされた形)
-    ctx.save();
-    polyPath(ctx, PHOTO_PATH);
+    // 窓の外枠(白) と 縦書き帯
+    polyPath(ctx, fr.photo.polygon);
     ctx.fillStyle = '#fff';
     ctx.fill();
+    ctx.fillRect(958, 112, 118, 1230);
+
+    // 窓を写真で埋める
+    ctx.save();
+    polyPath(ctx, fr.photo.polygon);
     ctx.clip();
     if (o.source) {
       const r = L.coverRect(o.source.width, o.source.height, PHOTO.w, PHOTO.h, o.view.zoom, o.view.ox, o.view.oy);
@@ -255,110 +337,115 @@
     }
     ctx.restore();
 
-    // 右の縦書きスローガン帯
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(892, 104, 108, 1090);
-    const slogan = Array.from(o.frame.slogan);
-    const step = Math.min(52, 985 / slogan.length);
-    ctx.fillStyle = '#111';
-    ctx.font = '900 ' + Math.round(step * 0.98) + 'px ' + FONT_JP;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    slogan.forEach(function (ch, i) {
-      if (ch === '　') return;
-      ctx.fillText(ch, 946, 175 + i * step);
-    });
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
+    line(ctx, 356, 106, 600, 18, 9, '#fff');
+    line(ctx, 376, 106, 1076, 106, 5, '#fff');
+    line(ctx, 430, 92, 590, 32, 3, 'rgba(255,255,255,.7)');
+    line(ctx, 24, 1536, 730, 1536, 4, '#fff');
+    line(ctx, 24, 1650, 770, 1650, 4, '#fff');
+    line(ctx, 470, 1726, 620, 1652, 6, '#fff');
 
-    // 上部の白いライン
-    line(ctx, 336, 98, 560, 16, 8, '#fff');
-    line(ctx, 352, 99, 1000, 99, 5, '#fff');
-    line(ctx, 400, 86, 548, 30, 3, 'rgba(255,255,255,.7)');
-
-    // 下部の帯
-    line(ctx, 22, 1326, 684, 1326, 4, '#fff');
-    line(ctx, 22, 1430, 720, 1430, 4, '#fff');
-    line(ctx, 438, 1506, 578, 1436, 6, '#fff');
-
-    // ランク文字 (左上)
-    ctx.font = '900 150px ' + FONT_HEAVY;
+    // ランク文字
+    ctx.font = '900 165px ' + FF_HEAVY;
     ctx.lineJoin = 'round';
-    ctx.lineWidth = 9;
+    ctx.lineWidth = 10;
     ctx.strokeStyle = c.dark;
     ctx.fillStyle = rank.accent;
-    const rankW = Math.min(ctx.measureText(rank.id).width, 250);
-    fitText(ctx, rank.id, 46, 146, rankW);
+    fitText(ctx, rank.id, 50, 164, Math.min(ctx.measureText(rank.id).width, 270), true);
 
     // 見出し
-    ctx.font = 'italic 900 94px ' + FONT_HEAVY;
-    ctx.lineWidth = 0;
-    ctx.strokeStyle = 'rgba(0,0,0,0)';
+    ctx.font = 'italic 900 104px ' + FF_HEAVY;
     ctx.fillStyle = '#fff';
-    fitText(ctx, o.frame.headline, 44, 1412, 636);
+    fitText(ctx, fr.headline, 48, 1622, 690, false);
 
     // 星
-    function stars(cx0, cy, gap, filled) {
+    function stars(x0, cy, gap, filled) {
       for (let i = 0; i < 5; i++) {
-        starPath(ctx, cx0 + i * gap, cy, 31);
+        starPath(ctx, x0 + i * gap, cy, 34);
+        ctx.lineWidth = 3; ctx.lineJoin = 'round';
         if (i < filled) {
-          ctx.fillStyle = '#ffd814';
-          ctx.fill();
-          ctx.lineWidth = 3; ctx.strokeStyle = c.dark; ctx.lineJoin = 'round';
-          ctx.stroke();
+          ctx.fillStyle = '#ffd814'; ctx.strokeStyle = c.dark;
         } else {
-          ctx.fillStyle = 'rgba(255,255,255,.22)';
-          ctx.fill();
-          ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.6)';
-          ctx.stroke();
+          ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.strokeStyle = 'rgba(255,255,255,.6)';
         }
+        ctx.fill();
+        ctx.stroke();
       }
     }
-    stars(595, 57, 85, rank.stars);
-    stars(70, 1476, 78, rank.stars);
+    stars(640, 62, 92, rank.stars);
+    stars(76, 1742, 84, rank.stars);
 
-    // 名前 (写真の左下)
-    const n1 = o.names.first;
-    const n2 = o.names.last;
-    if (n1 || n2) {
-      ctx.save();
-      ctx.font = 'italic 500 76px ' + FONT_NAME;
-      ctx.fillStyle = '#ffd814';
-      ctx.shadowColor = 'rgba(0,0,0,.65)';
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetY = 3;
-      if (n1 && n2) {
-        spacedText(ctx, n1, 38, 1190, 14, 640);
-        spacedText(ctx, n2, 165, 1268, 14, 600);
-      } else {
-        spacedText(ctx, n1 || n2, 40, 1262, 14, 640);
-      }
-      ctx.restore();
-    }
+    ctx.restore();
+  }
 
-    // 右下のバッジ
-    const bx = 850, by = 1328;
-    ctx.beginPath(); ctx.arc(bx, by, 152, 0, Math.PI * 2);
+  /** 仮フレームの右下バッジ(名前より前面) */
+  function drawFallbackBadge(ctx, o) {
+    const c = o.rank.colors;
+    const bx = 915, by = 1590;
+    ctx.save();
+    roundRect(ctx, 0, 0, W, H, 44);
+    ctx.clip();
+    ctx.beginPath(); ctx.arc(bx, by, 166, 0, Math.PI * 2);
     ctx.fillStyle = c.dark; ctx.fill();
-    ctx.beginPath(); ctx.arc(bx, by, 147, 0, Math.PI * 2);
+    ctx.beginPath(); ctx.arc(bx, by, 161, 0, Math.PI * 2);
     ctx.fillStyle = '#fff'; ctx.fill();
-    const rg = ctx.createRadialGradient(bx - 30, by - 40, 10, bx, by, 142);
+    const rg = ctx.createRadialGradient(bx - 30, by - 40, 10, bx, by, 155);
     rg.addColorStop(0, c.light); rg.addColorStop(1, c.base);
-    ctx.beginPath(); ctx.arc(bx, by, 141, 0, Math.PI * 2);
+    ctx.beginPath(); ctx.arc(bx, by, 155, 0, Math.PI * 2);
     ctx.fillStyle = rg; ctx.fill();
-    aomoriPath(ctx, 752, 1196, 1.95, 1.9);
+    aomoriPath(ctx, 812, 1450, 2.0, 1.8);
     ctx.fillStyle = '#fff';
     ctx.fill();
-    ctx.fillStyle = '#fff';
     ctx.textAlign = 'center';
-    ctx.font = '500 34px ' + FONT_NAME;
-    ctx.fillText(o.frame.badge[0], bx, 1405);
-    ctx.fillText(o.frame.badge[1], bx, 1443);
-    ctx.textAlign = 'left';
+    ctx.font = '500 37px ' + FF_NAME;
+    ctx.fillText(state.frame.badge[0], bx, 1692);
+    ctx.fillText(state.frame.badge[1], bx, 1734);
+    ctx.restore();
+  }
 
-    // ホイル(SR 以上)
-    if (rank.foil > 0) drawFoil(ctx, rank, o.seed || 1);
+  /**
+   * カード全体を描画する。
+   * o: { rank, source, view, names:{first,last}, slogan, seed, frameImg }
+   * frameImg があればフレームPNGを使用(写真→PNG→文字の順)、無ければ仮フレーム。
+   */
+  function drawCard(ctx, o, scale) {
+    ctx.save();
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    ctx.clearRect(0, 0, W, H);
 
+    if (o.frameImg) {
+      ctx.save();
+      roundRect(ctx, 0, 0, W, H, 44);
+      ctx.clip();
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, W, H);
+      if (o.source) {
+        const r = L.coverRect(o.source.width, o.source.height, PHOTO.w, PHOTO.h, o.view.zoom, o.view.ox, o.view.oy);
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(PHOTO.x, PHOTO.y, PHOTO.w, PHOTO.h);
+        ctx.clip();
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(o.source, PHOTO.x + r.x, PHOTO.y + r.y, r.w, r.h);
+        ctx.restore();
+      } else {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(PHOTO.x, PHOTO.y, PHOTO.w, PHOTO.h);
+        ctx.clip();
+        drawPlaceholder(ctx);
+        ctx.restore();
+      }
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(o.frameImg, 0, 0, W, H);
+      ctx.restore();
+    } else {
+      drawFallbackFrame(ctx, o);
+    }
+
+    drawSlogan(ctx, o.slogan);
+    drawNames(ctx, o.names);
+    if (!o.frameImg) drawFallbackBadge(ctx, o);
+    if (CFG.foilEffect && o.rank.foil > 0) drawFoil(ctx, o.rank, o.seed || 1);
     ctx.restore();
   }
 
@@ -406,17 +493,18 @@
   preview.width = Math.round(W * PREVIEW_SCALE);
   preview.height = Math.round(H * PREVIEW_SCALE);
   let rafId = 0;
+  let previewFrameImg = null;
 
-  function currentCardOptions(rank, seed) {
+  function cardOptions(rank, seed, slogan, frameImg) {
     return {
-      rank: rank, frame: state.frame, source: state.source, view: state.view,
-      names: currentNames(), seed: seed,
+      rank: rank, source: state.source, view: state.view,
+      names: currentNames(), slogan: slogan, seed: seed, frameImg: frameImg,
     };
   }
 
   function renderPreview() {
     rafId = 0;
-    drawCard(pctx, currentCardOptions(L.MYSTERY_RANK, 1), PREVIEW_SCALE);
+    drawCard(pctx, cardOptions(L.MYSTERY_RANK, 1, CFG.sloganPreview, previewFrameImg), PREVIEW_SCALE);
   }
   function requestRender() {
     if (!rafId) rafId = requestAnimationFrame(renderPreview);
@@ -429,7 +517,7 @@
   }
 
   /* ================================================================
-   * 名前
+   * 名前 (苗字 / 名前 を別欄・ローマ字)
    * ================================================================ */
   let nameInfo = { first: { text: '', invalid: false }, last: { text: '', invalid: false } };
 
@@ -439,23 +527,21 @@
 
   function onNameInput() {
     nameInfo = {
-      first: L.toRomajiName($('name1').value),
-      last: L.toRomajiName($('name2').value),
+      last: L.toRomajiName($('nameLast').value),
+      first: L.toRomajiName($('nameFirst').value),
     };
     const msg = $('nameMsg');
     const bad = nameInfo.first.invalid || nameInfo.last.invalid;
     msg.classList.toggle('error', bad);
+    msg.textContent = '';
     if (bad) {
-      msg.textContent = '漢字や記号は自動で変換できません。ひらがな か ローマ字で入力してね(例: しんいち / SHINICHI)';
+      msg.textContent = '漢字や記号は使えません。ローマ字で入力してね(例: YOKONO / SHINICHI)';
     } else if (nameInfo.first.text || nameInfo.last.text) {
-      msg.textContent = '';
-      const b = document.createElement('span');
-      b.textContent = 'カードに入る名前: ';
       const t = document.createElement('b');
       t.textContent = [nameInfo.first.text, nameInfo.last.text].filter(Boolean).join(' ');
-      msg.append(b, t);
+      msg.append('カードに入る名前: ', t);
     } else {
-      msg.textContent = 'ひらがな・カタカナは自動でローマ字になります';
+      msg.textContent = 'ローマ字で入力(ひらがなでもOK。自動でローマ字になります)';
     }
     updateGenerateButton();
     requestRender();
@@ -578,7 +664,6 @@
       pts.delete(e.pointerId);
       if (pts.size === 0) {
         preview.classList.remove('dragging');
-        // 写真が無いときのタップ = 写真えらび
         if (!state.source && !moved && e.type === 'pointerup') $('fileInput').click();
       }
     }
@@ -644,7 +729,6 @@
   function openCamera() {
     const ok = navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.isSecureContext;
     if (!ok) {
-      // HTTP などで getUserMedia が使えない場合は、OS標準カメラ起動にフォールバック
       $('captureInput').click();
       return;
     }
@@ -688,7 +772,6 @@
     });
   });
 
-  // ドラッグ&ドロップ(PC)
   document.addEventListener('dragover', function (e) { e.preventDefault(); });
   document.addEventListener('drop', function (e) {
     e.preventDefault();
@@ -746,11 +829,13 @@
     await sleep(reduceMotion ? 400 : 1500);
   }
 
-  function renderFinal(rank, seed) {
+  async function renderFinal(rank, seed, slogan) {
+    await fontsReady;
+    const frameImg = await loadFrameImage(rank.id);
     const cv = document.createElement('canvas');
     cv.width = Math.round(W * EXPORT_SCALE);
     cv.height = Math.round(H * EXPORT_SCALE);
-    drawCard(cv.getContext('2d'), currentCardOptions(rank, seed), EXPORT_SCALE);
+    drawCard(cv.getContext('2d'), cardOptions(rank, seed, slogan, frameImg), EXPORT_SCALE);
     return new Promise(function (resolve, reject) {
       cv.toBlob(function (b) { b ? resolve(b) : reject(new Error('toBlob')); }, 'image/png');
     });
@@ -771,7 +856,6 @@
     label.append(b, rank.name + ' が出たよ!');
     const tilt = $('tilt');
     tilt.classList.toggle('foil', rank.foil > 0);
-    // 入場アニメを再生し直す
     tilt.style.animation = 'none';
     void tilt.offsetWidth;
     tilt.style.animation = '';
@@ -783,13 +867,14 @@
   async function generate() {
     if (state.busy) return;
     if (!state.source) { toast('先に写真を入れてね'); return; }
-    if (namesInvalid()) { toast('名前は ひらがな か ローマ字 で入力してね'); return; }
+    if (namesInvalid()) { toast('名前はローマ字で入力してね'); return; }
     state.busy = true;
     updateGenerateButton();
     try {
       const rank = L.pickRank(secureRandom);
+      const slogan = L.pickFrom(secureRandom, CFG.slogans[rank.id]);
       const seed = Math.floor(secureRandom() * 1e9) + 1;
-      const rendering = renderFinal(rank, seed);
+      const rendering = renderFinal(rank, seed, slogan);
       await playGacha(rank);
       showResult(await rendering, rank);
     } catch (e) {
@@ -806,7 +891,7 @@
   }
 
   function fileName() {
-    const n = [nameInfo.first.text, nameInfo.last.text].filter(Boolean).join('_').replace(/[^A-Z0-9_\-']/g, '');
+    const n = [nameInfo.first.text, nameInfo.last.text].filter(Boolean).join('_').replace(/[^A-Z0-9_\-]/g, '');
     return 'aomori-card' + (n ? '-' + n : '') + '.png';
   }
 
@@ -840,7 +925,6 @@
     }
   });
 
-  // カードのチルト & ホイル反射
   (function setupTilt() {
     const tilt = $('tilt');
     if (reduceMotion) return;
@@ -894,18 +978,21 @@
     apple.addEventListener('animationend', function (e) {
       if (e.animationName === 'spin') expand();
     });
-    // 保険: アニメーションが発火しない環境でも必ず閉じる
     setTimeout(expand, 3200);
   }
 
-  $('name1').addEventListener('input', onNameInput);
-  $('name2').addEventListener('input', onNameInput);
+  $('nameLast').addEventListener('input', onNameInput);
+  $('nameFirst').addEventListener('input', onNameInput);
 
   initRates();
   updateHint();
   renderPreview();
   initSplash();
 
+  // 書体・フレームPNGの読み込みが終わったらプレビューを描き直す
+  fontsReady = loadFonts().then(function () { requestRender(); });
+  loadFrameImage('?').then(function (img) { previewFrameImg = img; requestRender(); });
+
   // テスト・デバッグ用に最小限を公開
-  window.__aomoriCard = { state: state, drawCard: drawCard };
+  window.__aomoriCard = { state: state, drawCard: drawCard, cardOptions: cardOptions, ready: function () { return fontsReady; } };
 })();

@@ -50,7 +50,7 @@
     <!-- 左(スマホでは上): ライブプレビュー -->
     <section class="stage" aria-label="カードのプレビュー">
       <div class="card-frame">
-        <canvas id="preview" width="768" height="1152" tabindex="0"
+        <canvas id="preview" width="770" height="1274" tabindex="0"
                 aria-label="カードのプレビュー。写真は矢印キーで移動、プラスとマイナスで拡大縮小できます"></canvas>
       </div>
       <p class="hint" id="hint">写真を追加すると、ここにカードが出来上がっていくよ</p>
@@ -94,18 +94,19 @@
       </div>
 
       <div class="step-block">
-        <h2><span class="num">3</span>おなまえ <small>(あとから変えられるよ)</small></h2>
+        <h2><span class="num">3</span>おなまえ <small>(ローマ字)</small></h2>
         <div class="name-grid">
           <div>
-            <label for="name1">名 (ローマ字 / ひらがな)</label>
-            <input type="text" id="name1" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="SHINICHI / しんいち">
+            <label for="nameLast">苗字 (SURNAME)</label>
+            <input type="text" id="nameLast" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="YOKONO">
           </div>
           <div>
-            <label for="name2">姓 (ローマ字 / ひらがな)</label>
-            <input type="text" id="name2" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="YOKONO / よこの">
+            <label for="nameFirst">名前 (GIVEN NAME)</label>
+            <input type="text" id="nameFirst" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="SHINICHI">
           </div>
         </div>
-        <p class="name-msg" id="nameMsg" aria-live="polite">ひらがな・カタカナは自動でローマ字になります</p>
+        <p class="name-msg" id="nameMsg" aria-live="polite">ローマ字で入力(ひらがなでもOK。自動でローマ字になります)</p>
+        <p class="note">カードには金色の文字で「名前 / 苗字」の順に入ります。</p>
       </div>
 
       <div class="step-block gacha-block">
@@ -172,6 +173,7 @@
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+<script src="assets/config.js"></script>
 <script src="assets/lib.js"></script>
 <script src="assets/app.js"></script>
 </body>
