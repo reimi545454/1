@@ -251,33 +251,27 @@
     ctx.fillStyle = g;
     ctx.fillRect(PHOTO.x, PHOTO.y, PHOTO.w, PHOTO.h);
     const cx = PHOTO.x + PHOTO.w / 2;
-    // 写真が入るまでの仮表示: 「犯人の影」風の真っ黒な人影(白い目とニヤリ口)
+    // 写真が入るまでの仮表示: ごく普通の人影(顔のない立ち姿のシルエット)
     const figH = PHOTO.h * 0.55;
     const k = figH / 400;
     const top = PHOTO.y + PHOTO.h * 0.09;
     ctx.save();
     ctx.translate(cx, top);
     ctx.scale(k, k);
-    ctx.fillStyle = 'rgba(0,40,90,.18)';
+    ctx.fillStyle = 'rgba(0,40,90,.16)';
     ctx.beginPath(); ctx.ellipse(0, 346, 78, 13, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#0b0b10'; ctx.strokeStyle = '#0b0b10';
+    ctx.fillStyle = '#34485f'; ctx.strokeStyle = '#34485f';
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.beginPath(); ctx.ellipse(0, 40, 30, 34, 0, 0, Math.PI * 2); ctx.fill();          // 頭
-    ctx.fillRect(-9, 66, 18, 16);                                                         // 首
-    ctx.beginPath(); ctx.moveTo(-46, 94); ctx.quadraticCurveTo(0, 74, 46, 94);            // 胴体
-    ctx.lineTo(52, 204); ctx.lineTo(-52, 204); ctx.closePath(); ctx.fill();
+    ctx.fillRect(-10, 66, 20, 18);                                                        // 首
+    ctx.beginPath(); ctx.moveTo(-50, 112); ctx.quadraticCurveTo(-48, 84, -14, 82);       // 胴体(なで肩)
+    ctx.lineTo(14, 82); ctx.quadraticCurveTo(48, 84, 50, 112);
+    ctx.lineTo(46, 204); ctx.lineTo(-46, 204); ctx.closePath(); ctx.fill();
     ctx.lineWidth = 20;                                                                   // 腕
-    ctx.beginPath(); ctx.moveTo(-42, 106); ctx.lineTo(-64, 196); ctx.moveTo(42, 106); ctx.lineTo(64, 196); ctx.stroke();
-    ctx.beginPath(); ctx.arc(-65, 204, 12, 0, Math.PI * 2); ctx.arc(65, 204, 12, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-44, 112); ctx.lineTo(-62, 198); ctx.moveTo(44, 112); ctx.lineTo(62, 198); ctx.stroke();
     ctx.lineWidth = 30;                                                                   // 脚
-    ctx.beginPath(); ctx.moveTo(-20, 198); ctx.lineTo(-24, 330); ctx.moveTo(20, 198); ctx.lineTo(24, 330); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-20, 198); ctx.lineTo(-24, 332); ctx.moveTo(20, 198); ctx.lineTo(24, 332); ctx.stroke();
     ctx.beginPath(); ctx.ellipse(-28, 340, 24, 9, 0, 0, Math.PI * 2); ctx.ellipse(28, 340, 24, 9, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#fff';                                                               // 目と口
-    ctx.shadowColor = 'rgba(255,255,255,.9)';
-    ctx.shadowBlur = 10;
-    ctx.beginPath(); ctx.ellipse(-12, 36, 9, 4.8, -0.35, 0, Math.PI * 2); ctx.ellipse(12, 36, 9, 4.8, 0.35, 0, Math.PI * 2); ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.beginPath(); ctx.moveTo(-18, 52); ctx.quadraticCurveTo(0, 76, 18, 52); ctx.quadraticCurveTo(0, 61, -18, 52); ctx.fill();
     ctx.restore();
     const ty = top + figH + 100;
     ctx.fillStyle = '#1e5f9f';
