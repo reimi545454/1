@@ -69,29 +69,18 @@
 
       <div class="step-block">
         <h2><span class="num">1</span>フレームをえらぶ</h2>
-        <div id="frames" class="chips" role="radiogroup" aria-label="フレーム">
-          <button type="button" class="chip" role="radio" aria-checked="true" data-frame="local-preneur">
-            <span class="swatch swatch-blue" aria-hidden="true"></span>ローカルプレナー
-          </button>
-          <button type="button" class="chip" role="radio" aria-checked="false" disabled>
-            <span class="swatch swatch-gold" aria-hidden="true"></span>漁師カード風<small>じゅんびちゅう</small>
-          </button>
-          <button type="button" class="chip" role="radio" aria-checked="false" disabled>
-            <span class="swatch swatch-red" aria-hidden="true"></span>ねぶた風<small>じゅんびちゅう</small>
-          </button>
-        </div>
+        <div id="frames" class="chips" role="radiogroup" aria-label="フレーム"></div>
       </div>
 
       <div class="step-block">
         <h2><span class="num">2</span>写真をいれる</h2>
-        <div class="btn-row">
-          <button type="button" class="btn btn-photo" id="btnPick">
-            <span class="ico" aria-hidden="true">🖼️</span>写真をえらぶ
-          </button>
-          <button type="button" class="btn btn-camera" id="btnCamera">
-            <span class="ico" aria-hidden="true">📷</span>カメラでとる
-          </button>
-        </div>
+        <button type="button" class="btn-upload" id="btnPick">
+          <span class="up-ico" aria-hidden="true">📷</span>
+          <span class="up-text"><b>写真をアップロード</b><small>アルバムから選ぶ</small></span>
+        </button>
+        <button type="button" class="btn btn-camera btn-wide" id="btnCamera">
+          <span class="ico" aria-hidden="true">📸</span>カメラでその場でとる
+        </button>
         <input type="file" id="fileInput" accept="image/*" hidden>
         <input type="file" id="captureInput" accept="image/*" capture="user" hidden>
         <div class="zoom-row" id="zoomRow" hidden>
@@ -103,7 +92,7 @@
       </div>
 
       <div class="step-block">
-        <h2><span class="num">3</span>おなまえ <small>(ローマ字)</small></h2>
+        <h2><span class="num">3</span>おなまえと地域</h2>
         <div class="name-grid">
           <div>
             <label for="nameLast">苗字 (SURNAME)</label>
@@ -116,6 +105,10 @@
         </div>
         <p class="name-msg" id="nameMsg" aria-live="polite">ローマ字で入力(ひらがなでもOK。自動でローマ字になります)</p>
         <p class="note">カードには金色の文字で「名前 / 苗字」の順に入ります。</p>
+        <div class="slogan-field">
+          <label for="region">地域(右下のバッジに入るよ)</label>
+          <select id="region"><option value="">青森県(全体)</option></select>
+        </div>
       </div>
 
       <div class="step-block" id="customBlock" hidden>

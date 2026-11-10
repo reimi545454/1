@@ -41,10 +41,10 @@
   /* ================================================================
    * 状態
    * ================================================================ */
-  const frameId = 'local-preneur';
   const state = {
-    frameId: frameId,
-    frame: CFG.frames[frameId],
+    frameId: CFG.defaultFrame,
+    frame: CFG.frames[CFG.defaultFrame],
+    region: null, // null = 青森県(全体)。{ ja, en, type }
     source: null, // HTMLCanvasElement (取り込み済みの写真)
     view: { zoom: 1, ox: 0, oy: 0 },
     busy: false,
@@ -55,7 +55,7 @@
     resultBlob: null,
     lastFocus: null,
   };
-  const PHOTO = state.frame.photo;
+  let PHOTO = state.frame.photo; // フレーム切替で差し替わる
 
   /* ================================================================
    * フォント・フレームPNGの読み込み
@@ -198,22 +198,29 @@
     const step = Math.min(s.maxSize, s.height / chars.length);
     ctx.save();
     ctx.fillStyle = s.color;
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = step * 0.2;
+    ctx.strokeStyle = s.halo || 'transparent';
     ctx.font = '900 ' + Math.round(step * 0.96) + 'px ' + FF_JP;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     chars.forEach(function (ch, i) {
       if (ch === '　' || ch === ' ') return;
       const cy = s.top + step * (i + 0.5);
+      const halo = !!s.halo;
       if (/[、。，．]/.test(ch)) {
         // 縦書きでは句読点はマスの右上に寄る
+        if (halo) ctx.strokeText(ch, s.x + step * 0.5, cy - step * 0.5);
         ctx.fillText(ch, s.x + step * 0.5, cy - step * 0.5);
       } else if (ch === 'ー' || ch === '～' || ch === '〜') {
         ctx.save();
         ctx.translate(s.x, cy);
         ctx.rotate(Math.PI / 2);
+        if (halo) ctx.strokeText(ch, 0, 0);
         ctx.fillText(ch, 0, 0);
         ctx.restore();
       } else {
+        if (halo) ctx.strokeText(ch, s.x, cy);
         ctx.fillText(ch, s.x, cy);
       }
     });
@@ -252,7 +259,8 @@
     ctx.fillRect(PHOTO.x, PHOTO.y, PHOTO.w, PHOTO.h);
     const cx = PHOTO.x + PHOTO.w / 2;
     ctx.save();
-    ctx.translate(cx - 170, 640 - 170);
+    const py = PHOTO.y + PHOTO.h * 0.38;
+    ctx.translate(cx - 170, py - 170);
     ctx.scale(340 / 120, 340 / 120);
     ctx.fillStyle = '#e8384f';
     ctx.fill(APPLE.body);
@@ -268,10 +276,10 @@
     ctx.fillStyle = '#1e5f9f';
     ctx.textAlign = 'center';
     ctx.font = '900 58px ' + FF_JP;
-    ctx.fillText('ここに写真が入るよ', cx, 960);
+    ctx.fillText('ここに写真が入るよ', cx, py + 320);
     ctx.font = '900 40px ' + FF_JP;
     ctx.fillStyle = '#4a82b8';
-    ctx.fillText('タップして写真をえらぶ', cx, 1036);
+    ctx.fillText('タップして写真をえらぶ', cx, py + 396);
     ctx.textAlign = 'left';
   }
 
@@ -305,30 +313,48 @@
     ctx.restore();
   }
 
-  /** PNGが無いランク用の仮フレーム(photo / slogan の窓位置は設定と共通) */
-  function drawFallbackFrame(ctx, o) {
-    const rank = o.rank;
+  function drawStars(ctx, rank, x0, cy, gap, r) {
     const c = rank.colors;
+    for (let i = 0; i < 5; i++) {
+      starPath(ctx, x0 + i * gap, cy, r);
+      ctx.lineWidth = 3; ctx.lineJoin = 'round';
+      if (i < rank.stars) {
+        ctx.fillStyle = '#ffd814'; ctx.strokeStyle = c.dark;
+      } else {
+        ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.strokeStyle = 'rgba(255,255,255,.6)';
+      }
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+
+  function drawRankLabel(ctx, rank) {
+    ctx.font = '900 165px ' + FF_HEAVY;
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = rank.colors.dark;
+    ctx.fillStyle = rank.accent;
+    fitText(ctx, rank.id, 50, 164, Math.min(ctx.measureText(rank.id).width, 270), true);
+  }
+
+  function drawWave(ctx, x1, x2, y, amp, len, w, color) {
+    ctx.beginPath();
+    for (let x = x1; x <= x2; x += 6) {
+      const yy = y + Math.sin(((x - x1) / len) * Math.PI * 2) * amp;
+      if (x === x1) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+    }
+    ctx.lineWidth = w;
+    ctx.strokeStyle = color;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+  }
+
+  function fillPhotoWindow(ctx, o) {
     const fr = state.frame;
     ctx.save();
-    roundRect(ctx, 0, 0, W, H, 44);
-    ctx.clip();
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, W, H);
-    const bg = ctx.createLinearGradient(0, 0, W, H);
-    bg.addColorStop(0, c.light); bg.addColorStop(0.5, c.base); bg.addColorStop(1, c.dark);
-    ctx.fillStyle = bg;
-    ctx.fillRect(12, 12, W - 24, H - 24);
-
-    // 窓の外枠(白) と 縦書き帯
     polyPath(ctx, fr.photo.polygon);
     ctx.fillStyle = '#fff';
     ctx.fill();
-    ctx.fillRect(958, 112, 118, 1230);
-
-    // 窓を写真で埋める
-    ctx.save();
-    polyPath(ctx, fr.photo.polygon);
     ctx.clip();
     if (o.source) {
       const r = L.coverRect(o.source.width, o.source.height, PHOTO.w, PHOTO.h, o.view.zoom, o.view.ox, o.view.oy);
@@ -339,6 +365,54 @@
       drawPlaceholder(ctx);
     }
     ctx.restore();
+  }
+
+  function frameBase(ctx, rank) {
+    const c = rank.colors;
+    roundRect(ctx, 0, 0, W, H, 44);
+    ctx.clip();
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, W, H);
+    const bg = ctx.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, c.light); bg.addColorStop(0.5, c.base); bg.addColorStop(1, c.dark);
+    ctx.fillStyle = bg;
+    ctx.fillRect(12, 12, W - 24, H - 24);
+  }
+
+  /** PNGが無いランク用の仮フレーム(photo / slogan の窓位置は設定と共通) */
+  function drawFallbackFrame(ctx, o) {
+    const fr = state.frame;
+    ctx.save();
+    frameBase(ctx, o.rank);
+    if (fr.style === 'fisher') drawFisherFrame(ctx, o);
+    else drawStripFrame(ctx, o);
+    ctx.restore();
+  }
+
+  /** 漁師カード風: 写真いっぱい + 波のライン + 下に星の帯 */
+  function drawFisherFrame(ctx, o) {
+    const rank = o.rank;
+    fillPhotoWindow(ctx, o);
+    // 上部: 斜めの白線と波
+    line(ctx, 356, 106, 600, 18, 9, '#fff');
+    drawWave(ctx, 380, 1076, 96, 7, 70, 5, 'rgba(255,255,255,.9)');
+    drawWave(ctx, 380, 1076, 110, 7, 70, 3, 'rgba(255,255,255,.55)');
+    drawRankLabel(ctx, rank);
+    drawStars(ctx, rank, 640, 62, 92, 34);
+    // 下部の帯: 星 + 波
+    drawWave(ctx, 24, 1076, 1722, 6, 80, 4, 'rgba(255,255,255,.85)');
+    drawStars(ctx, rank, 76, 1762, 84, 30);
+  }
+
+  /** ローカルプレナー風: 右に白い縦帯 + 見出し */
+  function drawStripFrame(ctx, o) {
+    const fr = state.frame;
+    const rank = o.rank;
+    polyPath(ctx, fr.photo.polygon);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+    ctx.fillRect(958, 112, 118, 1230);
+    fillPhotoWindow(ctx, o);
 
     line(ctx, 356, 106, 600, 18, 9, '#fff');
     line(ctx, 376, 106, 1076, 106, 5, '#fff');
@@ -347,61 +421,53 @@
     line(ctx, 24, 1650, 770, 1650, 4, '#fff');
     line(ctx, 470, 1726, 620, 1652, 6, '#fff');
 
-    // ランク文字
-    ctx.font = '900 165px ' + FF_HEAVY;
-    ctx.lineJoin = 'round';
-    ctx.lineWidth = 10;
-    ctx.strokeStyle = c.dark;
-    ctx.fillStyle = rank.accent;
-    fitText(ctx, rank.id, 50, 164, Math.min(ctx.measureText(rank.id).width, 270), true);
-
-    // 見出し
+    drawRankLabel(ctx, rank);
     ctx.font = 'italic 900 104px ' + FF_HEAVY;
     ctx.fillStyle = '#fff';
     fitText(ctx, fr.headline, 48, 1622, 690, false);
+    drawStars(ctx, rank, 640, 62, 92, 34);
+    drawStars(ctx, rank, 76, 1742, 84, 34);
+  }
 
-    // 星
-    function stars(x0, cy, gap, filled) {
-      for (let i = 0; i < 5; i++) {
-        starPath(ctx, x0 + i * gap, cy, 34);
-        ctx.lineWidth = 3; ctx.lineJoin = 'round';
-        if (i < filled) {
-          ctx.fillStyle = '#ffd814'; ctx.strokeStyle = c.dark;
-        } else {
-          ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.strokeStyle = 'rgba(255,255,255,.6)';
-        }
-        ctx.fill();
-        ctx.stroke();
-      }
-    }
-    stars(640, 62, 92, rank.stars);
-    stars(76, 1742, 84, rank.stars);
-
-    ctx.restore();
+  /** バッジの2行テキスト(地域を選んでいればその市町村) */
+  function badgeLines() {
+    const r = state.region;
+    return r ? [r.en, r.type] : state.frame.badge;
   }
 
   /** 仮フレームの右下バッジ(名前より前面) */
   function drawFallbackBadge(ctx, o) {
     const c = o.rank.colors;
-    const bx = 915, by = 1590;
+    const bp = state.frame.badgePos;
+    const k = bp.r / 166;
+    const bx = bp.x, by = bp.y;
     ctx.save();
     roundRect(ctx, 0, 0, W, H, 44);
     ctx.clip();
-    ctx.beginPath(); ctx.arc(bx, by, 166, 0, Math.PI * 2);
+    ctx.beginPath(); ctx.arc(bx, by, bp.r, 0, Math.PI * 2);
     ctx.fillStyle = c.dark; ctx.fill();
-    ctx.beginPath(); ctx.arc(bx, by, 161, 0, Math.PI * 2);
+    ctx.beginPath(); ctx.arc(bx, by, bp.r - 5 * k, 0, Math.PI * 2);
     ctx.fillStyle = '#fff'; ctx.fill();
-    const rg = ctx.createRadialGradient(bx - 30, by - 40, 10, bx, by, 155);
+    const rg = ctx.createRadialGradient(bx - 30 * k, by - 40 * k, 10, bx, by, bp.r - 11 * k);
     rg.addColorStop(0, c.light); rg.addColorStop(1, c.base);
-    ctx.beginPath(); ctx.arc(bx, by, 155, 0, Math.PI * 2);
+    ctx.beginPath(); ctx.arc(bx, by, bp.r - 11 * k, 0, Math.PI * 2);
     ctx.fillStyle = rg; ctx.fill();
-    aomoriPath(ctx, 812, 1450, 2.0, 1.8);
+    aomoriPath(ctx, bx - 103 * k, by - 140 * k, 2.0 * k, 1.8 * k);
     ctx.fillStyle = '#fff';
     ctx.fill();
+    const [l1, l2] = badgeLines();
+    ctx.fillStyle = '#fff';
     ctx.textAlign = 'center';
-    ctx.font = '500 37px ' + FF_NAME;
-    ctx.fillText(state.frame.badge[0], bx, 1692);
-    ctx.fillText(state.frame.badge[1], bx, 1734);
+    ctx.font = 'italic 600 ' + Math.round(40 * k) + 'px ' + FF_NAME;
+    const maxW = bp.r * 1.5;
+    const w1 = ctx.measureText(l1).width;
+    ctx.save();
+    ctx.translate(bx, by + 102 * k);
+    ctx.scale(Math.min(1, maxW / w1), 1);
+    ctx.fillText(l1, 0, 0);
+    ctx.restore();
+    ctx.font = 'italic 500 ' + Math.round(32 * k) + 'px ' + FF_NAME;
+    ctx.fillText(l2, bx, by + 142 * k);
     ctx.restore();
   }
 
@@ -509,7 +575,7 @@
     rafId = 0;
     const custom = state.mode === 'custom';
     const rank = custom ? state.customRank : L.MYSTERY_RANK;
-    const slogan = custom ? state.customSlogan.text : CFG.sloganPreview;
+    const slogan = custom ? state.customSlogan.text : state.frame.sloganPreview;
     drawCard(pctx, cardOptions(rank, 1, slogan, previewFrameImg), PREVIEW_SCALE);
   }
 
@@ -751,6 +817,7 @@
       $('captureInput').click();
       return;
     }
+    $('camera').style.setProperty('--cam-ar', PHOTO.w + ' / ' + PHOTO.h);
     setModal(true, $('camera'), $('camShutter'));
     startCamera();
   }
@@ -901,7 +968,7 @@
         showResult(blob, rank, true);
       } else {
         const rank = L.pickRank(secureRandom);
-        const slogan = L.pickFrom(secureRandom, CFG.slogans[rank.id]);
+        const slogan = L.pickFrom(secureRandom, state.frame.slogans[rank.id]);
         const rendering = renderFinal(rank, seed, slogan);
         await playGacha(rank);
         showResult(await rendering, rank, false);
@@ -1010,6 +1077,61 @@
     setTimeout(expand, 3200);
   }
 
+  /* ---- フレーム選択 ---- */
+  function setFrame(id) {
+    state.frameId = id;
+    state.frame = CFG.frames[id];
+    PHOTO = state.frame.photo;
+    document.querySelectorAll('#frames .chip[data-frame]').forEach(function (b) {
+      b.setAttribute('aria-checked', String(b.dataset.frame === id));
+    });
+    if (state.source) applyView(state.view.zoom, state.view.ox, state.view.oy);
+    refreshPreviewFrame();
+    requestRender();
+  }
+
+  function initFrames() {
+    const box = $('frames');
+    Object.keys(CFG.frames).forEach(function (id) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip';
+      b.setAttribute('role', 'radio');
+      b.setAttribute('aria-checked', String(id === state.frameId));
+      b.dataset.frame = id;
+      b.textContent = CFG.frames[id].label;
+      b.addEventListener('click', function () { setFrame(id); });
+      box.appendChild(b);
+    });
+    const soon = document.createElement('button');
+    soon.type = 'button';
+    soon.className = 'chip';
+    soon.disabled = true;
+    soon.setAttribute('role', 'radio');
+    soon.setAttribute('aria-checked', 'false');
+    soon.textContent = 'ねぶた風 ';
+    const sm = document.createElement('small');
+    sm.textContent = 'じゅんびちゅう';
+    soon.appendChild(sm);
+    box.appendChild(soon);
+  }
+
+  /* ---- 地域(バッジ) ---- */
+  function initRegions() {
+    const sel = $('region');
+    CFG.regions.forEach(function (r, i) {
+      const o = document.createElement('option');
+      o.value = String(i);
+      o.textContent = r[0];
+      sel.appendChild(o);
+    });
+    sel.addEventListener('change', function () {
+      const r = sel.value === '' ? null : CFG.regions[Number(sel.value)];
+      state.region = r ? { ja: r[0], en: r[1], type: r[2] } : null;
+      requestRender();
+    });
+  }
+
   /* ---- つくりかた(ガチャ / じぶんで えらぶ) ---- */
   const SLOGAN_NG = /[\p{Extended_Pictographic}\p{Cc}\u200d\ufe0f]/u;
 
@@ -1092,6 +1214,8 @@
 
   // 書体・フレームPNGの読み込みが終わったらプレビューを描き直す
   fontsReady = loadFonts().then(function () { requestRender(); });
+  initFrames();
+  initRegions();
   initCustomMode();
   refreshPreviewFrame();
 
