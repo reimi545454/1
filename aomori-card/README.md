@@ -29,7 +29,7 @@ npm test       # ロジックのユニットテスト
 PNGを置いて `assets/config.js` の `png` に登録するだけで、そのランクは仮フレームからPNGに切り替わります。
 
 ## 同梱フォント(SIL OFL 1.1)
-`assets/fonts/` … Exo 2 (名前) / Noto Sans JP Black をJIS第1・2水準で軽量化したもの(縦文字コメント)
+`assets/fonts/` … Exo 2 (名前) / Noto Sans JP Medium をJIS第1・2水準で軽量化したもの(縦文字コメント)
 
 ## 今後の拡張ポイント
 - フレーム追加: `assets/config.js` の `frames` に定義を足し、`index.html` のチップを有効化

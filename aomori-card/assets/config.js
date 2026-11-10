@@ -12,7 +12,7 @@ window.AomoriConfig = {
   // 書き出し・描画に使う書体(アプリに同梱。端末に依存せず常に同じ見た目)
   fonts: {
     name: { family: 'AomoriName', url: 'assets/fonts/Exo2-Italic-VF-latin.woff2', weight: '100 900', style: 'italic' },
-    jp: { family: 'AomoriJP', url: 'assets/fonts/NotoSansJP-Black-subset.woff2', weight: '900', style: 'normal' },
+    jp: { family: 'AomoriJP', url: 'assets/fonts/NotoSansJP-Medium-subset.woff2', weight: '500', style: 'normal' },
   },
 
   defaultFrame: 'fisherman',
@@ -36,20 +36,21 @@ window.AomoriConfig = {
       png: {}, // ローカルプレナーと同じ形式でランク別PNGを登録できる
 
       photo: {
-        x: 24, y: 112, w: 1052, h: 1588,
-        polygon: [[24, 252], [340, 112], [1076, 112], [1076, 1700], [24, 1700]],
+        x: 24, y: 112, w: 1052, h: 1596,
+        polygon: [[24, 252], [450, 112], [1076, 112], [1076, 1708], [24, 1708]],
       },
-      // 縦文字は写真の上に重ねる(halo=読みやすさ用の白フチ)
-      slogan: { drawn: true, x: 1018, top: 200, height: 1180, maxSize: 60, color: '#111111', halo: '#ffffff' },
+      // 縦文字は写真の上に重ねる(halo=読みやすさ用のごく薄い白フチ)
+      slogan: { drawn: true, x: 994, top: 175, height: 1100, maxSize: 72, color: '#111111', halo: '#ffffff' },
+      // 名前は写真の左下に重ねる(後ろに暗いぼかし影が入る)
       name: {
-        size: 96, spacing: 14,
-        first: { x: 42, y: 1556, maxW: 780 },
-        last: { x: 200, y: 1648, maxW: 700 },
-        single: { x: 42, y: 1640, maxW: 780 },
+        size: 112, weight: 800, spacing: 5,
+        first: { x: 40, y: 1580, maxW: 700 },
+        last: { x: 240, y: 1700, maxW: 640 },
+        single: { x: 40, y: 1690, maxW: 760 },
       },
       headline: '',
       badge: ['AOMORI', 'PREFECTURE'], // 地域を選ばなかったときのバッジ文字
-      badgePos: { x: 900, y: 1628, r: 152 },
+      badgePos: { x: 888, y: 1555, r: 180 },
 
       // 縦文字: 漁師カードと同じ文言(全ランク固定)。複数書くとガチャ時にランダム
       slogans: {

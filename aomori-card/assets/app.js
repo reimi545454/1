@@ -141,7 +141,7 @@
   /** 金色の名前文字。字間つき、長すぎる場合は横に縮める */
   function goldName(ctx, text, spec, size, spacing) {
     ctx.save();
-    ctx.font = 'italic 600 ' + size + 'px ' + FF_NAME;
+    ctx.font = 'italic ' + (state.frame.name.weight || 600) + ' ' + size + 'px ' + FF_NAME;
     ctx.textBaseline = 'alphabetic';
     const chars = Array.from(text);
     const widths = chars.map(function (c) { return ctx.measureText(c).width; });
@@ -199,9 +199,9 @@
     ctx.save();
     ctx.fillStyle = s.color;
     ctx.lineJoin = 'round';
-    ctx.lineWidth = step * 0.2;
+    ctx.lineWidth = step * 0.14;
     ctx.strokeStyle = s.halo || 'transparent';
-    ctx.font = '900 ' + Math.round(step * 0.96) + 'px ' + FF_JP;
+    ctx.font = '500 ' + Math.round(step * 0.9) + 'px ' + FF_JP;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     chars.forEach(function (ch, i) {
@@ -284,9 +284,9 @@
     }
     ctx.fillStyle = '#1e5f9f';
     ctx.textAlign = 'center';
-    ctx.font = '900 58px ' + FF_JP;
+    ctx.font = '700 58px ' + FF_JP;
     ctx.fillText('ここに写真が入るよ', cx, py + 320);
-    ctx.font = '900 40px ' + FF_JP;
+    ctx.font = '700 40px ' + FF_JP;
     ctx.fillStyle = '#4a82b8';
     ctx.fillText('タップして写真をえらぶ', cx, py + 396);
     ctx.textAlign = 'left';
@@ -322,8 +322,13 @@
     ctx.restore();
   }
 
+  // 漁師カード風は全ランク共通の水色(ランクは文字・星・ホイルで表す)
+  const FISHER_PAL = { light: '#5dbcf4', base: '#2b92e0', dark: '#125fae' };
+  function colorsFor(rank) { return state.frame.style === 'fisher' ? FISHER_PAL : rank.colors; }
+  function accentFor(rank) { return state.frame.style === 'fisher' ? '#ffd814' : rank.accent; }
+
   function drawStars(ctx, rank, x0, cy, gap, r) {
-    const c = rank.colors;
+    const c = colorsFor(rank);
     for (let i = 0; i < 5; i++) {
       starPath(ctx, x0 + i * gap, cy, r);
       ctx.lineWidth = 3; ctx.lineJoin = 'round';
@@ -338,11 +343,11 @@
   }
 
   function drawRankLabel(ctx, rank) {
-    ctx.font = '900 165px ' + FF_HEAVY;
+    ctx.font = '900 150px ' + FF_HEAVY;
     ctx.lineJoin = 'round';
-    ctx.lineWidth = 10;
-    ctx.strokeStyle = rank.colors.dark;
-    ctx.fillStyle = rank.accent;
+    ctx.lineWidth = 9;
+    ctx.strokeStyle = colorsFor(rank).dark;
+    ctx.fillStyle = accentFor(rank);
     fitText(ctx, rank.id, 50, 164, Math.min(ctx.measureText(rank.id).width, 270), true);
   }
 
@@ -377,7 +382,7 @@
   }
 
   function frameBase(ctx, rank) {
-    const c = rank.colors;
+    const c = colorsFor(rank);
     roundRect(ctx, 0, 0, W, H, 44);
     ctx.clip();
     ctx.fillStyle = '#fff';
@@ -398,19 +403,31 @@
     ctx.restore();
   }
 
-  /** 漁師カード風: 写真いっぱい + 波のライン + 下に星の帯 */
+  /** 漁師カード風: 写真いっぱい + 波の飾り + 下に星の帯 + 名前の後ろに暗い影 */
   function drawFisherFrame(ctx, o) {
     const rank = o.rank;
     fillPhotoWindow(ctx, o);
-    // 上部: 斜めの白線と波
-    line(ctx, 356, 106, 600, 18, 9, '#fff');
-    drawWave(ctx, 380, 1076, 96, 7, 70, 5, 'rgba(255,255,255,.9)');
-    drawWave(ctx, 380, 1076, 110, 7, 70, 3, 'rgba(255,255,255,.55)');
+    // 名前を読みやすくする左下の暗い影
+    ctx.save();
+    polyPath(ctx, state.frame.photo.polygon);
+    ctx.clip();
+    ctx.translate(160, PHOTO.y + PHOTO.h);
+    ctx.scale(1.6, 1);
+    const sh = ctx.createRadialGradient(0, 0, 0, 0, 0, 480);
+    sh.addColorStop(0, 'rgba(0,0,0,.78)');
+    sh.addColorStop(0.55, 'rgba(0,0,0,.4)');
+    sh.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = sh;
+    ctx.fillRect(-400, -520, 1400, 560);
+    ctx.restore();
+    // 上部の波飾り
+    drawWave(ctx, 380, 1076, 92, 7, 70, 5, 'rgba(255,255,255,.92)');
+    drawWave(ctx, 380, 1076, 106, 7, 70, 3, 'rgba(190,235,255,.8)');
     drawRankLabel(ctx, rank);
-    drawStars(ctx, rank, 640, 62, 92, 34);
-    // 下部の帯: 星 + 波
-    drawWave(ctx, 24, 1076, 1722, 6, 80, 4, 'rgba(255,255,255,.85)');
-    drawStars(ctx, rank, 76, 1762, 84, 30);
+    drawStars(ctx, rank, 612, 60, 100, 34);
+    // 下部の帯: 波 + 星
+    drawWave(ctx, 24, 1076, 1722, 6, 80, 4, 'rgba(255,255,255,.9)');
+    drawStars(ctx, rank, 64, 1762, 88, 29);
   }
 
   /** ローカルプレナー風: 右に白い縦帯 + 見出し */
@@ -446,15 +463,29 @@
 
   /** 仮フレームの右下バッジ(名前より前面) */
   function drawFallbackBadge(ctx, o) {
-    const c = o.rank.colors;
+    const c = colorsFor(o.rank);
+    const fisher = state.frame.style === 'fisher';
     const bp = state.frame.badgePos;
     const k = bp.r / 166;
     const bx = bp.x, by = bp.y;
     ctx.save();
     roundRect(ctx, 0, 0, W, H, 44);
     ctx.clip();
+    if (fisher) {
+      // 金と水色のリング(光彩つき)
+      ctx.shadowColor = 'rgba(255,230,140,.85)';
+      ctx.shadowBlur = 26;
+    }
     ctx.beginPath(); ctx.arc(bx, by, bp.r, 0, Math.PI * 2);
-    ctx.fillStyle = c.dark; ctx.fill();
+    if (fisher) {
+      const ring = ctx.createLinearGradient(bx - bp.r, by - bp.r, bx + bp.r, by + bp.r);
+      ring.addColorStop(0, '#bff0ff'); ring.addColorStop(0.5, '#ffe58a'); ring.addColorStop(1, '#7fd0ff');
+      ctx.fillStyle = ring;
+    } else {
+      ctx.fillStyle = c.dark;
+    }
+    ctx.fill();
+    ctx.shadowColor = 'transparent';
     ctx.beginPath(); ctx.arc(bx, by, bp.r - 5 * k, 0, Math.PI * 2);
     ctx.fillStyle = '#fff'; ctx.fill();
     const rg = ctx.createRadialGradient(bx - 30 * k, by - 40 * k, 10, bx, by, bp.r - 11 * k);
