@@ -16,6 +16,15 @@ window.AomoriConfig = {
     jp: { family: 'AomoriJP', url: 'assets/fonts/NotoSansJP-Medium-subset.woff2', weight: '500', style: 'normal' },
   },
 
+  /*
+   * Adobe Fonts(Apotek Extra Cond)。名前(斜体)とランク文字(通常体)に使う。
+   *   - Adobe の配信(Typekit)から読み込む。同梱はしない(規約のため)。読み込みの際にAdobeへアクセスが発生する
+   *   - 読み込めなかったとき(オフライン・ドメイン未登録など)は、上の同梱書体に自動で切り替わる
+   *   - kit の「ドメイン」に、公開先のドメインを登録しておくこと
+   *   - enabled: false にすると、Adobe には一切アクセスしない
+   */
+  adobeFonts: { enabled: true, css: 'https://use.typekit.net/mwj8mmr.css', family: 'apotek-extracond', weight: 600, timeoutMs: 4000 },
+
   defaultFrame: 'fisherman',
 
   /*
@@ -54,6 +63,7 @@ window.AomoriConfig = {
       // 名前は写真の左下に重ねる(後ろに暗いぼかし影が入る)
       name: {
         size: 120, weight: 900, spacing: 6,
+        adobe: { size: 132, spacing: 17 }, // Apotek(極細の書体)のときの大きさと字間
         first: { x: 40, y: 1580, maxW: 640 },
         last: { x: 240, y: 1700, maxW: 450 },
         single: { x: 40, y: 1690, maxW: 640 },

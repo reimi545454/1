@@ -35,6 +35,7 @@
     source: null, // HTMLCanvasElement (取り込み済みの写真)
     view: { zoom: 1, ox: 0, oy: 0 },
     busy: false,
+    adobeReady: false, // Adobe Fonts(Apotek)が使えるか
     resultUrl: null,
     resultBlob: null,
     lastFocus: null,
@@ -52,7 +53,33 @@
       const face = new FontFace(f.family, 'url(' + f.url + ')', { weight: f.weight, style: f.style });
       return face.load().then(function (loaded) { document.fonts.add(loaded); }).catch(function () { /* 代替書体で継続 */ });
     });
+    jobs.push(loadAdobeFonts());
     return Promise.all(jobs);
+  }
+
+  /** Adobe Fonts(Typekit)を読み込む。失敗・時間切れ・無効のときは state.adobeReady=false のまま(同梱書体で描く) */
+  function loadAdobeFonts() {
+    const a = CFG.adobeFonts;
+    if (!a || !a.enabled || !window.FontFace || !document.fonts) return Promise.resolve();
+    return new Promise(function (resolve) {
+      let done = false;
+      const finish = function () { if (!done) { done = true; resolve(); } };
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = a.css;
+      link.onload = function () {
+        const want = [a.weight + ' 64px "' + a.family + '"', 'italic ' + a.weight + ' 64px "' + a.family + '"'];
+        Promise.all(want.map(function (f) { return document.fonts.load(f, 'AOMORI SP'); }))
+          .then(function (res) {
+            state.adobeReady = res.every(function (faces) { return faces.length > 0 && faces.every(function (x) { return x.status === 'loaded'; }); });
+            finish();
+          })
+          .catch(finish);
+      };
+      link.onerror = finish;
+      setTimeout(finish, a.timeoutMs || 4000);
+      document.head.appendChild(link);
+    });
   }
 
   const frameImages = new Map();
@@ -128,7 +155,9 @@
   /** 金色の名前文字。字間つき、長すぎる場合は横に縮める */
   function goldName(ctx, text, spec, size, spacing) {
     ctx.save();
-    ctx.font = 'italic ' + (state.frame.name.weight || 600) + ' ' + size + 'px ' + FF_NAME;
+    ctx.font = state.adobeReady
+      ? 'italic ' + CFG.adobeFonts.weight + ' ' + size + 'px "' + CFG.adobeFonts.family + '", ' + FF_NAME
+      : 'italic ' + (state.frame.name.weight || 600) + ' ' + size + 'px ' + FF_NAME;
     ctx.textBaseline = 'alphabetic';
     const chars = Array.from(text);
     const widths = chars.map(function (c) { return ctx.measureText(c).width; });
@@ -171,15 +200,19 @@
 
   function drawNames(ctx, names, alpha) {
     const spec = state.frame.name;
+    // Adobe Fonts(極細のApotek)が使えるときは、専用の大きさと字間
+    const ad = state.adobeReady && spec.adobe;
+    const size = ad ? spec.adobe.size : spec.size;
+    const spacing = ad ? spec.adobe.spacing : spec.spacing;
     ctx.save();
     if (alpha != null) ctx.globalAlpha = alpha;
     const first = names.first;
     const last = names.last;
     if (first && last) {
-      goldName(ctx, first, spec.first, spec.size, spec.spacing);
-      goldName(ctx, last, spec.last, spec.size, spec.spacing);
+      goldName(ctx, first, spec.first, size, spacing);
+      goldName(ctx, last, spec.last, size, spacing);
     } else if (first || last) {
-      goldName(ctx, first || last, spec.single, spec.size, spec.spacing);
+      goldName(ctx, first || last, spec.single, size, spacing);
     }
     ctx.restore();
   }
@@ -321,7 +354,9 @@
   }
 
   function drawRankLabel(ctx, rank) {
-    ctx.font = '900 150px ' + FF_HEAVY;
+    ctx.font = state.adobeReady
+      ? CFG.adobeFonts.weight + ' 176px "' + CFG.adobeFonts.family + '", ' + FF_HEAVY
+      : '900 150px ' + FF_HEAVY;
     ctx.lineJoin = 'round';
     ctx.lineWidth = 9;
     ctx.strokeStyle = colorsFor(rank).dark;

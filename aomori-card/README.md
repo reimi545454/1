@@ -46,3 +46,10 @@ PNGを置いて `assets/config.js` の `png` に登録するだけで、その�
 バッジの青森県の地図と、市町村ごとの丸印の位置は、国土数値情報(行政区域データ・国土交通省)を
 SmartNews Media Research Institute が加工した japan-topography(https://github.com/smartnews-smri/japan-topography)を
 さらに簡略化して作成しています。丸印は、各市町村(飛び地がある場合は最大の領域)の最大内接円の中心です。
+
+## Adobe Fonts(Apotek Extra Cond)
+名前(斜体)とランク文字(通常体)は、Adobe Fonts の `apotek-extracond` を使います(`assets/config.js` の `adobeFonts`)。
+- Adobeの配信(`use.typekit.net`)から読み込みます。フォントファイルは同梱しません(規約のため)。読み込みの際、Adobeへアクセスが発生します。写真・名前・地域は、これまでどおり端末の外に出ません
+- Adobe Fonts のキットに、**公開先のドメインを登録**してください(未登録だと読み込めず、同梱書体に切り替わります)
+- 画面のセキュリティ設定(CSP)で、`use.typekit.net` と `p.typekit.net` だけを許可しています
+- `adobeFonts.enabled: false` にすると、Adobeには一切アクセスしません
