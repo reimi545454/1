@@ -31,7 +31,7 @@
 <!-- オープニング: くるくるりんご → ぐわっと広がって本編へ -->
 <div id="splash" role="status" aria-label="読み込み中">
   <div class="splash-stage">
-    <svg class="splash-apple" viewBox="0 0 120 120" aria-hidden="true"><use href="#apple"/></svg>
+    <svg class="splash-apple" data-mascot-slot="splash" viewBox="0 0 120 120" aria-hidden="true"><use href="#apple"/></svg>
   </div>
   <p class="splash-title">あおもり カードメーカー</p>
   <button type="button" class="splash-skip" id="splashSkip">スキップ</button>
@@ -39,7 +39,7 @@
 
 <div id="app">
   <header class="top">
-    <svg class="logo" viewBox="0 0 120 120" aria-hidden="true"><use href="#apple"/></svg>
+    <svg class="logo" data-mascot-slot="logo" viewBox="0 0 120 120" aria-hidden="true"><use href="#apple"/></svg>
     <div>
       <h1>あおもりカードメーカー</h1>
       <p class="sub">写真1枚で、あなたも青森のカードに。</p>
@@ -105,12 +105,18 @@
       <div class="step-block gacha-block" id="makeBlock" data-step>
         <h2><span class="num">4</span>カードをつくる</h2>
         <button type="button" class="btn-gacha" id="btnGenerate" disabled>
-          <svg class="gacha-apple" viewBox="0 0 120 120" aria-hidden="true"><use href="#apple"/></svg>
+          <svg class="gacha-apple" data-mascot-slot="button" viewBox="0 0 120 120" aria-hidden="true"><use href="#apple"/></svg>
           <span class="gacha-label">カードをつくる!</span>
         </button>
       </div>
     </section>
   </main>
+
+  <div id="assist" class="assist" hidden>
+    <button type="button" id="assistBtn" class="assist-btn">
+      <span class="assist-arrow" id="assistArrow" aria-hidden="true">👇</span><span id="assistText"></span>
+    </button>
+  </div>
 
   <footer class="foot">
     <p>© あおもりカードメーカー(ラフ版)</p>
@@ -137,7 +143,7 @@
 <!-- ガチャ演出 -->
 <div id="gacha" class="overlay gacha" aria-live="assertive" hidden>
   <div class="gacha-center">
-    <svg class="capsule" viewBox="0 0 120 120" aria-hidden="true"><use href="#apple"/></svg>
+    <svg class="capsule" data-mascot-slot="capsule" viewBox="0 0 120 120" aria-hidden="true"><use href="#apple"/></svg>
     <p class="gacha-text" id="gachaText">ガチャッ…</p>
     <p class="gacha-rank" id="gachaRank"></p>
   </div>

@@ -575,6 +575,7 @@
         app.inert = false;
         document.body.classList.remove('locked');
         if (state.lastFocus && state.lastFocus.focus) state.lastFocus.focus();
+        scheduleAssist();
       }
     }
   }
@@ -671,7 +672,54 @@
   function updateGenerateButton() {
     const needRegion = !!$('region') && !state.region;
     $('btnGenerate').disabled = !state.source || state.busy || namesInvalid() || needRegion;
+    updateAssist();
   }
+
+  /* ================================================================
+   * 操作アシスト: 「つぎはここだよ」を画面下に出し、押すとその場所までスクロールする
+   * ================================================================ */
+  function assistStep() {
+    const noName = !nameInfo.first.text && !nameInfo.last.text;
+    if (!state.source) return { id: 'photoBlock', text: 'つぎは 写真をいれてね' };
+    if (namesInvalid()) return { id: 'nameBlock', text: '名前をローマ字に直してね' };
+    if (noName && !state.region) return { id: 'nameBlock', text: 'つぎは 名前をいれてね' };
+    if ($('region') && !state.region) return { id: 'nameBlock', text: 'つぎは 地域をえらんでね' };
+    return { id: 'makeBlock', text: 'できたら「カードをつくる」を押してね' };
+  }
+
+  function updateAssist() {
+    const box = $('assist');
+    if (!box) return;
+    const blocked = !!document.getElementById('splash') ||
+      !!document.querySelector('.overlay:not([hidden])') || state.busy;
+    const step = assistStep();
+    const el = $(step.id);
+    if (blocked || !el) { box.hidden = true; return; }
+    const r = el.getBoundingClientRect();
+    const vh = window.innerHeight;
+    // 目的の場所がほぼ見えているときは案内を出さない
+    if (r.top < vh * 0.62 && r.bottom > vh * 0.18) { box.hidden = true; return; }
+    $('assistArrow').textContent = r.top >= vh * 0.62 ? '👇' : '👆';
+    $('assistText').textContent = step.text;
+    state.assistTarget = step.id;
+    box.hidden = false;
+  }
+
+  let assistRaf = 0;
+  function scheduleAssist() {
+    if (!assistRaf) assistRaf = requestAnimationFrame(function () { assistRaf = 0; updateAssist(); });
+  }
+  window.addEventListener('scroll', scheduleAssist, { passive: true });
+  window.addEventListener('resize', scheduleAssist);
+  $('assistBtn').addEventListener('click', function () {
+    const el = $(state.assistTarget || assistStep().id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    el.classList.remove('spotlight');
+    void el.offsetWidth;
+    el.classList.add('spotlight');
+    setTimeout(function () { el.classList.remove('spotlight'); }, 2600);
+  });
 
   /* ================================================================
    * 写真の取り込み
@@ -1093,7 +1141,7 @@
       if (finished) return;
       finished = true;
       splash.classList.add('done');
-      setTimeout(function () { splash.remove(); }, 600);
+      setTimeout(function () { splash.remove(); updateAssist(); }, 600);
     }
     function expand() {
       if (finished || splash.classList.contains('expand')) return;
@@ -1103,7 +1151,7 @@
     $('splashSkip').addEventListener('click', finish);
     splash.addEventListener('click', finish);
     if (reduceMotion) { setTimeout(finish, 300); return; }
-    apple.addEventListener('animationend', function (e) {
+    splash.addEventListener('animationend', function (e) {
       if (e.animationName === 'spin') expand();
     });
     setTimeout(expand, 3200);
@@ -1187,6 +1235,21 @@
 
   // 書体・フレームPNGの読み込みが終わったらプレビューを描き直す
   fontsReady = loadFonts().then(function () { requestRender(); });
+  // マスコット画像(config.mascotImages)があれば、読み込めたときだけ入れ替える
+  (function applyMascotImages() {
+    const imgs = CFG.mascotImages || {};
+    const key = { splash: 'splash', logo: 'logo', button: 'logo', capsule: 'gacha' };
+    document.querySelectorAll('[data-mascot-slot]').forEach(function (el) {
+      const url = imgs[key[el.dataset.mascotSlot]] || imgs.main;
+      if (!url) return;
+      const img = new Image();
+      img.className = el.getAttribute('class');
+      img.alt = '';
+      img.setAttribute('aria-hidden', 'true');
+      img.onload = function () { el.replaceWith(img); };
+      img.src = url;
+    });
+  })();
   applyUi();
   if ($('frames')) initFrames();
   initRegions();

@@ -27,6 +27,14 @@ window.AomoriConfig = {
   ui: { frameChooser: false, regionSelect: true, camera: true },
 
 
+  /*
+   * マスコット画像(任意)。空のままなら、りんごのイラスト(SVG)を使う。
+   * 画像を置いてパスを書くと、読み込めたときだけ入れ替わる(作り方は assets/mascot/README.md)。
+   *   main  : 基本の画像(正面向き)。他が空のときはこれを使う
+   *   splash: オープニング用 / gacha: ガチャ待ち用 / logo: ヘッダーとボタンの小さいアイコン用
+   */
+  mascotImages: { main: '', splash: '', gacha: '', logo: '' },
+
   // 名前が未入力のときにプレビューへ薄く出す見本(first=名前 / last=苗字)
   sampleName: { first: 'TARO', last: 'AOMORI' },
 
