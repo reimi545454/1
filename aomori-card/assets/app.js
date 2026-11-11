@@ -144,18 +144,22 @@
     g.addColorStop(0.62, '#b87800');
     g.addColorStop(0.8, '#ffd23f');
     g.addColorStop(1, '#fff1a8');
+    // 金色の文字に、黒のシャドウ(右下にずらした濃い影 + 細い黒の縁)
     ctx.lineJoin = 'round';
-    ctx.lineWidth = Math.max(4, size * 0.07);
-    ctx.strokeStyle = '#4a2d00';
-    ctx.shadowColor = 'rgba(0,0,0,.55)';
-    ctx.shadowBlur = size * 0.14;
-    ctx.shadowOffsetY = size * 0.04;
+    ctx.lineWidth = Math.max(3, size * 0.035);
+    ctx.strokeStyle = '#000';
+    ctx.shadowColor = '#000';
+    ctx.shadowBlur = size * 0.05;
+    ctx.shadowOffsetX = size * 0.045;
+    ctx.shadowOffsetY = size * 0.055;
     let cx = 0;
     chars.forEach(function (c, i) {
       ctx.strokeText(c, cx, 0);
       cx += widths[i] + spacing;
     });
     ctx.shadowColor = 'transparent';
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
     cx = 0;
     ctx.fillStyle = g;
     chars.forEach(function (c, i) {
