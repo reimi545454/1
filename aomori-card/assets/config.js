@@ -25,7 +25,13 @@ window.AomoriConfig = {
    */
   adobeFonts: { enabled: true, css: 'https://use.typekit.net/mwj8mmr.css', family: 'apotek-extracond', weight: 600, timeoutMs: 4000 },
 
-  defaultFrame: 'fisherman',
+  defaultFrame: 'sp',
+
+  /*
+   * ランクの固定。'SP' にすると、つくるを押したときのランクが常にSPになる(抽選しない)。
+   * null にすると、従来どおり重み付きの抽選(N / R / SR / UR / SP)。
+   */
+  rankOverride: 'SP',
 
   /*
    * 画面に出す部品。標準は「写真アップロード → 名前 + 地域 → つくる」(+ カメラ)。
@@ -33,7 +39,7 @@ window.AomoriConfig = {
    *   regionSelect: バッジの市町村選択
    *   camera      : 「カメラでその場でとる」ボタン
    */
-  ui: { frameChooser: false, regionSelect: true, camera: true },
+  ui: { frameChooser: false, regionSelect: false, camera: true },
 
 
   /*
@@ -48,6 +54,37 @@ window.AomoriConfig = {
   sampleName: { first: 'TARO', last: 'AOMORI' },
 
   frames: {
+    /* ---- SP(本番のフレームPNGを使用。写真と名前だけを入れる) ---- */
+    sp: {
+      label: 'SP',
+      style: 'png',
+      // ランク文字・星・縦文字・LOCAL PRENEUR・バッジ(AOMORI SUPPORT)は、すべてフレームPNGの絵。
+      // アプリが描くのは「写真」と「名前」だけ(市町村名・位置の点・ホイルは入れない)
+      png: { SP: 'assets/frames/sp/SP.png', PREVIEW: 'assets/frames/sp/SP.png' },
+      badgeDraw: false,
+      foil: false,
+
+      // 写真が見える窓(論理座標 1100×1820。フレームPNG 650×1075 の透明部分から算出)
+      photo: {
+        x: 0, y: 95, w: 946, h: 1466,
+        polygon: [[943,96],[382,95],[0,254],[2,1559],[736,1559],[770,1504],[821,1464],[875,1444],[944,1442]],
+      },
+      slogan: { drawn: false, x: 0, top: 0, height: 0, maxSize: 0, color: '#000' },
+      // 名前(金色+黒のシャドウ)。写真の左下
+      name: {
+        size: 110, weight: 900, spacing: 6,
+        adobe: { size: 129, spacing: 20 },
+        first: { x: 34, y: 1432, maxW: 508 },
+        last: { x: 166, y: 1537, maxW: 423 },
+        single: { x: 34, y: 1500, maxW: 508 },
+      },
+      headline: '',
+      badge: ['AOMORI', 'SUPPORT'],
+      badgePos: { x: 0, y: 0, r: 0 },
+      slogans: { SP: [''] },
+      sloganPreview: '',
+    },
+
     /* ---- 漁師カード風(出来上がりイメージの基本) ---- */
     fisherman: {
       label: '漁師カード風',

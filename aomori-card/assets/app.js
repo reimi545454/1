@@ -583,8 +583,8 @@
     drawSlogan(ctx, o.slogan);
     drawNames(ctx, o.names, o.nameAlpha);
     // フレームPNGがある場合は、バッジの円(リング・背景)はPNG側に任せ、中身(地図・丸印・市町村名)だけ描く
-    drawFallbackBadge(ctx, o, !!o.frameImg);
-    if (CFG.foilEffect && o.rank.foil > 0) drawFoil(ctx, o.rank, o.seed || 1);
+    if (state.frame.badgeDraw !== false) drawFallbackBadge(ctx, o, !!o.frameImg);
+    if (CFG.foilEffect && state.frame.foil !== false && o.rank.foil > 0) drawFoil(ctx, o.rank, o.seed || 1);
     ctx.restore();
   }
 
@@ -1078,7 +1078,7 @@
     updateGenerateButton();
     try {
       const seed = Math.floor(secureRandom() * 1e9) + 1;
-      const rank = L.pickRank(secureRandom);
+      const rank = (CFG.rankOverride && L.RANKS.find(function (r) { return r.id === CFG.rankOverride; })) || L.pickRank(secureRandom);
       const slogan = L.pickFrom(secureRandom, state.frame.slogans[rank.id]);
       const rendering = renderFinal(rank, seed, slogan);
       await playGacha(rank);
