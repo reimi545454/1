@@ -163,8 +163,45 @@
     return { w: Math.max(1, Math.round(w * k)), h: Math.max(1, Math.round(h * k)) };
   }
 
+  /* ---------- マスコットの出し分け(画面に依存しない判断だけ) ---------- */
+  /**
+   * 「いま出してよいか」を決める。
+   *   - once: その場面は1回の利用につき1回まで
+   *   - always: 間隔制限を受けない(結果発表など、毎回出す場面)
+   *   - それ以外は、前回の登場から cooldownMs が経つまで出さない
+   */
+  function createBuddyGate(options) {
+    const cooldownMs = options && options.cooldownMs != null ? options.cooldownMs : 8000;
+    const seen = {};
+    let last = -Infinity;
+    return {
+      allow: function (scene, meta, now) {
+        const m = meta || {};
+        if (m.once && seen[scene]) return false;
+        if (!m.always && now - last < cooldownMs) return false;
+        return true;
+      },
+      commit: function (scene, now) { seen[scene] = true; last = now; },
+    };
+  }
+
+  /** セリフを選ぶ。候補が無ければ ''(=吹き出しなし)。{region} を市町村名に置き換える。 */
+  function pickLine(rand, lines, vars) {
+    const raw = pickFrom(rand, lines);
+    if (!raw) return '';
+    const v = vars || {};
+    return String(raw).replace(/\{(\w+)\}/g, function (m, k) { return v[k] != null ? v[k] : ''; });
+  }
+
+  /** 吹き出しを出しておく時間(ms)。文字が多いほど少し長く。 */
+  function bubbleHoldMs(text) {
+    const n = Array.from(text || '').length;
+    if (!n) return 1600;
+    return Math.min(4200, Math.max(2400, 1800 + n * 120));
+  }
+
   return {
-    RANKS: RANKS, MYSTERY_RANK: MYSTERY_RANK, pickRank: pickRank, pickFrom: pickFrom,
+    RANKS: RANKS, MYSTERY_RANK: MYSTERY_RANK, pickRank: pickRank, pickFrom: pickFrom, createBuddyGate: createBuddyGate, pickLine: pickLine, bubbleHoldMs: bubbleHoldMs,
     kanaToRomaji: kanaToRomaji, toRomajiName: toRomajiName,
     coverRect: coverRect, centerCrop: centerCrop, fitWithin: fitWithin,
   };

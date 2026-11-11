@@ -89,3 +89,30 @@ test('pickFrom: 配列から選ぶ。空は空文字、乱数の両端でも範�
   assert.equal(L.pickFrom(() => 0.5, []), '');
   assert.equal(L.pickFrom(() => 0.5, undefined), '');
 });
+
+test('createBuddyGate: 間隔・1回きり・毎回の場面', () => {
+  const g = L.createBuddyGate({ cooldownMs: 8000 });
+  assert.equal(g.allow('greet', { once: true }, 0), true);
+  g.commit('greet', 0);
+  assert.equal(g.allow('greet', { once: true }, 99999), false); // 1回きり
+  assert.equal(g.allow('photo', {}, 3000), false); // 8秒以内
+  assert.equal(g.allow('photo', {}, 8000), true); // 8秒後
+  assert.equal(g.allow('result', { always: true }, 3000), true); // 毎回の場面は間隔を無視
+  g.commit('result', 3000);
+  assert.equal(g.allow('result', { always: true }, 3100), true); // 毎回
+  assert.equal(g.allow('photo', {}, 9000), false); // 直前の登場(3000)から8秒経っていない
+});
+
+test('pickLine: 候補なしは空、{region} を差し込む', () => {
+  assert.equal(L.pickLine(() => 0, [], {}), '');
+  assert.equal(L.pickLine(() => 0, undefined, {}), '');
+  assert.equal(L.pickLine(() => 0, ['{region}だよ'], { region: 'つがる市' }), 'つがる市だよ');
+  assert.equal(L.pickLine(() => 0, ['{x}!'], {}), '!');
+  assert.equal(L.pickLine(() => 0.99, ['a', 'b'], {}), 'b');
+});
+
+test('bubbleHoldMs: 文字数に応じて2.4〜4.2秒、空は1.6秒', () => {
+  assert.equal(L.bubbleHoldMs(''), 1600);
+  assert.equal(L.bubbleHoldMs('あ'), 2400);
+  assert.equal(L.bubbleHoldMs('あ'.repeat(100)), 4200);
+});
