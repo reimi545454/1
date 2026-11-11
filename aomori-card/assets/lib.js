@@ -200,8 +200,79 @@
     return Math.min(4200, Math.max(2400, 1800 + n * 120));
   }
 
+  /* ---------- 保存画像(縦名刺サイズ 55 x 91 mm) ---------- */
+  const CARD_MM = { w: 55, h: 91 };
+
+  // 基準の画像サイズ(フレームPNG)。650 x 1075 px = 300dpi で 55 x 91 mm
+  const CARD_BASE_PX = { w: 650, h: 1075 };
+
+  /**
+   * 書き出しサイズを求める。幅(px)から、基準(650 x 1075)と同じ比率で高さを決める。
+   * dpi は、幅が 55mm になる解像度。
+   */
+  function exportSize(widthPx) {
+    const w = Math.max(1, Math.round(widthPx));
+    const h = Math.round((w * CARD_BASE_PX.h) / CARD_BASE_PX.w);
+    return { w: w, h: h, dpi: Math.round((w / CARD_MM.w) * 25.4) };
+  }
+
+  let crcTable = null;
+  function crc32(bytes) {
+    if (!crcTable) {
+      crcTable = [];
+      for (let n = 0; n < 256; n++) {
+        let c = n;
+        for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+        crcTable[n] = c >>> 0;
+      }
+    }
+    let crc = 0xffffffff;
+    for (let i = 0; i < bytes.length; i++) crc = crcTable[(crc ^ bytes[i]) & 0xff] ^ (crc >>> 8);
+    return (crc ^ 0xffffffff) >>> 0;
+  }
+
+  /**
+   * PNG のバイト列に、解像度(pHYs チャンク)を書き込む。
+   * widthPx 幅が 55mm になるよう、1メートルあたりの画素数 = widthPx / 0.055 を記録する。
+   * PNG でなければ、元のバイト列をそのまま返す。
+   */
+  function setPngPhysicalSize(bytes, widthPx) {
+    const sig = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+    for (let i = 0; i < 8; i++) if (bytes[i] !== sig[i]) return bytes;
+    const ppm = Math.round(widthPx / (CARD_MM.w / 1000));
+    const data = new Uint8Array(9);
+    const dv = new DataView(data.buffer);
+    dv.setUint32(0, ppm); dv.setUint32(4, ppm); data[8] = 1; // 単位 = メートル
+    const body = new Uint8Array(13);
+    body.set([0x70, 0x48, 0x59, 0x73], 0); // 'pHYs'
+    body.set(data, 4);
+    const chunk = new Uint8Array(21); // 長さ4 + 種類4 + データ9 + CRC4
+    const cdv = new DataView(chunk.buffer);
+    cdv.setUint32(0, 9);
+    chunk.set(body, 4);
+    cdv.setUint32(17, crc32(body));
+    // 既存の pHYs を取り除き、IHDR の直後に入れる
+    const out = [];
+    let pos = 8;
+    out.push(bytes.subarray(0, 8));
+    let inserted = false;
+    while (pos + 8 <= bytes.length) {
+      const len = new DataView(bytes.buffer, bytes.byteOffset + pos, 4).getUint32(0);
+      const type = String.fromCharCode(bytes[pos + 4], bytes[pos + 5], bytes[pos + 6], bytes[pos + 7]);
+      const end = pos + 12 + len;
+      if (type !== 'pHYs') out.push(bytes.subarray(pos, end));
+      if (type === 'IHDR' && !inserted) { out.push(chunk); inserted = true; }
+      pos = end;
+    }
+    const total = out.reduce(function (s, a) { return s + a.length; }, 0);
+    const res = new Uint8Array(total);
+    let o = 0;
+    out.forEach(function (a) { res.set(a, o); o += a.length; });
+    return res;
+  }
+
   return {
-    RANKS: RANKS, MYSTERY_RANK: MYSTERY_RANK, pickRank: pickRank, pickFrom: pickFrom, createBuddyGate: createBuddyGate, pickLine: pickLine, bubbleHoldMs: bubbleHoldMs,
+    RANKS: RANKS, MYSTERY_RANK: MYSTERY_RANK, pickRank: pickRank, pickFrom: pickFrom, CARD_MM: CARD_MM, CARD_BASE_PX: CARD_BASE_PX, exportSize: exportSize, crc32: crc32, setPngPhysicalSize: setPngPhysicalSize, createBuddyGate: createBuddyGate, pickLine: pickLine, bubbleHoldMs: bubbleHoldMs,
     kanaToRomaji: kanaToRomaji, toRomajiName: toRomajiName,
     coverRect: coverRect, centerCrop: centerCrop, fitWithin: fitWithin,
   };

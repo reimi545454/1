@@ -116,3 +116,35 @@ test('bubbleHoldMs: 文字数に応じて2.4〜4.2秒、空は1.6秒', () => {
   assert.equal(L.bubbleHoldMs('あ'), 2400);
   assert.equal(L.bubbleHoldMs('あ'.repeat(100)), 4200);
 });
+
+test('exportSize: 基準 650x1075(300dpi / 55x91mm)と同じ比率。2倍は 1300x2150 / 600dpi', () => {
+  assert.deepEqual(L.exportSize(650), { w: 650, h: 1075, dpi: 300 });
+  assert.deepEqual(L.exportSize(1300), { w: 1300, h: 2150, dpi: 600 });
+  assert.deepEqual(L.exportSize(1950), { w: 1950, h: 3225, dpi: 901 }); // 900.5 を四捨五入
+});
+
+test('crc32: 既知の値', () => {
+  assert.equal(L.crc32(new TextEncoder().encode('123456789')), 0xcbf43926);
+});
+
+test('setPngPhysicalSize: pHYs を IHDR の直後に入れる(CRC・既存の置き換え・非PNG)', () => {
+  const png = Uint8Array.from(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64'));
+  const out = L.setPngPhysicalSize(png, 650);
+  assert.equal(out.length, png.length + 21);
+  // IHDR(8+8+13+4=33)の直後に pHYs
+  const at = 33;
+  const dv = new DataView(out.buffer, out.byteOffset);
+  assert.equal(dv.getUint32(at), 9);
+  assert.equal(String.fromCharCode(...out.subarray(at + 4, at + 8)), 'pHYs');
+  const ppm = Math.round(650 / 0.055);
+  assert.equal(dv.getUint32(at + 8), ppm);
+  assert.equal(dv.getUint32(at + 12), ppm);
+  assert.equal(out[at + 16], 1);
+  assert.equal(dv.getUint32(at + 17), L.crc32(out.subarray(at + 4, at + 17)));
+  // 二重に呼んでも pHYs は1つだけ
+  const twice = L.setPngPhysicalSize(out, 650);
+  assert.equal(twice.length, out.length);
+  // PNGでないものはそのまま
+  const junk = new Uint8Array([1, 2, 3]);
+  assert.equal(L.setPngPhysicalSize(junk, 650), junk);
+});

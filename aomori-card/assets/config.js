@@ -7,7 +7,10 @@
  * (1100 x 1820 でも動きます。拡縮して使います)
  */
 window.AomoriConfig = {
-  card: { width: 1100, height: 1820, exportScale: 1.5 },
+  // 保存画像: 縦名刺サイズ 55 x 91 mm(650 x 1075 px = 300dpi)。
+  //   フレームPNGがあるときは、そのPNGと同じ大きさで保存する(大きくしたいときは、フレームPNGを同じ比率で大きく作る)。
+  //   exportWidth は、フレームPNGが無いときの幅(高さは 650:1075 の比率で決まる)
+  card: { width: 1100, height: 1820, exportWidth: 650 },
 
   // 書き出し・描画に使う書体(アプリに同梱。端末に依存せず常に同じ見た目)
   fonts: {

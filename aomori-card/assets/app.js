@@ -14,7 +14,12 @@
   const W = CFG.card.width;
   const H = CFG.card.height;
   const PREVIEW_SCALE = 0.7;
-  const EXPORT_SCALE = CFG.card.exportScale || 1.5;
+  // 保存画像の大きさ: フレームPNGがあればその大きさ(650x1075 = 300dpiで縦名刺 55x91mm)。なければ設定の幅から
+  function exportFor(frameImg) {
+    const w = frameImg && frameImg.naturalWidth ? frameImg.naturalWidth : (CFG.card.exportWidth || L.CARD_BASE_PX.w);
+    const h = frameImg && frameImg.naturalHeight ? frameImg.naturalHeight : L.exportSize(w).h;
+    return { w: w, h: h };
+  }
   const MAX_SOURCE_SIDE = 2800;
   const MAX_FILE_BYTES = 30 * 1024 * 1024;
   const ZOOM_MAX = 4;
@@ -1039,12 +1044,20 @@
     await fontsReady;
     const frameImg = await loadFrameImage(rank.id);
     const cv = document.createElement('canvas');
-    cv.width = Math.round(W * EXPORT_SCALE);
-    cv.height = Math.round(H * EXPORT_SCALE);
-    drawCard(cv.getContext('2d'), cardOptions(rank, seed, slogan, frameImg), EXPORT_SCALE);
-    return new Promise(function (resolve, reject) {
+    const size = exportFor(frameImg);
+    cv.width = size.w;
+    cv.height = size.h;
+    drawCard(cv.getContext('2d'), cardOptions(rank, seed, slogan, frameImg), size.w / W);
+    const blob = await new Promise(function (resolve, reject) {
       cv.toBlob(function (b) { b ? resolve(b) : reject(new Error('toBlob')); }, 'image/png');
     });
+    // 印刷しても 55 x 91 mm になるよう、解像度の情報(pHYs)を書き込む。失敗しても画像はそのまま使う
+    try {
+      const bytes = new Uint8Array(await blob.arrayBuffer());
+      return new Blob([L.setPngPhysicalSize(bytes, size.w)], { type: 'image/png' });
+    } catch (e) {
+      return blob;
+    }
   }
 
   function showResult(blob, rank) {
