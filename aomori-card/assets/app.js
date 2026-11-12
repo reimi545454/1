@@ -289,11 +289,14 @@
     ctx.save();
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font = '900 ' + Math.round(PHOTO.h * 0.46) + 'px ' + FF_HEAVY;
+    // 「?」: Apotek(使えるとき)か、同梱の日本語書体で、やわらかい色に
+    ctx.font = state.adobeReady
+      ? CFG.adobeFonts.weight + ' ' + Math.round(PHOTO.h * 0.5) + 'px "' + CFG.adobeFonts.family + '", ' + FF_JP
+      : '500 ' + Math.round(PHOTO.h * 0.4) + 'px ' + FF_JP;
     ctx.lineJoin = 'round';
-    ctx.lineWidth = PHOTO.h * 0.03;
+    ctx.lineWidth = PHOTO.h * 0.012;
     ctx.strokeStyle = '#ffffff';
-    ctx.fillStyle = '#5b9fd8';
+    ctx.fillStyle = 'rgba(74, 158, 224, .55)';
     ctx.strokeText('?', cx, PHOTO.y + PHOTO.h * 0.36);
     ctx.fillText('?', cx, PHOTO.y + PHOTO.h * 0.36);
     ctx.restore();
@@ -865,6 +868,7 @@
     state.view = { zoom: 1, ox: 0, oy: 0 };
     $('zoom').value = '1';
     $('zoomRow').hidden = false;
+    $('moveRow').hidden = false;
     updateHint();
     updateGenerateButton();
     requestRender();
@@ -983,6 +987,21 @@
     applyView(parseFloat(e.target.value), state.view.ox, state.view.oy);
   });
   $('btnResetView').addEventListener('click', function () { applyView(1, 0, 0); });
+  // 写真を動かすボタン(ドラッグやピンチが使いにくい環境のため)
+  document.querySelectorAll('[data-move]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (!state.source) return;
+      const v = state.view;
+      const STEP = 40; // 論理座標
+      const map = {
+        left: [v.zoom, v.ox - STEP, v.oy], right: [v.zoom, v.ox + STEP, v.oy],
+        up: [v.zoom, v.ox, v.oy - STEP], down: [v.zoom, v.ox, v.oy + STEP],
+        zoomin: [v.zoom * 1.12, v.ox, v.oy], zoomout: [v.zoom / 1.12, v.ox, v.oy],
+      };
+      const m = map[b.dataset.move];
+      if (m) applyView(m[0], m[1], m[2]);
+    });
+  });
 
   /* ================================================================
    * カメラ

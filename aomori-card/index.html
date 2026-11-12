@@ -79,7 +79,16 @@
           <input type="range" id="zoom" min="1" max="4" step="0.01" value="1">
           <button type="button" class="btn-mini" id="btnResetView">リセット</button>
         </div>
-        <p class="note">ドラッグで位置、ピンチ/スライダーで大きさを調整できるよ。写真はこの端末の中だけで処理されて、サーバーには送信されません。写真は、ご自身のものか、写っている方の許可を得たものを使ってね。</p>
+        <div class="move-row" id="moveRow" hidden>
+          <span class="move-label">うごかす</span>
+          <button type="button" class="btn-move" data-move="left" aria-label="写真を左へ">←</button>
+          <button type="button" class="btn-move" data-move="right" aria-label="写真を右へ">→</button>
+          <button type="button" class="btn-move" data-move="up" aria-label="写真を上へ">↑</button>
+          <button type="button" class="btn-move" data-move="down" aria-label="写真を下へ">↓</button>
+          <button type="button" class="btn-move" data-move="zoomout" aria-label="小さく">−</button>
+          <button type="button" class="btn-move" data-move="zoomin" aria-label="大きく">＋</button>
+        </div>
+        <p class="note">ドラッグで位置、ピンチ/スライダーで大きさを調整できるよ(動かないときは「＋」で大きくしてね)。写真はこの端末の中だけで処理されて、サーバーには送信されません。写真は、ご自身のものか、写っている方の許可を得たものを使ってね。</p>
       </div>
 
       <div class="step-block" id="nameBlock" data-step>
