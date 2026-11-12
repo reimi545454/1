@@ -61,7 +61,7 @@ window.AomoriConfig = {
   /*
    * キャラクターの登場(ぴょこっと出て、すぐ隠れる)。画面の左右の端に出て、タップは受け付けない。
    *   scenes の poses: 出す絵(複数なら順に切り替える)。once: 1回の利用で1回だけ / always: 間隔の制限を受けない
-   *   lines: セリフ(場面ごとの候補)。**空のあいだは吹き出しを出さない**。津軽弁は、本人が書いた言葉だけを入れる。
+   *   lines: セリフ(場面ごとの候補)。本人が書いた津軽弁だけを入れる。**空の場面は吹き出しを出さない**。複数あれば、出るたびにランダム。
    *          {region} は市町村名に置き換わる
    *   絵が読み込めない場面は、出さない(エラーにはならない)
    */
@@ -80,7 +80,14 @@ window.AomoriConfig = {
       idle: { poses: ['assets/mascot/clean/sleep.webp'], side: 'right', once: true }, // 操作がない
     },
     lines: {
-      greet: [], photoAdded: [], waiting: [], resultNormal: [], resultRare: [], saved: [], error: [], idle: [],
+      greet: ['よぐきだなぁ'],
+      photoAdded: ['たげめごい！', 'いい写真だじゃ'],
+      waiting: ['なにがでるべが'],
+      resultNormal: ['完成したじゃ', 'でぎだよ〜'],
+      resultRare: ['たんげすげぇ'],
+      saved: ['ありがとう', 'みんなさ見せでけろ'],
+      error: ['まいねじゃ〜', 'めやぐ', 'まいね'],
+      idle: ['どしたば？', '写真を入れてけろ'],
     },
   },
 
