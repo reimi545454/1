@@ -720,6 +720,83 @@
   }
 
   /* ================================================================
+   * キャラクターの登場: 画面の端からぴょこっと出て、少しして隠れる(出す判断は lib.js の createBuddyGate)
+   * ================================================================ */
+  const buddy = (function () {
+    const cfg = CFG.buddy;
+    const none = { say: function () {}, hide: function () {}, touch: function () {} };
+    const el = $('buddy');
+    if (!cfg || !cfg.enabled || !el) return none;
+    const img = $('buddyImg');
+    const bubble = $('buddyBubble');
+    const gate = L.createBuddyGate({ cooldownMs: cfg.cooldownMs });
+    const loaded = {};
+    let token = 0;
+    let timers = [];
+    let idleTimer = 0;
+
+    function preload(url) {
+      if (loaded[url] !== undefined) return Promise.resolve(loaded[url]);
+      return new Promise(function (resolve) {
+        const i = new Image();
+        i.onload = function () { loaded[url] = true; resolve(true); };
+        i.onerror = function () { loaded[url] = false; resolve(false); };
+        i.src = url;
+      });
+    }
+    function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+    function keyboardOpen() {
+      const vv = window.visualViewport;
+      return !!vv && vv.height < window.innerHeight - 150;
+    }
+    function blocked() {
+      return !!document.getElementById('splash') || !$('camera').hidden || keyboardOpen();
+    }
+    function hide() {
+      token++;
+      timers.forEach(clearTimeout);
+      timers = [];
+      el.classList.remove('in', 'hop');
+      later(function () { el.hidden = true; }, 380);
+    }
+
+    async function say(scene, vars) {
+      const def = cfg.scenes && cfg.scenes[scene];
+      if (!def || blocked()) return;
+      if (!gate.allow(scene, def, performance.now())) return;
+      const my = ++token;
+      timers.forEach(clearTimeout);
+      timers = [];
+      const poses = [];
+      for (const u of def.poses || []) { if (await preload(u)) poses.push(u); }
+      if (!poses.length || my !== token || blocked()) return;
+      gate.commit(scene, performance.now());
+      const line = L.pickLine(secureRandom, (cfg.lines || {})[scene], vars);
+      el.classList.remove('in', 'hop', 'left', 'right');
+      el.classList.add(def.side === 'left' ? 'left' : 'right');
+      img.src = poses[0];
+      bubble.hidden = !line;
+      bubble.textContent = line;
+      el.hidden = false;
+      void el.offsetWidth;
+      el.classList.add('in', 'hop');
+      let t = 900;
+      poses.slice(1).forEach(function (u) { later(function () { img.src = u; el.classList.remove('hop'); void el.offsetWidth; el.classList.add('hop'); }, t); t += 900; });
+      later(function () { hide(); }, Math.max(L.bubbleHoldMs(line), t + 1000));
+    }
+
+    // 操作がない時間が続いたら idle の場面。操作があるたびに数え直す
+    function touch() {
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(function () { say('idle'); }, cfg.idleMs || 15000);
+    }
+    ['pointerdown', 'keydown', 'scroll', 'input'].forEach(function (ev) { window.addEventListener(ev, touch, { passive: true }); });
+    document.addEventListener('focusin', function (e) { if (e.target && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) hide(); });
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', function () { if (keyboardOpen()) hide(); });
+    return { say: say, hide: hide, touch: touch };
+  })();
+
+  /* ================================================================
    * 操作アシスト: 「つぎはここだよ」を画面下に出し、押すとその場所までスクロールする
    * ================================================================ */
   function assistStep() {
@@ -791,6 +868,7 @@
     updateHint();
     updateGenerateButton();
     requestRender();
+    buddy.say('photoAdded');
   }
 
   async function handleFile(file) {
@@ -819,6 +897,7 @@
       toast('写真を読み込んだよ!');
     } catch (e) {
       toast('この画像は読み込めませんでした。JPEG / PNG でためしてね');
+      buddy.say('error');
     }
   }
 
@@ -1024,6 +1103,7 @@
     $('gachaRank').textContent = '';
     $('confetti').textContent = '';
     setModal(true, g);
+    buddy.say('waiting');
     await sleep(reduceMotion ? 300 : 1700);
     $('flash').classList.remove('go');
     void $('flash').offsetWidth;
@@ -1080,6 +1160,7 @@
     tilt.style.animation = '';
     setModal(false, $('gacha'));
     setModal(true, $('result'), $('btnSave'));
+    buddy.say(rank.stars >= 3 ? 'resultRare' : 'resultNormal');
   }
 
   async function generate() {
@@ -1099,6 +1180,7 @@
     } catch (e) {
       setModal(false, $('gacha'));
       toast('カードの生成に失敗しました。もう一度ためしてね');
+      buddy.say('error');
     } finally {
       state.busy = false;
       updateGenerateButton();
@@ -1137,6 +1219,7 @@
     if (!state.resultUrl) return;
     saveResult();
     toast('保存しました(うまくいかないときは画像を長押ししてね)');
+    buddy.say('saved');
   });
   // シェア: 画像ごと共有できる端末はそのまま共有。できない端末は、保存してSNSへの投稿を案内する
   $('btnShare').addEventListener('click', async function () {
@@ -1193,7 +1276,7 @@
       if (finished) return;
       finished = true;
       splash.classList.add('done');
-      setTimeout(function () { splash.remove(); updateAssist(); }, 600);
+      setTimeout(function () { splash.remove(); updateAssist(); buddy.say('greet'); buddy.touch(); }, 600);
     }
     function expand() {
       if (finished || splash.classList.contains('expand')) return;

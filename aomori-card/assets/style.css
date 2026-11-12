@@ -318,3 +318,26 @@ img.splash-apple, img.logo, img.gacha-apple, img.capsule { object-fit: contain; 
 @keyframes nudge { 50% { translate: 0 5px; } }
 .spotlight { border-color: var(--sky) !important; animation: spot 1.1s ease-in-out 2; }
 @keyframes spot { 50% { box-shadow: 0 0 0 7px rgba(30, 136, 229, .35), 0 6px 0 var(--line); } }
+
+/* ---------- キャラクターの登場(ぴょこっと出て、隠れる) ---------- */
+.buddy {
+  position: fixed; bottom: 30%; z-index: 60; width: min(24vw, 112px); pointer-events: none;
+  opacity: 0; transition: transform .38s cubic-bezier(.2, 1.5, .4, 1), opacity .22s ease;
+}
+.buddy img { width: 100%; height: auto; display: block; filter: drop-shadow(0 6px 6px rgba(60, 40, 30, .22)); }
+.buddy.right { right: 0; transform: translateX(115%); }
+.buddy.left { left: 0; transform: translateX(-115%); }
+.buddy.in { opacity: 1; transform: translateX(0); }
+.buddy.hop img { animation: buddyHop .5s ease-out; }
+@keyframes buddyHop { 0% { transform: translateY(0); } 35% { transform: translateY(-14px); } 70% { transform: translateY(0); } 85% { transform: translateY(-4px); } 100% { transform: translateY(0); } }
+.buddy-bubble {
+  position: absolute; bottom: 100%; max-width: 58vw; width: max-content; margin-bottom: 4px; padding: 8px 12px;
+  background: #fff; color: var(--ink); border: 3px solid var(--line); border-radius: 16px; font-weight: 800; font-size: .9rem; line-height: 1.4;
+  box-shadow: 0 4px 0 var(--line);
+}
+.buddy.right .buddy-bubble { right: 6px; }
+.buddy.left .buddy-bubble { left: 6px; }
+@media (prefers-reduced-motion: reduce) {
+  .buddy.right, .buddy.left { transform: none; transition: opacity .2s ease; }
+  .buddy.hop img { animation: none; }
+}

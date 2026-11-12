@@ -51,7 +51,39 @@ window.AomoriConfig = {
    *   main  : 基本の画像(正面向き)。他が空のときはこれを使う
    *   splash: オープニング用 / gacha: ガチャ待ち用 / logo: ヘッダーとボタンの小さいアイコン用
    */
-  mascotImages: { main: '', splash: '', gacha: '', logo: '' },
+  mascotImages: {
+    main: 'assets/mascot/clean/front.webp',
+    splash: 'assets/mascot/clean/front_happi.webp',
+    gacha: '', // 空なら main(正面)。ガチャ待ちで端に出るキャラ(buddy.scenes.waiting)と別の絵にする
+    logo: 'assets/mascot/clean/front.webp',
+  },
+
+  /*
+   * キャラクターの登場(ぴょこっと出て、すぐ隠れる)。画面の左右の端に出て、タップは受け付けない。
+   *   scenes の poses: 出す絵(複数なら順に切り替える)。once: 1回の利用で1回だけ / always: 間隔の制限を受けない
+   *   lines: セリフ(場面ごとの候補)。**空のあいだは吹き出しを出さない**。津軽弁は、本人が書いた言葉だけを入れる。
+   *          {region} は市町村名に置き換わる
+   *   絵が読み込めない場面は、出さない(エラーにはならない)
+   */
+  buddy: {
+    enabled: true,
+    cooldownMs: 8000, // 登場と登場の間隔
+    idleMs: 15000, // 操作がないとき
+    scenes: {
+      greet: { poses: ['assets/mascot/clean/front_happi.webp'], side: 'right', once: true }, // 起動
+      photoAdded: { poses: ['assets/mascot/clean/happy.webp'], side: 'left', once: true }, // 写真を入れた
+      waiting: { poses: ['assets/mascot/clean/nebuta_drum.webp'], side: 'right', always: true }, // ガチャ待ち
+      resultNormal: { poses: ['assets/mascot/clean/cheer.webp'], side: 'left', always: true }, // 結果(N・R)
+      resultRare: { poses: ['assets/mascot/clean/surprised.webp', 'assets/mascot/clean/nebuta_dance.webp'], side: 'left', always: true }, // 結果(SR以上)
+      saved: { poses: ['assets/mascot/clean/nebuta_fan.webp'], side: 'right', always: true }, // 保存した
+      error: { poses: ['assets/mascot/poses/thinking.webp'], side: 'left', always: true }, // エラー
+      idle: { poses: ['assets/mascot/poses/sleep.webp'], side: 'right', once: true }, // 操作がない
+    },
+    lines: {
+      greet: [], photoAdded: [], waiting: [], resultNormal: [], resultRare: [], saved: [], error: [], idle: [],
+    },
+  },
+
 
   // 名前が未入力のときにプレビューへ薄く出す見本(first=名前 / last=苗字)
   sampleName: { first: 'TARO', last: 'AOMORI' },

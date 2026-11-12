@@ -18,3 +18,11 @@
 ```js
 mascotImages: { main: 'assets/mascot/front.png', splash: '', gacha: 'assets/mascot/shake.png', logo: 'assets/mascot/logo.png' },
 ```
+
+## 登場するキャラ(buddy)
+`assets/config.js` の `buddy` で、場面ごとに出す絵を決めます。絵は `assets/mascot/clean/`(きれいに切り出した版)と、`assets/mascot/poses/`(最初の16枚の仮素材)にあります。
+- セリフは `buddy.lines` に書きます。**空のあいだは吹き出しを出しません**。津軽弁は、本人が書いた言葉だけを入れてください(`{region}` は市町村名になります)
+- 同時に出るのは1つだけ。前の登場から8秒は出しません(結果・ガチャ待ち・保存・エラーは毎回出します)
+- キーボードが出ているとき、カメラ表示中、オープニング中は出しません。タップは邪魔しません
+- 「動きを減らす」設定では、スライドやジャンプはせず、ふわっと表示するだけです
+- 絵が読み込めない場面は、出ないだけでエラーにはなりません
