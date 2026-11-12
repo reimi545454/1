@@ -77,7 +77,7 @@ window.AomoriConfig = {
       resultRare: { poses: ['assets/mascot/clean/surprised.webp', 'assets/mascot/clean/nebuta_dance.webp'], side: 'left', always: true }, // 結果(SR以上)
       saved: { poses: ['assets/mascot/clean/nebuta_fan.webp'], side: 'right', always: true }, // 保存した
       error: { poses: ['assets/mascot/poses/thinking.webp'], side: 'left', always: true }, // エラー
-      idle: { poses: ['assets/mascot/poses/sleep.webp'], side: 'right', once: true }, // 操作がない
+      idle: { poses: ['assets/mascot/clean/sleep.webp'], side: 'right', once: true }, // 操作がない
     },
     lines: {
       greet: [], photoAdded: [], waiting: [], resultNormal: [], resultRare: [], saved: [], error: [], idle: [],
